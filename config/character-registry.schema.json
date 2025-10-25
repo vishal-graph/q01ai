@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CharacterRegistry",
+  "type": "object",
+  "required": ["version", "defaults", "characters"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Registry version for tracking"
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "ai": {
+          "type": "object",
+          "properties": {
+            "model": { "type": "string" },
+            "temperature": { "type": "number" },
+            "maxTokens": { "type": "integer" },
+            "timeout": { "type": "integer" }
+          },
+          "required": ["model", "temperature", "maxTokens"]
+        },
+        "language": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { 
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "locale": { "type": "string" }
+          },
+          "required": ["primary", "locale"]
+        }
+      },
+      "required": ["ai", "language"]
+    },
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "service", "persona", "tone", "region", "routing", "prompts", "guardrails", "eq", "language"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique character identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Character display name"
+          },
+          "service": {
+            "type": "string",
+            "enum": ["construction", "interior_design", "home_automation", "painting"],
+            "description": "Service this character handles"
+          },
+          "active": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether this character is active"
+          },
+          "persona": {
+            "type": "string",
+            "description": "Character background and expertise"
+          },
+          "qualification": {
+            "type": "string",
+            "description": "Professional qualifications"
+          },
+          "tone": {
+            "type": "string",
+            "description": "Communication tone and style"
+          },
+          "region": {
+            "type": "object",
+            "properties": {
+              "country": { "type": "string" },
+              "state": { "type": "string" },
+              "city": { "type": "string" }
+            },
+            "required": ["country", "state"]
+          },
+          "routing": {
+            "type": "object",
+            "properties": {
+              "ai": {
+                "type": "object",
+                "properties": {
+                  "model": { "type": "string" },
+                  "temperature": { "type": "number" },
+                  "maxTokens": { "type": "integer" },
+                  "timeout": { "type": "integer" }
+                }
+              }
+            },
+            "required": ["ai"]
+          },
+          "prompts": {
+            "type": "object",
+            "properties": {
+              "enquiry": {
+                "type": "object",
+                "properties": {
+                  "fields": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "style": { "type": "string" },
+                  "collectionFlow": {
+                    "type": "string",
+                    "description": "Instructions for conversational parameter collection flow"
+                  },
+                  "parameters": {
+                    "type": "array",
+                    "description": "9-parameter enquiry model for structured data collection",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Parameter identifier"
+                        },
+                        "label": {
+                          "type": "string",
+                          "description": "Human-readable parameter name"
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "description": "Why this parameter is important"
+                        },
+                        "questionIntent": {
+                          "type": "string",
+                          "description": "Semantic goal of the question"
+                        },
+                        "aiGuidance": {
+                          "type": "string",
+                          "description": "How AI should phrase and handle this parameter"
+                        },
+                        "exampleQuestions": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "description": "Example questions with varied tone"
+                        },
+                        "responseType": {
+                          "type": "string",
+                          "enum": ["text", "number", "boolean", "choice", "file", "media"],
+                          "description": "Expected response data type"
+                        },
+                        "validation": {
+                          "type": "object",
+                          "properties": {
+                            "rules": {
+                              "type": "array",
+                              "items": { "type": "string" },
+                              "description": "Validation rules and acceptable values"
+                            },
+                            "followUps": {
+                              "type": "array",
+                              "items": { "type": "string" },
+                              "description": "Contextual follow-up responses"
+                            }
+                          }
+                        },
+                        "emotionCues": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string" },
+                          "description": "Map of detected emotion to tone modulation"
+                        },
+                        "usageInProcess": {
+                          "type": "string",
+                          "description": "How this parameter is used in downstream processes"
+                        }
+                      },
+                      "required": ["id", "label", "purpose", "questionIntent", "aiGuidance", "exampleQuestions", "responseType", "usageInProcess"]
+                    }
+                  }
+                },
+                "required": ["fields", "style"]
+              }
+            },
+            "required": ["enquiry"]
+          },
+          "guardrails": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Behavioral constraints and principles"
+          },
+          "eq": {
+            "type": "object",
+            "description": "Emotional intelligence configuration",
+            "properties": {
+              "detection": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Keywords/signals to detect user emotional state"
+              },
+              "empathyPhrases": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Empathy responses to use"
+              },
+              "modulation": {
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "description": "Map of signal to tone modulation"
+              }
+            },
+            "required": ["detection", "empathyPhrases", "modulation"]
+          },
+          "language": {
+            "type": "object",
+            "properties": {
+              "primary": { "type": "string" },
+              "secondary": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "locale": { "type": "string" },
+              "openingPhrases": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "closingPhrases": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

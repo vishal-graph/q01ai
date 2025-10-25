@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: Questionnaire API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082
+paths:
+  /questionnaires:
+    post:
+      summary: Start a questionnaire
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                service:
+                  type: string
+                channel:
+                  type: string
+                userRef:
+                  type: string
+              required: [service]
+      responses:
+        '201':
+          description: Created
+  /questionnaires/{id}:
+    get:
+      summary: Get questionnaire state
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not Found }
+  /questionnaires/{id}/messages:
+    post:
+      summary: Continue questionnaire with a message
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text: { type: string }
+                mediaRef: { type: string }
+              required: [text]
+      responses:
+        '200': { description: OK }
+        '404': { description: Not Found }
+  /questionnaires/{id}/complete:
+    post:
+      summary: Force complete questionnaire
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not Found }
+  /admin/characters:
+    get:
+      summary: List characters
+      responses:
+        '200': { description: OK }
+  /admin/characters/reload:
+    post:
+      summary: Force reload character registry
+      responses:
+        '200': { description: OK }
+

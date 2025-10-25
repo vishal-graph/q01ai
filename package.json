@@ -1,0 +1,41 @@
+{
+  "name": "q.01ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Q.01AI - Standalone conversational questionnaire system for Construction, Interior Design, Home Automation, and Painting services",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "apps/workers/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "test:int": "pnpm -r test:int",
+    "test:bdd": "pnpm -r test:bdd",
+    "test:perf": "pnpm -r test:perf",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "gen:zod": "ts-node --compiler-options '{\"module\":\"esnext\"}' tools/gen-zod-types.ts",
+    "characters:list": "curl http://localhost:8082/admin/characters",
+    "characters:reload": "curl -X POST http://localhost:8082/admin/characters/reload"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "chokidar": "^4.0.3"
+  }
+}
