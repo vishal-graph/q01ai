@@ -10,7 +10,7 @@ import { router as api } from './routes';
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-async function main() {
+export function createApp() {
   const app = express();
   app.use(helmet());
   app.use(cors());
@@ -23,17 +23,26 @@ async function main() {
   app.get('/healthz', (_req, res) => res.json({ status: 'ok' }));
   app.get('/readyz', (_req, res) => res.json({ status: 'ready' }));
   app.use('/', api);
+  return app;
+}
 
+async function main() {
+  const app = createApp();
   const PORT = Number(process.env.PORT || 8082);
   app.listen(PORT, () => {
     logger.info({ PORT }, 'questionnaire service listening');
   });
 }
 
-main().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
-  process.exit(1);
-});
+// Start local server only when not running on Vercel (serverless)
+if (!process.env.VERCEL) {
+  main().catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+export default createApp;
 
 
