@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire Test UI</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 12px;
+            background: #0b1120;
+            color: #0f172a;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #0b141a;
+            border-radius: 28px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #0b141a;
+            position: relative;
+        }
+        .chat-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: transparent;
+        }
+        .chat-content {
+            position: relative;
+            z-index: 1;
+            padding: 0;
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            background: rgba(17, 25, 40, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .chat-header__avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .chat-header__meta {
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header__name {
+            color: #f8fafc;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .chat-header__status {
+            color: rgba(226, 232, 240, 0.75);
+            font-size: 12px;
+        }
+        .service-selector {
+            padding: 18px 20px 8px;
+        }
+        .service-selector h3 {
+            margin: 0 0 12px 4px;
+            color: rgba(226, 232, 240, 0.85);
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+        .service-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .service-btn {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.55);
+            color: rgba(226, 232, 240, 0.85);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .service-btn:hover {
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.12);
+            color: #c7d2fe;
+        }
+        .service-btn.active {
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.18);
+            color: #e0e7ff;
+        }
+        .status {
+            margin: 0 20px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            background: rgba(15, 23, 42, 0.55);
+            color: rgba(226, 232, 240, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+        }
+        .status.success {
+            background: rgba(34, 197, 94, 0.12);
+            border-color: rgba(34, 197, 94, 0.25);
+            color: #4ade80;
+        }
+        .status.error {
+            background: rgba(248, 113, 113, 0.12);
+            border-color: rgba(248, 113, 113, 0.28);
+            color: #fca5a5;
+        }
+        .chat-container {
+            flex: 1;
+            margin: 16px 20px;
+            border-radius: 18px;
+            padding: 18px 16px 90px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+        .message {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+            animation: bubblePop 0.25s ease;
+        }
+        .bubble {
+            max-width: 88%;
+            padding: 12px 14px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 14px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            white-space: pre-line;
+        }
+        .message.assistant {
+            align-items: flex-start;
+        }
+        .message.assistant .bubble {
+            background: #111827;
+            color: rgba(226, 232, 240, 0.95);
+            border-bottom-left-radius: 4px;
+        }
+        .message.assistant .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -6px;
+            width: 12px;
+            height: 12px;
+            background: #111827;
+            clip-path: polygon(0 100%, 100% 0, 100% 100%);
+        }
+        .message.user {
+            align-items: flex-end;
+        }
+        .message.user .bubble {
+            background: #4f46e5;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+        .message.user .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -6px;
+            width: 12px;
+            height: 12px;
+            background: #4f46e5;
+            clip-path: polygon(0 0, 100% 100%, 0 100%);
+        }
+        .bubble-meta {
+            font-size: 11px;
+            color: rgba(148, 163, 184, 0.85);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .message.assistant .bubble-meta {
+            color: rgba(148, 163, 184, 0.8);
+        }
+        .input-bar {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 14px 20px 18px;
+            background: rgba(10, 17, 23, 0.92);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(12px);
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.75);
+            color: rgba(226, 232, 240, 0.95);
+            font-size: 14px;
+            transition: border 0.2s ease, background 0.2s ease;
+        }
+        .message-input:focus {
+            outline: none;
+            border-color: rgba(45, 212, 191, 0.45);
+            background: rgba(15, 23, 42, 0.9);
+        }
+        .media-btn {
+            background: rgba(79, 70, 229, 0.12);
+            border: 1px solid rgba(79, 70, 229, 0.38);
+            color: #c7d2fe;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .media-btn:hover {
+            background: rgba(79, 70, 229, 0.22);
+        }
+        .send-btn {
+            padding: 0 22px;
+            height: 40px;
+            border-radius: 999px;
+            border: none;
+            background: #4f46e5;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+        .send-btn:disabled {
+            background: rgba(148, 163, 184, 0.25);
+            color: rgba(148, 163, 184, 0.55);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .options-container {
+            margin-top: 8px;
+            padding: 4px 0 0 0;
+            background: transparent !important;
+            border: none !important;
+            display: inline-flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .expected-format {
+            font-size: 11px;
+            color: rgba(203, 213, 225, 0.75);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .options-title {
+            font-weight: 600;
+            font-size: 12px;
+            color: rgba(226, 232, 240, 0.75);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .options-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .option-btn {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            border-color: #4f46e5;
+            color: #e0e7ff;
+        }
+        .option-btn.selected {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: #ffffff;
+        }
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border-radius: 18px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom-left-radius: 4px;
+        }
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: rgba(226, 232, 240, 0.75);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        .parameters-display {
+            margin: 0 20px 20px;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.55);
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            color: rgba(226, 232, 240, 0.9);
+        }
+        .parameter-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.2);
+            font-size: 13px;
+        }
+        .parameter-item:last-child {
+            border-bottom: none;
+        }
+        .parameter-name {
+            font-weight: 600;
+            color: rgba(226, 232, 240, 0.8);
+        }
+        .parameter-value {
+            color: #38bdf8;
+        }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: #0f172a;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 24px 45px rgba(15, 23, 42, 0.55);
+            text-align: center;
+            max-width: 360px;
+            margin: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            color: rgba(226, 232, 240, 0.92);
+        }
+        .popup-content h3 {
+            margin: 0 0 14px 0;
+            color: #5eead4;
+            font-size: 20px;
+        }
+        .popup-content p {
+            margin: 0 0 20px 0;
+            font-size: 14px;
+            color: rgba(226, 232, 240, 0.78);
+        }
+        .popup-close {
+            background: #4f46e5;
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .popup-close:hover {
+            opacity: 0.9;
+        }
+        button:focus-visible {
+            outline: 2px solid rgba(56, 189, 248, 0.6);
+            outline-offset: 2px;
+        }
+        @keyframes typingBounce {
+            0%, 80%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            40% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+        @keyframes bubblePop {
+            from {
+                transform: scale(0.96) translateY(4px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+        @media (max-width: 540px) {
+            .container {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .chat-header {
+                border-radius: 0;
+            }
+            .chat-container {
+                margin: 12px 16px;
+            }
+        }
+    </style>
+    <style id="light-mode-overrides">
+        /* Light mode: WhatsApp-like whites/greens with dark text */
+        body { background: #f0f2f5 !important; color: #111827 !important; }
+        .container { background: #ffffff !important; border: 1px solid #e5e7eb !important; }
+        .chat-wrapper { background: #ffffff !important; }
+        .chat-wrapper::before { background: transparent !important; backdrop-filter: none !important; }
+        .chat-header { background: #ffffff !important; border-bottom: 1px solid #e5e7eb !important; }
+        .chat-header__name { color: #0f172a !important; }
+        .chat-header__status { color: #6b7280 !important; }
+        .chat-header__avatar { background: #25d366 !important; }
+
+        .service-btn { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #111827 !important; }
+        .service-btn:hover { border-color: #25d366 !important; background: #eefcf3 !important; color: #0f5132 !important; }
+        .service-btn.active { border-color: #25d366 !important; background: #e7fbee !important; color: #0f5132 !important; }
+
+        .status { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #374151 !important; }
+        .status.success { background: #e7fbee !important; border-color: #bbf7d0 !important; color: #166534 !important; }
+        .status.error { background: #fee2e2 !important; border-color: #fecaca !important; color: #7f1d1d !important; }
+
+        .chat-container { background: #ffffff !important; border: 1px solid #e5e7eb !important; }
+
+        .message.assistant .bubble { background: #ffffff !important; color: #111827 !important; border: 1px solid #e5e7eb !important; }
+        .message.assistant .bubble::after { background: #ffffff !important; }
+        .message.user .bubble { background: #d9fdd3 !important; color: #111827 !important; }
+        .message.user .bubble::after { background: #d9fdd3 !important; }
+        .bubble-meta { color: #6b7280 !important; }
+
+        .input-bar { background: #ffffff !important; border-top: 1px solid #e5e7eb !important; }
+        .message-input { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #111827 !important; }
+        .media-btn { background: #ffffff !important; border: 1px solid #25d366 !important; color: #25d366 !important; }
+        .media-btn:hover { background: #e7fbee !important; }
+        .send-btn { background: #25d366 !important; color: #ffffff !important; }
+        .send-btn:hover { box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25) !important; }
+
+        .options-container { background: transparent !important; border: none !important; }
+        .options-list { gap: 6px !important; }
+        .option-btn { background: #ffffff !important; border: 1px solid #e5e7eb !important; }
+        .option-btn:hover { border-color: #25d366 !important; color: #0f5132 !important; }
+        .option-btn.selected { background: #25d366 !important; border-color: #25d366 !important; color: #ffffff !important; }
+
+        .parameters-display { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #111827 !important; }
+        .parameter-name { color: #111827 !important; }
+        .parameter-value { color: #16a34a !important; }
+
+        .popup-content { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #111827 !important; }
+        .popup-content h3 { color: #16a34a !important; }
+        .popup-close { background: #25d366 !important; color: #ffffff !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-wrapper">
+            <div class="chat-content">
+                <div class="chat-header">
+                    <div class="chat-header__avatar">Q</div>
+                    <div class="chat-header__meta">
+                        <div class="chat-header__name">TatvaOps Concierge</div>
+                        <div class="chat-header__status">Select a service to get started</div>
+                    </div>
+                </div>
+        
+        <div class="service-selector">
+            <h3>Select Service:</h3>
+            <div class="service-buttons">
+                <button class="service-btn" data-service="interior_design">Interior Design</button>
+                <button class="service-btn" data-service="construction">Construction</button>
+                <button class="service-btn" data-service="home_automation">Home Automation</button>
+                <button class="service-btn" data-service="painting">Painting</button>
+                <button class="service-btn" data-service="solar_services">Solar Services</button>
+                        <button class="service-btn" data-service="electrical_services">Electrical Services</button>
+            </div>
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message assistant">
+                <div class="bubble">
+                    <div class="bubble-meta">TatvaOps Concierge</div>
+                    <div>Please select a service to begin the questionnaire.</div>
+                </div>
+            </div>
+        </div>
+
+                <div class="input-bar">
+        <div class="input-container">
+            <input type="file" id="mediaUpload" accept=".png,.jpeg,.jpg,.pdf" style="display: none;" onchange="handleMediaUpload(event)">
+            <button class="media-btn" onclick="document.getElementById('mediaUpload').click()" title="Upload Image/PDF">
+                📎
+            </button>
+            <input type="text" id="messageInput" class="message-input" placeholder="Type your message here..." disabled>
+            <button id="sendBtn" class="send-btn" disabled>Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="parameters-display" id="parametersDisplay" style="display: none;">
+            <h4>Collected Parameters:</h4>
+            <div id="parametersList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let currentQuestionnaireId = null;
+        let currentService = null;
+        let collectedParameters = {};
+
+        const serviceButtons = document.querySelectorAll('.service-btn');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatContainer = document.getElementById('chatContainer');
+        const statusDiv = document.getElementById('status');
+        const parametersDisplay = document.getElementById('parametersDisplay');
+        const parametersList = document.getElementById('parametersList');
+        const headerNameEl = document.querySelector('.chat-header__name');
+        const headerStatusEl = document.querySelector('.chat-header__status');
+        const headerAvatarEl = document.querySelector('.chat-header__avatar');
+        let currentExpectedFormat = '';
+        let currentOptions = [];
+        let currentAllowMultiple = false;
+        let selectedOptions = [];
+        let currentCharacterName = 'TatvaOps Concierge';
+        let typingMessage = null;
+
+        const serviceNameMap = {
+            interior_design: 'Interior Design',
+            construction: 'Construction Services',
+            home_automation: 'Home Automation',
+            painting: 'Painting & Finishes',
+            solar_services: 'Solar Services',
+            electrical_services: 'Electrical Safety'
+        };
+
+        const serviceTriggerMessages = {
+            interior_design: 'Hello! I am exploring interior design support for my home.',
+            construction: 'Hi, I would like help planning a construction project.',
+            home_automation: 'Hey! I am interested in smart home automation ideas.',
+            painting: 'Hello, I have a painting project I need assistance with.',
+            solar_services: 'Namaskara! I want to know the best solar setup for my property.',
+            electrical_services: 'Hi Vivek, I need an electrical safety consultation.'
+        };
+
+        function friendlyServiceName(serviceId) {
+            return serviceNameMap[serviceId] || serviceId?.replace(/_/g, ' ') || 'Service';
+        }
+
+        function getInitials(name = 'AI') {
+            return name
+                .split(' ')
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0]?.toUpperCase())
+                .join('') || 'AI';
+        }
+
+        function updateHeader(name = 'TatvaOps Concierge', serviceId = null) {
+            headerNameEl.textContent = name;
+            headerAvatarEl.textContent = getInitials(name);
+            if (serviceId) {
+                headerStatusEl.textContent = `Connected • ${friendlyServiceName(serviceId)}`;
+            }
+            updateComposerForCharacter(name);
+        }
+
+        function setHeaderStatus(text) {
+            headerStatusEl.textContent = text;
+        }
+
+        function updateComposerForCharacter(name = 'Consultant') {
+            const firstName = name.split(' ')[0] || 'consultant';
+            messageInput.placeholder = `Message ${firstName}…`;
+        }
+
+        function showTypingIndicator(name = currentCharacterName) {
+            if (typingMessage) return;
+            typingMessage = document.createElement('div');
+            typingMessage.className = 'message assistant typing';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+
+            const meta = document.createElement('div');
+            meta.className = 'bubble-meta';
+            meta.textContent = name;
+            bubble.appendChild(meta);
+
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            const dots = document.createElement('div');
+            dots.className = 'typing-dots';
+            for (let i = 0; i < 3; i += 1) {
+                const dot = document.createElement('span');
+                dots.appendChild(dot);
+            }
+            indicator.appendChild(dots);
+            bubble.appendChild(indicator);
+
+            typingMessage.appendChild(bubble);
+            chatContainer.appendChild(typingMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            setHeaderStatus(`${name.split(' ')[0] || 'Consultant'} is typing…`);
+        }
+
+        function hideTypingIndicator() {
+            if (typingMessage) {
+                typingMessage.remove();
+                typingMessage = null;
+                if (currentQuestionnaireId) {
+                    setHeaderStatus('Awaiting your response');
+                }
+            }
+        }
+ 
+        function updateSendButtonState() {
+            if (messageInput.disabled) {
+                sendBtn.disabled = true;
+                return;
+            }
+
+            if (currentAllowMultiple) {
+                const hasSelection = selectedOptions.length > 0;
+                const hasTyped = messageInput.value.trim().length > 0;
+                sendBtn.disabled = !(hasSelection || hasTyped);
+            } else {
+                sendBtn.disabled = messageInput.value.trim().length === 0;
+            }
+        }
+
+        updateComposerForCharacter(currentCharacterName);
+        setHeaderStatus('Select a service to get started');
+        updateSendButtonState();
+
+        // Service selection
+        serviceButtons.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const service = btn.dataset.service;
+                await startQuestionnaire(service);
+            });
+        });
+
+        // Send message
+        sendBtn.addEventListener('click', () => sendMessage());
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        messageInput.addEventListener('input', updateSendButtonState);
+
+        async function startQuestionnaire(service) {
+            try {
+                showStatus('Starting questionnaire...', 'info');
+                hideTypingIndicator();
+                setHeaderStatus('Connecting…');
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                selectedOptions = [];
+                currentAllowMultiple = false;
+                updateSendButtonState();
+                
+                // Update UI
+                serviceButtons.forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-service="${service}"]`).classList.add('active');
+                
+                // Clear chat
+                chatContainer.innerHTML = '';
+                
+                // Start questionnaire
+                const response = await fetch(`${API_BASE}/questionnaires`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ service })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                currentQuestionnaireId = data.id;
+                currentService = service;
+                collectedParameters = {};
+                currentCharacterName = data.character || 'AI Consultant';
+                updateHeader(currentCharacterName, service);
+                setHeaderStatus(`Awaiting your message • ${friendlyServiceName(service)}`);
+
+                const triggerText = serviceTriggerMessages[service];
+                if (!triggerText && data.nextQuestion) {
+                    addMessage(data.nextQuestion, 'assistant', data.character || currentCharacterName);
+                }
+                
+                // Enable input
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                updateSendButtonState();
+                
+                showStatus(`Questionnaire started for ${service}`, 'success');
+                updateParametersDisplay();
+                
+                if (triggerText) {
+                    setTimeout(() => {
+                        if (currentQuestionnaireId === data.id) {
+                            sendMessage(triggerText);
+                        }
+                    }, 450);
+                } else {
+                    messageInput.focus();
+                }
+                
+            } catch (error) {
+                console.error('Error starting questionnaire:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+                updateHeader('TatvaOps Concierge', null);
+                setHeaderStatus('Select a service to get started');
+                messageInput.disabled = false;
+                updateSendButtonState();
+            }
+        }
+
+        async function sendMessage(overrideText = null) {
+            const message = overrideText !== null ? String(overrideText).trim() : messageInput.value.trim();
+            if (!message || !currentQuestionnaireId) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            if (overrideText === null) {
+            messageInput.value = '';
+            }
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            selectedOptions = [];
+            messageInput.placeholder = 'Waiting for response…';
+            updateSendButtonState();
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(`${API_BASE}/questionnaires/${currentQuestionnaireId}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: message })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                 hideTypingIndicator();
+                 messageInput.disabled = false;
+                
+                if (data.status === 'completed') {
+                    // Questionnaire completed
+                    addMessage('Thank you! I have all the details. Your questionnaire is complete.', 'assistant');
+                    showStatus('Questionnaire completed!', 'success');
+                    messageInput.disabled = true;
+                    sendBtn.disabled = true;
+                     messageInput.placeholder = 'Conversation completed';
+                     setHeaderStatus('Conversation complete • We will follow up soon');
+                    
+                    // Show popup affirmation
+                    showPopup('Thanks for your time, our consultant will get back to you shortly!');
+                    
+                    // Show collected parameters
+                    collectedParameters = data.parameters;
+                    updateParametersDisplay();
+                    
+            } else {
+                // Continue conversation
+                currentExpectedFormat = '';
+                currentOptions = Array.isArray(data.options) ? data.options : [];
+                 currentAllowMultiple = Boolean(data.allowMultiple);
+                 selectedOptions = [];
+                 if (currentAllowMultiple) {
+                     messageInput.placeholder = 'Select options or type your answer…';
+                 } else {
+                     updateComposerForCharacter(currentCharacterName);
+                 }
+                 addMessage(data.nextQuestion, 'assistant', currentCharacterName, data.parameterLabel, currentOptions, currentAllowMultiple);
+                 setHeaderStatus('Awaiting your response');
+                messageInput.focus();
+                updateSendButtonState();
+            }
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                 hideTypingIndicator();
+                 addMessage(`Sorry, I encountered an error: ${error.message}`, 'assistant', currentCharacterName);
+                 messageInput.disabled = false;
+                currentAllowMultiple = false;
+                updateComposerForCharacter(currentCharacterName);
+                updateSendButtonState();
+                 setHeaderStatus('Online • Ready when you are');
+            }
+        }
+
+        function addMessage(text, sender, character = null, parameterLabel = null, options = [], allowMultiple = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+
+            const optionsArray = Array.isArray(options) ? options : [];
+            const cleanedText = optionsArray.length
+                ? String(text).replace(/\s*\(Options:[^)]+\)\s*[\.\u3002]?\s*/ig, ' ').trim()
+                : String(text).trim();
+
+            // No meta headers; show only message text inside the bubble (WhatsApp-style)
+
+            if (cleanedText.length) {
+                const textEl = document.createElement('div');
+                textEl.textContent = cleanedText;
+                bubble.appendChild(textEl);
+            }
+
+            if (sender === 'assistant' && optionsArray.length) {
+                if (allowMultiple) {
+                    const helper = document.createElement('div');
+                    helper.className = 'expected-format';
+                    helper.textContent = 'Select one or more or type your answer';
+                    bubble.appendChild(helper);
+                }
+
+                const wrap = document.createElement('div');
+                wrap.className = 'options-container';
+                const list = document.createElement('div');
+                list.className = 'options-list';
+                optionsArray.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = opt;
+                    if (allowMultiple) {
+                        btn.addEventListener('click', () => {
+                            const index = selectedOptions.indexOf(opt);
+                            if (index >= 0) {
+                                selectedOptions.splice(index, 1);
+                                btn.classList.remove('selected');
+                            } else {
+                                selectedOptions.push(opt);
+                                btn.classList.add('selected');
+                            }
+                            messageInput.value = selectedOptions.join(', ');
+                            updateSendButtonState();
+                        });
+                    } else {
+                        btn.addEventListener('click', () => {
+                            sendMessage(opt);
+                        });
+                    }
+                    list.appendChild(btn);
+                });
+                wrap.appendChild(list);
+                bubble.appendChild(wrap);
+            }
+
+            messageDiv.appendChild(bubble);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            if (sender === 'assistant') {
+                if (allowMultiple) {
+                    messageInput.placeholder = 'Select options or type your answer…';
+                } else {
+                    updateComposerForCharacter(character || currentCharacterName);
+                }
+                updateSendButtonState();
+            }
+        }
+        
+        // Handle media upload
+        function handleMediaUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                messageInput.value = `[File uploaded: ${file.name}]`;
+                sendMessage();
+            }
+        }
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function showPopup(message) {
+            // Create popup overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            
+            // Create popup content
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <h3>✅ Questionnaire Complete!</h3>
+                    <p>${message}</p>
+                    <button class="popup-close" onclick="this.parentElement.parentElement.remove()">Close</button>
+                </div>
+            `;
+            
+            // Add to page
+            document.body.appendChild(overlay);
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                if (overlay.parentElement) {
+                    overlay.remove();
+                }
+            }, 5000);
+        }
+
+        function updateParametersDisplay() {
+            if (Object.keys(collectedParameters).length === 0) {
+                parametersDisplay.style.display = 'none';
+                return;
+            }
+
+            parametersDisplay.style.display = 'block';
+            parametersList.innerHTML = '';
+            
+            Object.entries(collectedParameters).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.className = 'parameter-item';
+                item.innerHTML = `
+                    <span class="parameter-name">${key}</span>
+                    <span class="parameter-value">${value}</span>
+                `;
+                parametersList.appendChild(item);
+            });
+        }
+
+        // Check if questionnaire service is running
+        async function checkService() {
+            try {
+                const response = await fetch(`${API_BASE}/healthz`);
+                if (response.ok) {
+                    showStatus('Questionnaire service is running', 'success');
+                } else {
+                    showStatus('Questionnaire service is not responding', 'error');
+                }
+            } catch (error) {
+                showStatus('Cannot connect to questionnaire service. Make sure it\'s running on port 8082', 'error');
+            }
+        }
+
+        // Check service on load
+        checkService();
+    </script>
+</body>
+</html>
