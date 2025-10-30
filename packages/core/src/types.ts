@@ -2,7 +2,7 @@
  * Core domain types for TatvaOps Conversational Enquiry System
  */
 
-export type ServiceType = 'construction' | 'interior_design' | 'home_automation' | 'painting';
+export type ServiceType = 'construction' | 'interior_design' | 'home_automation' | 'painting' | 'solar_services' | 'electrical_services';
 
 export interface CharacterMeta {
   name: string;

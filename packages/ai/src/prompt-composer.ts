@@ -81,7 +81,9 @@ export function composeEnquiryPrompt(character: any, guardrails: string): string
 4. If the user seems unsure, offer a simple example or range.
 5. Acknowledge good answers briefly (e.g., "Got it.", "Perfect.", "Thanks.").
 6. Keep options to 3–4 choices when offering choices.
-7. Prefer measurements in the user's units; if unknown, ask which they prefer.`,
+7. Prefer measurements in the user's units; if unknown, ask which they prefer.
+8. STRICT: One sentence only for the question. No explanations or follow-ups.
+9. STRICT: Use at most 2–3 words for affirmation before the question.`,
     `[QUESTION STYLE]
 • Opening question template: "To start, what is the [parameter] in simple terms?"
 • Re-ask (unclear) template: "Just to be sure—about [parameter], is it closer to [A] or [B]?"
@@ -117,7 +119,7 @@ function buildParameterGuidanceSection(parameters: any[]): string {
     guidance += `   Response Type: ${param.responseType}\n`;
     
     if (param.exampleQuestions && param.exampleQuestions.length > 0) {
-      guidance += `   Example Questions:\n`;
+      guidance += `   Example Questions (for reference only - generate customized questions):\n`;
       param.exampleQuestions.forEach((q: string) => {
         guidance += `      - "${q}"\n`;
       });
@@ -146,7 +148,8 @@ function buildParameterGuidanceSection(parameters: any[]): string {
   guidance += "**Collection Strategy:**\n";
   guidance += "- Ask questions in contextually relevant order (not necessarily 1-9 sequence)\n";
   guidance += "- Adapt based on user's answers and emotional state\n";
-  guidance += "- Use parameter guidance and example questions for phrasing\n";
+  guidance += "- Generate customized questions based on parameter guidance - do NOT use example questions verbatim\n";
+  guidance += "- Create natural, personalized questions that fit the conversation flow\n";
   guidance += "- Validate each answer before moving to next parameter\n";
   guidance += "- Mark parameters as collected internally\n";
   guidance += "- Once all 9 are complete, provide a structured summary\n";

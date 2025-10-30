@@ -16,7 +16,7 @@ import { createHash } from 'crypto';
 class GeminiAPIAdapter implements AIClient {
   name = 'gemini-api';
   private apiKey: string;
-  private baseUrl = 'https://aiplatform.googleapis.com/v1/publishers/google/models';
+  private baseUrl = 'https://generativelanguage.googleapis.com/v1/models';
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.GEMINI_API_KEY || '';
@@ -110,10 +110,10 @@ class GeminiAPIAdapter implements AIClient {
       throw new Error('GEMINI_API_KEY not configured');
     }
 
-    // Build endpoint URL (Vertex AI format)
-    const endpoint = `${this.baseUrl}/${model}:streamGenerateContent?key=${this.apiKey}`;
+    // Build endpoint URL (Direct Gemini API format)
+    const endpoint = `${this.baseUrl}/${model}:generateContent?key=${this.apiKey}`;
 
-    // Build request body (Vertex AI format)
+    // Build request body (Direct Gemini API format)
     const requestBody = {
       contents: [
         {
@@ -127,9 +127,9 @@ class GeminiAPIAdapter implements AIClient {
       ],
       generationConfig: {
         temperature,
-        maxOutputTokens: Math.min(512, maxTokens),
-        topP: 0.9,
-        topK: 32,
+        maxOutputTokens: maxTokens,
+        topP: 0.95,
+        topK: 40,
       }
     };
 
@@ -151,31 +151,19 @@ class GeminiAPIAdapter implements AIClient {
 
     const data: any = await response.json();
 
-    // Extract text from response (handle streaming format)
-    let text = '';
-    
-    if (Array.isArray(data)) {
-      // Streaming response - concatenate all text parts
-      for (const chunk of data) {
-        const chunkText = chunk.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        text += chunkText;
-      }
-    } else {
-      // Single response
-      text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    }
+    // Extract text from response (Direct Gemini API format)
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     
     if (!text) {
       logger.error({ data }, 'No text in Gemini API response');
       throw new Error('No text content in Gemini API response');
     }
 
-    // Extract usage info (from last chunk if streaming)
-    const lastChunk = Array.isArray(data) ? data[data.length - 1] : data;
+    // Extract usage info
     const usage = {
-      promptTokens: lastChunk.usageMetadata?.promptTokenCount || 0,
-      completionTokens: lastChunk.usageMetadata?.candidatesTokenCount || 0,
-      totalTokens: lastChunk.usageMetadata?.totalTokenCount || 0,
+      promptTokens: data.usageMetadata?.promptTokenCount || 0,
+      completionTokens: data.usageMetadata?.candidatesTokenCount || 0,
+      totalTokens: data.usageMetadata?.totalTokenCount || 0,
     };
 
     logger.info({ 
@@ -209,7 +197,7 @@ class GeminiAPIAdapter implements AIClient {
   async healthCheck(): Promise<boolean> {
     try {
       const response = await this.makeRequest(
-        'gemini-2.0-flash-exp',
+        'gemini-2.5-flash',
         'You are a helpful assistant.',
         'Say "OK" if you can hear me.',
         0.1,

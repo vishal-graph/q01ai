@@ -5,7 +5,7 @@
 import { z } from 'zod';
 
 // Service Type
-export const ServiceTypeZ = z.enum(['construction', 'interior_design', 'home_automation', 'painting']);
+export const ServiceTypeZ = z.enum(['construction', 'interior_design', 'home_automation', 'painting', 'solar_services', 'electrical_services']);
 
 // Character Meta
 export const CharacterMetaZ = z.object({

@@ -1,76 +1,12 @@
 import { Router } from 'express';
-import { QuestionnaireStore, Message } from './models/Questionnaire'; // Removed QuestionnaireDoc import
+import { QuestionnaireStore } from './models/Questionnaire';
 import { pickCharacter } from '@tatvaops/core';
-// import { composeEnquiryPrompt } from '@tatvaops/ai'; // Temporarily disabled due to module issues // Use composeEnquiryPrompt
 import { geminiAPIClient } from '@tatvaops/ai';
+import { getNextParamId, getParamMeta, extractParamValue } from './engine';
 import { serviceParameters } from './parameters';
-import { getNextParamId, getParamMeta, extractParamValue, sanitizeAssistant, applyGuardrails, applyEQIfAny } from './engine';
 import { config } from './config';
 import { postCompletion } from './webhook';
 import { router as adminRouter } from './admin.routes';
-
-// Simple prompt composer to bypass module issues
-function composeEnquiryPrompt(character: any, _context?: string): string {
-  const parameters = character.prompts?.enquiry?.parameters || [];
-  const collectionFlow = character.prompts?.enquiry?.collectionFlow || 
-    "Ask questions one at a time, validate responses, and collect all required parameters.";
-  
-  // Build parameter guidance section
-  const parameterGuidance = parameters.length > 0 
-    ? buildParameterGuidanceSection(parameters)
-    : `[LEGACY FIELDS] ${character.prompts.enquiry.fields.join(", ")}`;
-  
-  const sections = [
-    `[ROLE] You are ${character.name}, a ${character.service} consultant for TatvaOps in ${character.region.state}${character.region.city ? ", " + character.region.city : ""}.`,
-    `[PERSONA] ${character.persona}`,
-    `[QUALIFICATION] ${character.qualification || "Expert consultant"}`,
-    `[TONE] ${character.tone}`,
-    `[LANGUAGE] Primary: ${character.language.primary}, Secondary: ${Array.isArray(character.language.secondary) ? character.language.secondary.join("/") : (character.language.secondary || "None")}. Locale: ${character.language.locale}`,
-    `[OPENING PHRASES] When greeting users, prefer these natural openings: ${(character.language.openingPhrases || ["Hello!"]).join(" | ")}`,
-    `[EMOTIONAL INTELLIGENCE] Detect these signals and respond with empathy: ${(character.eq?.detection || []).join(", ")}`,
-    `[EQ MODULATION] ${buildEQModulationHints(character.eq)}`,
-    `[GUARDRAILS] Always maintain professional standards, provide ranges not exact prices, never guarantee approvals, respect privacy, promote safety, remain vendor-neutral.`,
-    `[COLLECTION FLOW] ${collectionFlow}`,
-    parameterGuidance,
-    `[STYLE CONSTRAINTS] Keep questions simple and conversational. Ask one question at a time. ALWAYS affirm and empathize with user responses. Accept ANY answer without validation. Don't use role prefixes. Don't re-introduce yourself mid-conversation.`,
-    `[EMPATHY REQUIREMENTS] After each user response, show empathy and affirmation before asking the next question. Use phrases like "Perfect!", "That's helpful!", "Great choice!", "I understand", "That makes sense", "Excellent!", "Wonderful!", "That's exactly what I needed to know".`,
-    `[RESPONSE FORMAT] Respond naturally as the character. Be warm, professional, and helpful. Always validate the user's input with empathy before moving to the next question.`
-  ];
-  
-  return sections.join("\n\n");
-}
-
-function buildParameterGuidanceSection(parameters: any[]): string {
-  let guidance = "[PARAMETER COLLECTION]\n";
-  guidance += "You need to collect these parameters through conversation. ACCEPT ANY ANSWER - no validation required:\n\n";
-  
-  parameters.forEach((param, index) => {
-    guidance += `${index + 1}. ${param.label} (${param.id})\n`;
-    guidance += `   Purpose: ${param.purpose}\n`;
-    guidance += `   Question Intent: ${param.questionIntent}\n`;
-    guidance += `   AI Guidance: ${param.aiGuidance}\n`;
-    guidance += `   Example Questions: ${param.exampleQuestions?.join(" | ") || "Ask naturally"}\n`;
-    guidance += `   Response Type: ${param.responseType}\n`;
-    guidance += `   IMPORTANT: Accept whatever the user says. Show empathy and affirmation. Move to next question.\n`;
-    if (param.emotionCues) {
-      const cues = Object.entries(param.emotionCues).map(([emotion, tone]) => `${emotion}→${tone}`);
-      guidance += `   Emotion Handling: ${cues.join(", ")}\n`;
-    }
-    guidance += `   Usage: ${param.usageInProcess}\n\n`;
-  });
-  
-  return guidance;
-}
-
-function buildEQModulationHints(eq: any): string {
-  if (!eq || !eq.modulation) return "No specific EQ modulation needed.";
-  
-  const modulations = Object.entries(eq.modulation);
-  if (modulations.length === 0) return "No specific EQ modulation needed.";
-  
-  const hints = modulations.map(([signal, tone]) => `${signal}→${tone}`).join(", ");
-  return `When user shows these signals, modulate tone: ${hints}`;
-}
 
 export const router = Router();
 
@@ -93,14 +29,13 @@ router.post('/questionnaires', async (req, res) => {
     status: 'collecting',
     parameters: {},
     transcript: [],
-    createdAt: new Date(), // Set createdAt
-    updatedAt: new Date(), // Set updatedAt
+    createdAt: new Date(),
+    updatedAt: new Date(),
   });
 
-  const first = serviceParameters[service]?.[0]?.label || 'first detail';
-  const nextQuestion = `Let's begin. ${character.language?.openingPhrases?.[0] || 'Hello!'} What is the ${first}?`;
-
-  res.status(201).json({ id: newDoc.id, service, character: character.name, nextQuestion });
+  const openingStatement = character.language?.openingPhrases?.[0] || 'Hello!';
+  // No question asked initially; user's first message will trigger it
+  res.status(201).json({ id: newDoc.id, service, character: character.name, nextQuestion: openingStatement });
   return;
 });
 
@@ -115,11 +50,18 @@ router.post('/questionnaires/:id/messages', async (req, res) => {
   doc.transcript.push({ role: 'user', text, ts: new Date() });
   doc.updatedAt = new Date();
 
-  const character = pickCharacter(doc.service as any);
+  // If this is the very first user message (e.g., trigger), do NOT capture any parameter yet.
+  const userTurnsCount = doc.transcript.filter(m => m.role === 'user').length;
+  const isFirstUserTurn = userTurnsCount === 1 && Object.keys(doc.parameters || {}).length === 0;
 
-  // Store value for current parameter if detectable
-  const currentParamId = getNextParamId(doc.service, doc.parameters) || undefined;
-  if (currentParamId) {
+  // Store value for current parameter if detectable (skip on first user turn)
+  let currentParamId = getNextParamId(doc.service, doc.parameters);
+  if (!currentParamId) {
+    // This is the first question, so we need to get the first parameter
+    currentParamId = serviceParameters[doc.service]?.[0]?.id;
+  }
+  
+  if (!isFirstUserTurn && currentParamId) {
     const val = extractParamValue(doc.service, currentParamId, text);
     if (val !== undefined) {
       (doc.parameters as any)[currentParamId] = val;
@@ -128,15 +70,18 @@ router.post('/questionnaires/:id/messages', async (req, res) => {
 
   // Decide next param
   const nextId = getNextParamId(doc.service, doc.parameters);
-  let assistant: string;
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[debug] next missing param', nextId);
+  }
+  let assistantResponse: string;
+
   if (!nextId) {
     // Completed
     doc.status = 'completed';
-        assistant = 'Thank you for providing all the details! Our consultant will get back to you shortly. Thanks for your time!';
-    doc.transcript.push({ role: 'assistant', text: assistant, ts: new Date() });
+    assistantResponse = 'Thank you! All details captured.';
+    doc.transcript.push({ role: 'assistant', text: assistantResponse, ts: new Date() });
     await QuestionnaireStore.save(doc);
 
-    // Optional webhook
     if (config.QUESTIONNAIRE_WEBHOOK_URL) {
       void postCompletion(config.QUESTIONNAIRE_WEBHOOK_URL, {
         questionnaireId: doc.id,
@@ -151,70 +96,63 @@ router.post('/questionnaires/:id/messages', async (req, res) => {
     return res.json({ id: doc.id, status: 'completed', parameters: doc.parameters });
   }
 
-  const paramMeta = getParamMeta(doc.service, nextId);
+  const character = pickCharacter(doc.service as any);
+  const paramMeta = getParamMeta(doc.service, nextId)!;
   
-  const system = composeEnquiryPrompt(character, ""); // Pass character directly
-  const history = doc.transcript.slice(-10).map((m: Message) => m.text).join('\n\n'); // Explicitly type 'm'
+  // Generate empathetic affirmation and question using Gemini
+  const recentContext = doc.transcript.slice(-4).map(m => `${m.role.toUpperCase()}: ${m.text}`).join('\n');
+  const systemPrompt = `You are ${character.name}, a ${character.service} consultant. Persona: ${character.persona}. Tone: ${character.tone}.
+
+CONTEXT (recent turns):\n${recentContext}\n\nTASK:
+1) Start with ONE warm, human, emotionally-aware affirmation (3–8 words) tailored to the user's last input.
+   - Explicitly reference their selection/value if it matches an option: ${paramMeta.options ? paramMeta.options.join(' | ') : '(no options)'}.
+   - Convey benefit or understanding (e.g., comfort, clarity, aesthetics, budget fit, timeline confidence).
+   - Avoid generic phrases like "Excellent choice", "Noted", "Got it", "Let's proceed" by themselves.
+   - Vary language each turn; do not repeat prior affirmations.
+   - Examples: "Lovely range for cozy layouts.", "Great, 2BHK—balanced and practical.", "Nice pick—elegant and timeless.", "Perfect for efficient planning.", "Great fit for that style." 
+2) Then ask ONE concise next question about "${paramMeta.label}" (≤ 14 words).
+   - Use the expected format: ${paramMeta.expectedFormat || '(no specific format)'}.
+   - If there are options, include exactly: ${paramMeta.options ? `(Options: ${paramMeta.options.join(' | ')})` : '(no options)'}.
+3) No greetings. No extra sentences. Keep it natural and warm.`;
+
   const response = await geminiAPIClient.generateText({
-    model: character.routing?.ai?.model || 'gemini-2.0-flash-exp',
-    system,
-    user: history + `\n\n[NEXT PARAMETER]\n${paramMeta?.label}. Ask only about this. IMPORTANT: Accept the user's last response with empathy and affirmation, then ask about the next parameter.`,
-    temperature: character.routing?.ai?.temperature || 0.6,
+    model: character.routing?.ai?.model || 'gemini-2.5-flash',
+    system: systemPrompt,
+    user: doc.transcript.map(m => m.text).join('\n'), // Provide full transcript for context
+    temperature: 0.35,
   });
 
-  assistant = sanitizeAssistant(String(response.data));
-  assistant = applyGuardrails(assistant);
-  assistant = applyEQIfAny(character, text, assistant);
+  assistantResponse = String(response.data);
 
-  doc.transcript.push({ role: 'assistant', text: assistant, ts: new Date() });
+  // If this is the first assistant response of the conversation, prefix an introduction phrase
+  const assistantTurnsCount = doc.transcript.filter(m => m.role === 'assistant').length;
+  const isFirstAssistantResponse = assistantTurnsCount === 0 && Object.keys(doc.parameters || {}).length === 0;
+  if (isFirstAssistantResponse) {
+    const rawName = character.name || 'Consultant';
+    const namePart = rawName.split(' - ')[0]?.trim() || rawName;
+    const firstName = (namePart.split(/\s+/)[0] || namePart).replace(/[^A-Za-z]/g, '') || 'Consultant';
+    const rolePart = rawName.includes(' - ') ? rawName.split(' - ')[1]?.trim() : '';
+    const serviceTitle = String(character.service || 'consultant').replace(/_/g, ' ');
+    const role = rolePart || `${serviceTitle} consultant`;
+    const intro = `Hello! I'm ${firstName}, your ${role}.`;
+    assistantResponse = `${intro}\n\n${assistantResponse}`;
+  }
+
+  doc.transcript.push({ role: 'assistant', text: assistantResponse, ts: new Date() });
   await QuestionnaireStore.save(doc);
 
-      const responseData = {
-        id: doc.id,
-        askedParam: nextId,
-        nextQuestion: assistant,
-        expectedFormat: paramMeta?.expectedFormat || '',
-        parameterLabel: paramMeta?.label || '',
-        mediaUpload: true, // All questions support media upload
-        mediaTypes: ['png', 'jpeg', 'jpg', 'pdf']
-      };
-  
+  const responseData = {
+    id: doc.id,
+    askedParam: nextId,
+    nextQuestion: assistantResponse,
+    expectedFormat: '',
+    parameterLabel: paramMeta?.label || '',
+    options: (paramMeta as any)?.options || [],
+    mediaUpload: true,
+    mediaTypes: ['png', 'jpeg', 'jpg', 'pdf'],
+    allowMultiple: Boolean((paramMeta as any)?.allowMultiple)
+  };
+
   res.json(responseData);
   return;
 });
-
-// Get questionnaire
-router.get('/questionnaires/:id', async (req, res) => {
-  const doc = await QuestionnaireStore.findById(req.params.id);
-  if (!doc) return res.status(404).json({ error: 'not found' });
-  res.json(doc);
-  return;
-});
-
-// Complete questionnaire (force)
-router.post('/questionnaires/:id/complete', async (req, res) => {
-  const doc = await QuestionnaireStore.findById(req.params.id);
-  if (!doc) return res.status(404).json({ error: 'not found' });
-  // Ensure all 9 collected
-  const total = (serviceParameters[doc.service] || []).length;
-  const collected = Object.keys((doc.parameters as any) || {}).length;
-  if (collected < total) return res.status(409).json({ error: 'incomplete', collected, total });
-  doc.status = 'completed';
-  await QuestionnaireStore.save(doc);
-
-  if (config.QUESTIONNAIRE_WEBHOOK_URL) {
-    void postCompletion(config.QUESTIONNAIRE_WEBHOOK_URL, {
-      questionnaireId: doc.id,
-      service: doc.service,
-      parameters: doc.parameters,
-      characterId: doc.characterId,
-      userRef: doc.userRef,
-      channel: doc.channel,
-      completedAt: new Date().toISOString(),
-    });
-  }
-  res.json({ id: doc.id, status: 'completed', parameters: doc.parameters });
-  return;
-});
-
-

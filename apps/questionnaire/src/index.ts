@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import './polyfills';
 import express from 'express';
 import 'express-async-errors';
