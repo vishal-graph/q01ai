@@ -1,11 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import createApp from '../dist/index';
 
-let app: ReturnType<typeof createApp> | null = null;
+let app: any = null;
 
 function getApp() {
   if (!app) {
     try {
+      // Dynamic require to avoid TypeScript resolution issues
+      const createApp = require('../dist/index').default || require('../dist/index');
       app = createApp();
     } catch (error) {
       console.error('Failed to create app:', error);
