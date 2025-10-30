@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loadCharacters, forceReloadCharacters } from '@tatvaops/core';
+import { loadCharacters, forceReloadCharacters } from '../../../packages/core/src/index';
 
 const router = Router();
 

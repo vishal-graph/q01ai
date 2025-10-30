@@ -5,8 +5,8 @@ let app: any = null;
 function getApp() {
   if (!app) {
     try {
-      // Dynamic require to avoid TypeScript resolution issues
-      const createApp = require('../dist/index').default || require('../dist/index');
+      // Import directly from sources; Vercel bundles relative imports
+      const createApp = require('../src/index').default || require('../src/index');
       app = createApp();
     } catch (error) {
       console.error('Failed to create app:', error);
