@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "pnpm install && pnpm -r build",
+  "installCommand": "pnpm install",
   "builds": [
     { "src": "api/*.ts", "use": "@vercel/node" }
   ],
