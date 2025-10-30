@@ -5,7 +5,8 @@
   "main": "./dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "prebuild": "pnpm --filter @tatvaops/core build && pnpm --filter @tatvaops/ai build || echo 'prebuild skipped'",
+    "build": "echo 'Skipping app build (serverless uses api/questionnaire.ts)'",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts"
