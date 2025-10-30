@@ -9,7 +9,8 @@
     "apps/workers/*"
   ],
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm --filter @tatvaops/core build && pnpm --filter @tatvaops/ai build && pnpm --filter @tatvaops/questionnaire build",
+    "build:all": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm -r test",
     "test:int": "pnpm -r test:int",
