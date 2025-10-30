@@ -3,7 +3,7 @@
  * Replaces hardcoded prompts with character-aware, context-sensitive prompts
  */
 
-import { pickCharacter, Service } from "@tatvaops/core";
+import { pickCharacter, Service } from "../../core/src/index";
 import { jsonSchemaInstruction } from "./prompts/helpers";
 
 export type Stage = "enquiry" | "summarizer" | "milestone";

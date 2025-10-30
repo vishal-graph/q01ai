@@ -10,7 +10,7 @@ import {
   AIProviderError,
   retryWithBackoff,
   extractJson,
-} from '@tatvaops/core';
+} from '../../../core/src/index';
 import { createHash } from 'crypto';
 
 class VertexGeminiAdapter implements AIClient {

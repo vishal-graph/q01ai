@@ -3,7 +3,7 @@
  */
 
 import { AIClient, GenerateOptions, GenerateResponse } from '../client';
-import { logger } from '@tatvaops/core';
+import { logger } from '../../../core/src/index';
 
 class MockAIAdapter implements AIClient {
   name = 'mock-ai';

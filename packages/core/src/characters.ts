@@ -12,8 +12,8 @@ import { deepmerge } from "./utils"; // Import deepmerge
 
 export type Service = "interior_design" | "construction" | "home_automation" | "painting";
 
-const SCHEMA_PATH = process.env.CHARACTER_SCHEMA_PATH || path.resolve(process.cwd(), "config/character-registry.schema.json");
-const REGISTRY_PATH = process.env.CHARACTER_REGISTRY_PATH || path.resolve(process.cwd(), "config/characters.json");
+const SCHEMA_PATH = process.env.CHARACTER_SCHEMA_PATH || path.resolve(__dirname, "../../apps/questionnaire/config/character-registry.schema.json");
+const REGISTRY_PATH = process.env.CHARACTER_REGISTRY_PATH || path.resolve(__dirname, "../../apps/questionnaire/config/characters.json");
 
 // In-memory cache
 let cache: any = null;
