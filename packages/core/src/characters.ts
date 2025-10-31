@@ -12,13 +12,25 @@ import { deepmerge } from "./utils"; // Import deepmerge
 
 export type Service = "interior_design" | "construction" | "home_automation" | "painting" | "solar_services" | "electrical_services";
 
-// In a Vercel environment, process.cwd() is /var/task.
-// The vercel.json includeFiles directive copies the project's config
-// directory into the root of the lambda bundle.
-const CWD = process.cwd();
+// Module-level path variables, to be configured by the application
+let REGISTRY_PATH: string | null = null;
+let SCHEMA_PATH: string | null = null;
 
-const SCHEMA_PATH = process.env.CHARACTER_SCHEMA_PATH || path.resolve(CWD, "config/character-registry.schema.json");
-const REGISTRY_PATH = process.env.CHARACTER_REGISTRY_PATH || path.resolve(CWD, "config/characters.json");
+/**
+ * Initializes the character loader with necessary file paths.
+ * This must be called by the application at startup.
+ */
+export function initCharacterLoader(registryPath: string, schemaPath:string): void {
+  if (!fs.existsSync(registryPath)) {
+    throw new Error(`Character registry not found at provided path: ${registryPath}`);
+  }
+  if (!fs.existsSync(schemaPath)) {
+    throw new Error(`Character schema not found at provided path: ${schemaPath}`);
+  }
+  REGISTRY_PATH = registryPath;
+  SCHEMA_PATH = schemaPath;
+  console.info(`Character loader initialized with registry: ${REGISTRY_PATH}`);
+}
 
 
 // In-memory cache
@@ -29,6 +41,7 @@ let mtime = 0;
  * Validate registry using AJV (JSON Schema validation)
  */
 function validateWithAjv(registry: any): void {
+  if (!SCHEMA_PATH) throw new Error('Character loader not initialized. Call initCharacterLoader() first.');
   const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(schema);
@@ -61,6 +74,7 @@ function validateWithZod(_registry: any): void {
  * Load raw registry from disk with caching
  */
 function loadRaw(): any {
+  if (!REGISTRY_PATH) throw new Error('Character loader not initialized. Call initCharacterLoader() first.');
   try {
     // Check if file has been modified
     const stat = fs.statSync(REGISTRY_PATH);

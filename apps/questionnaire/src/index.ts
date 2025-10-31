@@ -7,8 +7,28 @@ import helmet from 'helmet';
 import pino from 'pino';
 // optional: lighter logger, avoid pino-http types for now
 import { router as api } from './routes';
+import { initCharacterLoader } from '../../../packages/core/src/index';
+import path from 'path';
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+
+// Initialize the character loader at startup
+try {
+  // In Vercel, process.cwd() is /var/task. Our vercel.json copies the config directory here.
+  const registryPath = path.resolve(process.cwd(), 'config/characters.json');
+  const schemaPath = path.resolve(process.cwd(), 'config/character-registry.schema.json');
+  initCharacterLoader(registryPath, schemaPath);
+} catch (error) {
+  logger.fatal(error, 'Failed to initialize character loader on startup');
+  // In a serverless environment, this will prevent the function from becoming healthy.
+  // For a local server, we might want to exit.
+  if (!process.env.VERCEL) {
+    process.exit(1);
+  } else {
+    // Re-throw to ensure the serverless function fails to initialize
+    throw error;
+  }
+}
 
 export function createApp() {
   const app = express();
