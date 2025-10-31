@@ -14,9 +14,9 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 // Initialize the character loader at startup
 try {
-  // In Vercel, process.cwd() is /var/task. Our vercel.json copies the config directory here.
-  const registryPath = path.resolve(process.cwd(), 'config/characters.json');
-  const schemaPath = path.resolve(process.cwd(), 'config/character-registry.schema.json');
+  // In Vercel, the source tree is bundled inside /var/task.
+  const registryPath = path.resolve(process.cwd(), 'apps/questionnaire/config/characters.json');
+  const schemaPath = path.resolve(process.cwd(), 'apps/questionnaire/config/character-registry.schema.json');
   initCharacterLoader(registryPath, schemaPath);
 } catch (error) {
   logger.fatal(error, 'Failed to initialize character loader on startup');
