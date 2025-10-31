@@ -7,18 +7,22 @@ import helmet from 'helmet';
 import pino from 'pino';
 // optional: lighter logger, avoid pino-http types for now
 import { router as api } from './routes';
-import { initCharacterLoader } from '../../../packages/core/src/index';
-import path from 'path';
+import { initCharacterLoaderFromObjects } from '../../../packages/core/src/index';
+// Import config JSON to ensure bundling and avoid fs issues on Vercel
+// These paths are within the app package, so the bundler will include them
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import characterRegistry from '../config/characters.json';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import characterSchema from '../config/character-registry.schema.json';
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 // Initialize the character loader at startup
 try {
-  // In Vercel, process.cwd() is /var/task. 
-  // The vercel.json includeFiles directive copies the project's config directory here.
-  const registryPath = path.resolve(process.cwd(), 'config/characters.json');
-  const schemaPath = path.resolve(process.cwd(), 'config/character-registry.schema.json');
-  initCharacterLoader(registryPath, schemaPath);
+  // Prefer in-memory initialization to avoid filesystem dependence
+  initCharacterLoaderFromObjects(characterRegistry as any, characterSchema as any);
 } catch (error) {
   logger.fatal(error, 'Failed to initialize character loader on startup');
   // In a serverless environment, this will prevent the function from becoming healthy.

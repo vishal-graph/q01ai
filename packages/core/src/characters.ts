@@ -14,6 +14,8 @@ export type Service = "interior_design" | "construction" | "home_automation" | "
 // Module-level path variables, to be configured by the application
 let REGISTRY_PATH: string | null = null;
 let SCHEMA_PATH: string | null = null;
+let REGISTRY_OBJ: any | null = null;
+let SCHEMA_OBJ: any | null = null;
 
 /**
  * Initializes the character loader with necessary file paths.
@@ -28,7 +30,22 @@ export function initCharacterLoader(registryPath: string, schemaPath:string): vo
   }
   REGISTRY_PATH = registryPath;
   SCHEMA_PATH = schemaPath;
+  REGISTRY_OBJ = null;
+  SCHEMA_OBJ = null;
   console.info(`Character loader initialized with registry: ${REGISTRY_PATH}`);
+}
+
+/**
+ * Initialize the character loader using in-memory objects, avoiding filesystem.
+ */
+export function initCharacterLoaderFromObjects(registry: any, schema: any): void {
+  if (!registry) throw new Error('Character registry object is required');
+  if (!schema) throw new Error('Character schema object is required');
+  REGISTRY_OBJ = registry;
+  SCHEMA_OBJ = schema;
+  REGISTRY_PATH = null;
+  SCHEMA_PATH = null;
+  console.info('Character loader initialized from in-memory objects');
 }
 
 
@@ -40,8 +57,10 @@ let mtime = 0;
  * Validate registry using AJV (JSON Schema validation)
  */
 function validateWithAjv(registry: any): void {
-  if (!SCHEMA_PATH) throw new Error('Character loader not initialized. Call initCharacterLoader() first.');
-  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
+  const schema = SCHEMA_OBJ ?? ((): any => {
+    if (!SCHEMA_PATH) throw new Error('Character loader not initialized. Call initCharacterLoader() or initCharacterLoaderFromObjects() first.');
+    return JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
+  })();
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(schema);
   
@@ -73,8 +92,13 @@ function validateWithZod(_registry: any): void {
  * Load raw registry from disk with caching
  */
 function loadRaw(): any {
-  if (!REGISTRY_PATH) throw new Error('Character loader not initialized. Call initCharacterLoader() first.');
   try {
+    if (REGISTRY_OBJ) {
+      validateWithAjv(REGISTRY_OBJ);
+      validateWithZod(REGISTRY_OBJ);
+      return REGISTRY_OBJ;
+    }
+    if (!REGISTRY_PATH) throw new Error('Character loader not initialized. Call initCharacterLoader() or initCharacterLoaderFromObjects() first.');
     // Check if file has been modified
     const stat = fs.statSync(REGISTRY_PATH);
     const nowMtime = +stat.mtime;
