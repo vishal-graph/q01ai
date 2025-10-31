@@ -3,7 +3,6 @@
  * Simpler alternative to Vertex AI - no GCP authentication needed
  */
 
-import fetch from 'node-fetch';
 import { AIClient, GenerateOptions, GenerateResponse } from '../client';
 import {
   logger,

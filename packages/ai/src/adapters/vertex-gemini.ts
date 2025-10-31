@@ -2,7 +2,6 @@
  * Vertex AI Gemini adapter
  */
 
-import fetch from 'node-fetch';
 import { GoogleAuth } from 'google-auth-library';
 import { AIClient, GenerateOptions, GenerateResponse } from '../client';
 import {
@@ -221,6 +220,8 @@ class VertexGeminiAdapter implements AIClient {
       ],
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -228,8 +229,9 @@ class VertexGeminiAdapter implements AIClient {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),
-      timeout: 60000, // 60 second timeout
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();

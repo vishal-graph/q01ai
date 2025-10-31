@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export async function postCompletion(url: string, payload: any): Promise<boolean> {
   const attempts = 3;
   let delay = 500;
