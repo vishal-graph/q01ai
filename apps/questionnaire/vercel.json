@@ -7,6 +7,7 @@
   ],
   "routes": [
     { "src": "/test-ui.html", "dest": "/public/test-ui.html" },
+    { "src": "/debug-ls", "dest": "/api/questionnaire.ts" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
     { "src": "/(healthz|readyz|questionnaires(?:/.*)?|admin(?:/.*)?)", "dest": "/api/questionnaire.ts" },
     { "src": "/", "dest": "/public/index.html" }
