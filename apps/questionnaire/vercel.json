@@ -3,10 +3,7 @@
   "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm run build",
   "functions": {
     "api/*.ts": {
-      "includeFiles": [
-        "apps/questionnaire/config/**",
-        "packages/core/config/**"
-      ]
+      "includeFiles": "apps/questionnaire/config/**"
     }
   },
   "builds": [
