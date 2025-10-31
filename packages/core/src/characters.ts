@@ -12,8 +12,33 @@ import { deepmerge } from "./utils"; // Import deepmerge
 
 export type Service = "interior_design" | "construction" | "home_automation" | "painting";
 
-const SCHEMA_PATH = process.env.CHARACTER_SCHEMA_PATH || path.resolve(__dirname, "../../apps/questionnaire/config/character-registry.schema.json");
-const REGISTRY_PATH = process.env.CHARACTER_REGISTRY_PATH || path.resolve(__dirname, "../../apps/questionnaire/config/characters.json");
+function resolvePathWithFallbacks(envVar: string | undefined, relativeFile: string): string {
+  if (envVar && envVar.trim()) return envVar;
+
+  // Try process.cwd() first (works for local/dev and some serverless setups)
+  const cwdPath = path.resolve(process.cwd(), relativeFile);
+  if (fs.existsSync(cwdPath)) return cwdPath;
+
+  // In Vercel bundle, __dirname will be like /var/task/packages/core/src
+  // Walk up to repo root then into apps/questionnaire
+  const candidates = [
+    // Relative to this file's directory
+    path.resolve(__dirname, "../../../../", relativeFile), // /var/task/<repo-root>/<relativeFile>
+    path.resolve(__dirname, "../../../../apps/questionnaire/", relativeFile.replace(/^config\//, "config/")), // /var/task/apps/questionnaire/config/*
+    // Relative to package root
+    path.resolve(__dirname, "../", relativeFile),
+  ];
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+
+  // Fallback to CWD path even if missing (will error with clear message later)
+  return cwdPath;
+}
+
+const SCHEMA_PATH = resolvePathWithFallbacks(process.env.CHARACTER_SCHEMA_PATH, "config/character-registry.schema.json");
+const REGISTRY_PATH = resolvePathWithFallbacks(process.env.CHARACTER_REGISTRY_PATH, "config/characters.json");
 
 // In-memory cache
 let cache: any = null;
