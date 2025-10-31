@@ -12,12 +12,10 @@
   },
   "dependencies": {
     "@tatvaops/core": "workspace:*",
-    "google-auth-library": "^9.4.1",
-    "node-fetch": "^2.7.0"
+    "google-auth-library": "^9.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "@types/node-fetch": "^2.6.9",
     "typescript": "^5.3.3"
   }
 }

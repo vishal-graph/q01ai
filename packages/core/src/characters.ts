@@ -10,7 +10,7 @@ import Ajv from "ajv";
 // Remove circular import - use console for now
 import { deepmerge } from "./utils"; // Import deepmerge
 
-export type Service = "interior_design" | "construction" | "home_automation" | "painting";
+export type Service = "interior_design" | "construction" | "home_automation" | "painting" | "solar_services" | "electrical_services";
 
 function resolvePathWithFallbacks(envVar: string | undefined, relativeFile: string): string {
   if (envVar && envVar.trim()) return envVar;
