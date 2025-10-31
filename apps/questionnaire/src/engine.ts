@@ -130,10 +130,10 @@ export function extractParamValue(service: string, paramId: string, userText: st
           const m = text.match(/(living|bedroom|kitchen|entire|specific|all)/i);
           return m ? userText : userText;
         }
-        // For all other parameters, accept the raw text for now.
-        // In a production system, you'd have more specific validation/extraction.
+        // For all other parameters (MCQs), accept the user's text as-is.
+        // The UI sends the exact option value, so we can trust it.
         default:
-          return undefined;
+          return userText;
       }
     default:
       return undefined; // If service is not recognized, don't extract anything

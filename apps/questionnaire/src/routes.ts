@@ -3,7 +3,6 @@ import { QuestionnaireStore } from './models/Questionnaire';
 import { pickCharacter } from '../../../packages/core/src/index';
 import { geminiAPIClient } from '../../../packages/ai/src/index';
 import { getNextParamId, getParamMeta, extractParamValue } from './engine';
-import { serviceParameters } from './parameters';
 import { config } from './config';
 import { postCompletion } from './webhook';
 import { router as adminRouter } from './admin.routes';
@@ -54,25 +53,28 @@ router.post('/questionnaires/:id/messages', async (req, res) => {
   const userTurnsCount = doc.transcript.filter(m => m.role === 'user').length;
   const isFirstUserTurn = userTurnsCount === 1 && Object.keys(doc.parameters || {}).length === 0;
 
-  // Store value for current parameter if detectable (skip on first user turn)
-  let currentParamId = getNextParamId(doc.service, doc.parameters);
-  if (!currentParamId) {
-    // This is the first question, so we need to get the first parameter
-    currentParamId = serviceParameters[doc.service]?.[0]?.id;
-  }
-  
-  if (!isFirstUserTurn && currentParamId) {
-    const val = extractParamValue(doc.service, currentParamId, text);
-    if (val !== undefined) {
-      (doc.parameters as any)[currentParamId] = val;
+  // If not the first turn, extract and save the answer to the parameter we just asked about
+  if (!isFirstUserTurn) {
+    // Find which parameter was asked in the previous assistant message
+    const lastAskedParam = getNextParamId(doc.service, doc.parameters);
+    
+    if (lastAskedParam) {
+      const val = extractParamValue(doc.service, lastAskedParam, text);
+      console.log(`[debug] Extracting ${lastAskedParam} from "${text}": ${val}`);
+      
+      if (val !== undefined && val !== null && val !== '') {
+        (doc.parameters as any)[lastAskedParam] = val;
+        console.log(`[debug] Saved ${lastAskedParam} = ${val}`);
+      } else {
+        console.warn(`[debug] Failed to extract value for ${lastAskedParam} from user input: "${text}"`);
+      }
     }
   }
 
-  // Decide next param
+  // Now determine the next unanswered parameter
   const nextId = getNextParamId(doc.service, doc.parameters);
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[debug] next missing param', nextId);
-  }
+  console.log(`[debug] Parameters so far:`, JSON.stringify(doc.parameters));
+  console.log(`[debug] Next missing param: ${nextId}`);
   let assistantResponse: string;
 
   if (!nextId) {
