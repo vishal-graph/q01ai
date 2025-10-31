@@ -5,7 +5,6 @@
  */
 
 import fs from "node:fs";
-import path from "node:path";
 import Ajv from "ajv";
 // Remove circular import - use console for now
 import { deepmerge } from "./utils"; // Import deepmerge
