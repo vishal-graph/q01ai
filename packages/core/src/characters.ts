@@ -10,50 +10,26 @@ import Ajv from "ajv";
 // Remove circular import - use console for now
 import { deepmerge } from "./utils"; // Import deepmerge
 
-// Vercel serverless bundling fix: import JSON directly to bypass fs issues
-import characterRegistry from '../../../../apps/questionnaire/config/characters.json';
-import characterSchema from '../../../../apps/questionnaire/config/character-registry.schema.json';
-
-
 export type Service = "interior_design" | "construction" | "home_automation" | "painting" | "solar_services" | "electrical_services";
 
-function resolvePathWithFallbacks(envVar: string | undefined, relativeFile: string): string {
-  if (envVar && envVar.trim()) return envVar;
+// In a Vercel environment, process.cwd() is /var/task.
+// The vercel.json includeFiles directive copies the project's config
+// directory into the root of the lambda bundle.
+const CWD = process.cwd();
 
-  // Try process.cwd() first (works for local/dev and some serverless setups)
-  const cwdPath = path.resolve(process.cwd(), relativeFile);
-  if (fs.existsSync(cwdPath)) return cwdPath;
+const SCHEMA_PATH = process.env.CHARACTER_SCHEMA_PATH || path.resolve(CWD, "config/character-registry.schema.json");
+const REGISTRY_PATH = process.env.CHARACTER_REGISTRY_PATH || path.resolve(CWD, "config/characters.json");
 
-  // In Vercel bundle, __dirname will be like /var/task/packages/core/src
-  // Walk up to repo root then into apps/questionnaire
-  const candidates = [
-    // Relative to this file's directory
-    path.resolve(__dirname, "../../../../", relativeFile), // /var/task/<repo-root>/<relativeFile>
-    path.resolve(__dirname, "../../../../apps/questionnaire/", relativeFile.replace(/^config\//, "config/")), // /var/task/apps/questionnaire/config/*
-    // Relative to package root
-    path.resolve(__dirname, "../", relativeFile),
-  ];
 
-  for (const p of candidates) {
-    if (fs.existsSync(p)) return p;
-  }
-
-  // Fallback to CWD path even if missing (will error with clear message later)
-  return cwdPath;
-}
-
-// const SCHEMA_PATH = resolvePathWithFallbacks(process.env.CHARACTER_SCHEMA_PATH, "config/character-registry.schema.json");
-// const REGISTRY_PATH = resolvePathWithFallbacks(process.env.CHARACTER_REGISTRY_PATH, "config/characters.json");
-
-// In-memory cache is no longer needed in a serverless context
-// let cache: any = null;
-// let mtime = 0;
+// In-memory cache
+let cache: any = null;
+let mtime = 0;
 
 /**
  * Validate registry using AJV (JSON Schema validation)
  */
 function validateWithAjv(registry: any): void {
-  const schema = characterSchema;
+  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(schema);
   
@@ -86,17 +62,33 @@ function validateWithZod(_registry: any): void {
  */
 function loadRaw(): any {
   try {
-    // The registry is now imported directly at the top of the file.
-    const registry = characterRegistry;
+    // Check if file has been modified
+    const stat = fs.statSync(REGISTRY_PATH);
+    const nowMtime = +stat.mtime;
+
+    // Return cached version if file hasn't changed
+    if (cache && mtime === nowMtime) {
+        console.debug(`Returning cached character registry from: ${REGISTRY_PATH}`);
+      return cache;
+    }
+
+    // Read and parse registry
+    const rawContent = fs.readFileSync(REGISTRY_PATH, "utf8");
+        console.debug(`Read character registry from: ${REGISTRY_PATH}, content length: ${rawContent.length}`);
+    const registry = JSON.parse(rawContent);
 
     // Validate
     validateWithAjv(registry);
     validateWithZod(registry);
-    
-    console.info(`Successfully loaded character registry via direct import.`);
-    return registry;
+
+    // Update cache
+    cache = registry;
+    mtime = nowMtime;
+
+        console.info(`Successfully loaded character registry from: ${REGISTRY_PATH}`);
+    return cache;
   } catch (error: any) {
-    console.error(`Failed to load character registry: ${error.message}`);
+    console.error(`Failed to load character registry from ${REGISTRY_PATH}: ${error.message}`);
     throw new Error(`Failed to load character registry: ${error.message}`);
   }
 }
@@ -138,8 +130,7 @@ export function pickCharacter(service: Service): any {
  * Useful for admin endpoints or manual refresh
  */
 export function forceReloadCharacters(): any {
-  // Hot-reloading from disk is not supported with direct imports.
-  // This function will now just return the statically imported registry.
-  console.warn('forceReloadCharacters is a no-op when using direct JSON imports.');
+  cache = null;
+  mtime = 0;
   return loadRaw();
 }
