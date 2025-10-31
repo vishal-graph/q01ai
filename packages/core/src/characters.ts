@@ -10,6 +10,11 @@ import Ajv from "ajv";
 // Remove circular import - use console for now
 import { deepmerge } from "./utils"; // Import deepmerge
 
+// Vercel serverless bundling fix: import JSON directly to bypass fs issues
+import characterRegistry from '../../../../apps/questionnaire/config/characters.json';
+import characterSchema from '../../../../apps/questionnaire/config/character-registry.schema.json';
+
+
 export type Service = "interior_design" | "construction" | "home_automation" | "painting" | "solar_services" | "electrical_services";
 
 function resolvePathWithFallbacks(envVar: string | undefined, relativeFile: string): string {
@@ -37,18 +42,18 @@ function resolvePathWithFallbacks(envVar: string | undefined, relativeFile: stri
   return cwdPath;
 }
 
-const SCHEMA_PATH = resolvePathWithFallbacks(process.env.CHARACTER_SCHEMA_PATH, "config/character-registry.schema.json");
-const REGISTRY_PATH = resolvePathWithFallbacks(process.env.CHARACTER_REGISTRY_PATH, "config/characters.json");
+// const SCHEMA_PATH = resolvePathWithFallbacks(process.env.CHARACTER_SCHEMA_PATH, "config/character-registry.schema.json");
+// const REGISTRY_PATH = resolvePathWithFallbacks(process.env.CHARACTER_REGISTRY_PATH, "config/characters.json");
 
-// In-memory cache
-let cache: any = null;
-let mtime = 0;
+// In-memory cache is no longer needed in a serverless context
+// let cache: any = null;
+// let mtime = 0;
 
 /**
  * Validate registry using AJV (JSON Schema validation)
  */
 function validateWithAjv(registry: any): void {
-  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
+  const schema = characterSchema;
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(schema);
   
@@ -81,31 +86,15 @@ function validateWithZod(_registry: any): void {
  */
 function loadRaw(): any {
   try {
-    // Check if file has been modified
-    const stat = fs.statSync(REGISTRY_PATH);
-    const nowMtime = +stat.mtime;
-
-    // Return cached version if file hasn't changed
-    if (cache && mtime === nowMtime) {
-        console.debug(`Returning cached character registry from: ${REGISTRY_PATH}`);
-      return cache;
-    }
-
-    // Read and parse registry
-    const rawContent = fs.readFileSync(REGISTRY_PATH, "utf8");
-        console.debug(`Read character registry from: ${REGISTRY_PATH}, content length: ${rawContent.length}`);
-    const registry = JSON.parse(rawContent);
+    // The registry is now imported directly at the top of the file.
+    const registry = characterRegistry;
 
     // Validate
     validateWithAjv(registry);
     validateWithZod(registry);
-
-    // Update cache
-    cache = registry;
-    mtime = nowMtime;
-
-        console.info(`Successfully loaded character registry from: ${REGISTRY_PATH}`);
-    return cache;
+    
+    console.info(`Successfully loaded character registry via direct import.`);
+    return registry;
   } catch (error: any) {
     console.error(`Failed to load character registry: ${error.message}`);
     throw new Error(`Failed to load character registry: ${error.message}`);
@@ -149,7 +138,8 @@ export function pickCharacter(service: Service): any {
  * Useful for admin endpoints or manual refresh
  */
 export function forceReloadCharacters(): any {
-  cache = null;
-  mtime = 0;
+  // Hot-reloading from disk is not supported with direct imports.
+  // This function will now just return the statically imported registry.
+  console.warn('forceReloadCharacters is a no-op when using direct JSON imports.');
   return loadRaw();
 }
