@@ -8,7 +8,7 @@
   "routes": [
     { "src": "/test-ui.html", "dest": "/public/test-ui.html" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/(healthz|readyz|questionnaires(?:/.*)?|admin(?:/.*)?)", "dest": "/api/questionstationnaire.ts" },
+    { "src": "/(healthz|readyz|questionnaires(?:/.*)?|admin(?:/.*)?)", "dest": "/api/questionnaire.ts" },
     { "src": "/", "dest": "/public/index.html" }
   ]
 }
