@@ -448,6 +448,14 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Choose from: Safety Inspection, Repair/Troubleshooting, Partial Upgrade, Full Rewiring, Automation Integration, New Installation, or Other'
     },
     {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align scope with financial planning',
+      options: ['< ₹10k', '₹10k - ₹25k', '₹25k - ₹50k', '₹50k+', 'Flexible / Need quote'],
+      expectedFormat: 'Choose a budget band for the electrical work'
+    },
+    {
       id: 'timeline',
       label: 'Timeline / Urgency',
       type: 'choice',

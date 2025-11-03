@@ -84,6 +84,10 @@ export function extractParamValue(service: string, paramId: string, userText: st
         }
         case 'backupRequirement':
         case 'interestedInSubsidy': {
+          // Normalize solar to string options; for others, allow boolean parsing
+          if (service === 'solar_services') {
+            return userText;
+          }
           if (/(yes|true|yep)/i.test(text)) return true;
           if (/(no|false|nope)/i.test(text)) return false;
           return userText;
