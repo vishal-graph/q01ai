@@ -386,10 +386,17 @@ export const serviceParameters: Record<string, Param[]> = {
     {
       id: 'farmSizeCrop',
       label: 'Farm Size & Crop Type',
-      type: 'text',
+      type: 'choice',
       goal: 'Determine zone design, water requirement and scheduling',
-      examples: ['5 acres mango + 2 acres vegetables', '1 acre floriculture polyhouse'],
-      expectedFormat: 'Share acreage/hectares and list the crops you are growing'
+      options: [
+        'Vegetables – < 1 acre',
+        'Horticulture – 1–5 acres',
+        'Plantation – 5–10 acres',
+        'Open Field Crops – >10 acres',
+        'Mixed Farming (Multiple crops across different plots)',
+        'Greenhouse / Polyhouse crops'
+      ],
+      expectedFormat: 'Choose the crop layout that matches your farm'
     },
     {
       id: 'currentIrrigationMethod',
@@ -402,17 +409,31 @@ export const serviceParameters: Record<string, Param[]> = {
     {
       id: 'waterSource',
       label: 'Water Source & Pressure',
-      type: 'text',
+      type: 'choice',
       goal: 'Pump sizing and pressure balancing for automation',
-      validationHint: 'Mention source (borewell/tank/canal), motor HP and whether pressure fluctuates',
-      expectedFormat: 'Describe where water comes from, pump capacity and pressure consistency'
+      options: [
+        'Borewell (high yield)',
+        'Borewell (low yield)',
+        'Open well / Farm pond',
+        'Overhead tank / Sump storage',
+        'Canal / River source',
+        'Not sure about pressure — need assessment'
+      ],
+      expectedFormat: 'Select the water source and pressure condition'
     },
     {
       id: 'soilType',
       label: 'Soil Type',
       type: 'choice',
       goal: 'Plan moisture retention logic and scheduling buffers',
-      options: ['Red soil', 'Black cotton soil', 'Sandy / loamy soil', 'Laterite mix', 'Mixed patches', 'Not sure'],
+      options: [
+        'Red soil (fast draining)',
+        'Black soil (high moisture retention)',
+        'Sandy soil (very fast draining)',
+        'Mixed soil (red + black)',
+        'Rocky / Hard soil',
+        'Not sure — require soil test'
+      ],
       expectedFormat: 'Pick the soil family that matches your fields'
     },
     {
@@ -420,7 +441,14 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Preferred Automation Level',
       type: 'choice',
       goal: 'Select appropriate controller and valve logic',
-      options: ['Semi-automatic (timers)', 'Fully automated IoT control', 'Manual with alerts', 'Need guidance'],
+      options: [
+        'Fully manual control',
+        'Semi-automatic (timer-based valves)',
+        'Fully automated (IoT + motor + valve control)',
+        'Automated only for irrigation lines',
+        'Automated only for pump/motor',
+        'Need guidance to decide'
+      ],
       expectedFormat: 'Choose the control style you are comfortable with'
     },
     {
@@ -428,7 +456,14 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Power Availability & Backup',
       type: 'choice',
       goal: 'Assess feasibility of pump automation and scheduling',
-      options: ['Stable power supply', 'Frequent power cuts', 'Using diesel generator backup', 'Solar pump / hybrid', 'Need recommendations'],
+      options: [
+        'No power cuts',
+        'Occasional power cuts (1–2 hrs)',
+        'Frequent power cuts (3–6 hrs)',
+        'Daily long outages (6+ hrs)',
+        'Require solar pump backup',
+        'Not sure'
+      ],
       expectedFormat: 'Describe current power condition for pumps and controllers'
     },
     {
@@ -436,7 +471,14 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Budget Range (₹)',
       type: 'choice',
       goal: 'Align proposal, ROI narrative and component selection',
-      options: ['₹1L - ₹3L', '₹3L - ₹6L', '₹6L - ₹10L', '₹10L+', 'Need cost guidance'],
+      options: [
+        'Under ₹50,000',
+        '₹50,000 – ₹1,00,000',
+        '₹1,00,000 – ₹2,50,000',
+        '₹2,50,000 – ₹5,00,000',
+        '₹5,00,000 – ₹10,00,000',
+        'Above ₹10,00,000'
+      ],
       expectedFormat: 'Pick the budget window you are considering'
     },
     {
@@ -444,7 +486,7 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Interest in Fertigation Automation',
       type: 'choice',
       goal: 'Plan nutrient dosing integration and controller selection',
-      options: ['Yes, want fertigation automation', 'Maybe later', 'No, keep manual', 'Need to understand benefits'],
+      options: ['Yes', 'Maybe', 'Not now', 'No', 'Undecided'],
       expectedFormat: 'Choose if you want fertilizer dosing automated'
     },
     {
@@ -452,7 +494,7 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Timeline / Installation Goal',
       type: 'choice',
       goal: 'Coordinate inspections, vendor scheduling and rollout',
-      options: ['Immediately (within 1 month)', 'Next 2-3 months', 'Before next crop cycle', 'Post-harvest / offseason', 'Just evaluating'],
+      options: ['Immediately', 'This month', '2–3 months', 'Post-harvest', 'Planning stage', 'Just exploring'],
       expectedFormat: 'Select when you want the irrigation automation to be ready'
     }
   ],
