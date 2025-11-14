@@ -893,6 +893,10 @@
             if (optionsArray.length) {
                 // Remove inline "(Options: ...)" hints
                 cleanedText = cleanedText.replace(/\s*\((?:options?|choices?):[^)]*\)\s*[\.\u3002]?/gi, ' ');
+                // Remove colon-separated clause that lists options, e.g. "Options include A | B"
+                cleanedText = cleanedText.split(/\n+/).map(line => {
+                    return line.replace(/(?:(?:options?|choices?)\s*(?:include|are|:)\s*).*/gi, '').trim();
+                }).join('\n');
 
                 // Drop lines that announce options, choice lists, or restate MCQ labels
                 const lines = cleanedText
