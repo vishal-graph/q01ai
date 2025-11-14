@@ -908,12 +908,37 @@
                         if (lower.startsWith('choose from:')) return false;
                         if (lower.startsWith('select from:')) return false;
                         if (lower.startsWith('available options')) return false;
+                        // Remove lines that exactly restate an option (with bullets or punctuation)
+                        const isExactOption = optionsArray.some(opt => {
+                            const normalizedOption = opt.toLowerCase();
+                            return (
+                                lower === normalizedOption ||
+                                lower === `${normalizedOption}.` ||
+                                lower === `${normalizedOption}!` ||
+                                lower === `- ${normalizedOption}` ||
+                                lower === `• ${normalizedOption}`
+                            );
+                        });
+                        if (isExactOption) return false;
+                        // Remove bullet prefixed list of options (e.g., "1. Flat RCC terrace (open)")
+                        const optionAfterBullet = optionsArray.some(opt => {
+                            const normalizedOption = opt.toLowerCase();
+                            return lower.replace(/^[\d•\-]+\s*/, '') === normalizedOption;
+                        });
+                        if (optionAfterBullet) return false;
                         // Remove lines that are just comma/pipe separated duplicates of the provided options
-                        const normalized = lower.replace(/[|,]/g, ' ').split(/\s+/).filter(Boolean);
-                        const uniqueWords = new Set(normalized);
                         const allOptionsMentioned = optionsArray.every(opt => lower.includes(opt.toLowerCase()));
-                        if (allOptionsMentioned && uniqueWords.size <= optionsArray.length * 2) {
+                        const hasSeparatorList = /[|,\/]/.test(lower);
+                        if (allOptionsMentioned && hasSeparatorList) {
                             return false;
+                        }
+                        // Additionally, drop lines that list options separated by " / " words
+                        if (allOptionsMentioned && /\bor\b|\band\b/.test(lower)) {
+                            const lineWithoutStopWords = lower.replace(/\b(and|or|\/)\b/g, ' ');
+                            const optionWords = optionsArray.map(opt => opt.toLowerCase());
+                            if (optionWords.every(opt => lineWithoutStopWords.includes(opt))) {
+                                return false;
+                            }
                         }
                         return true;
                     });
