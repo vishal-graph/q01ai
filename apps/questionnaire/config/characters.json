@@ -2783,19 +2783,19 @@
               "label": "Land Size & Crop Type",
               "purpose": "Maps layout, structure feasibility, and crop-structure compatibility.",
               "questionIntent": "Understand acreage and primary crops to plan infrastructure zones.",
-              "aiGuidance": "Encourage the farmer to describe both open and protected cultivation areas. Use relatable farm examples.",
+              "aiGuidance": "Encourage the farmer to select the option that matches their current setup. Offer reassurance that mixed or protected cultivation can be phased.",
               "exampleQuestions": [
-                "How much land are you cultivating and which crops are you focusing on?",
-                "Could you share acreage for each crop — for example, vegetables under open field and flowers under polyhouse?",
-                "What does your farm layout look like today — orchards, vegetables, or mixed plots?"
+                "Which option matches your land and crop pattern — vegetables, horticulture, plantations, or open-field grains?",
+                "Are you running mixed farming or planning greenhouse cultivation on any portion?",
+                "Would you describe your farm as mostly open-field or under greenhouse structures?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Accept acreage in acres/hectares; note crops under open field or protected cultivation"],
+                "rules": ["Vegetables — < 1 acre | Horticulture — 1–5 acres | Plantation — 5–10 acres | Open-field crops — > 10 acres | Mixed farming | Greenhouse"],
                 "followUps": [
-                  "If mixed crops: \"Great — we'll map zones so each crop gets the right infrastructure.\"",
-                  "If small acreage: \"Even compact farms benefit from precise irrigation and shade nets.\"",
-                  "If large holding: \"Fantastic — we'll plan phased development to keep investments manageable.\""
+                  "If Mixed farming: \"Great — we'll zone the farm so each area gets the right infrastructure.\"",
+                  "If Greenhouse: \"Excellent — we'll deep dive into protected cultivation requirements and ventilation.\"",
+                  "If Open-field crops — > 10 acres: \"Fantastic — we'll phase infrastructure so the investment stays manageable.\""
                 ]
               },
               "emotionCues": { "uncertain": "reassuring", "proud": "encouraging" },
@@ -2806,18 +2806,18 @@
               "label": "Required Infrastructure Type",
               "purpose": "Defines project scope across construction, irrigation, and utilities.",
               "questionIntent": "Learn which infrastructure elements the farmer wants to build or upgrade.",
-              "aiGuidance": "List options clearly. Offer phased combination if they feel the entire scope is heavy.",
+              "aiGuidance": "List every option clearly and explain that multiple selections can be phased over time.",
               "exampleQuestions": [
-                "What infrastructure would you like help with — irrigation lines, greenhouse, fencing, storage?",
-                "Should we focus on drip lines, pump house, or also include shade-net and fencing?",
-                "Would phased development help — for example, irrigation first, then greenhouse?"
+                "Which infrastructure do you want us to set up — irrigation, greenhouse, shade-net, fencing, pump house, storage room?",
+                "Do you need only irrigation lines now or also fencing and a pump house?",
+                "Should we plan for storage shed or utility room along with the irrigation system?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Allow multiple selections across irrigation, structures, fencing, storage, utilities"],
+                "rules": ["Allow multiple selections covering irrigation, greenhouse construction, shade-net, fencing, pump house/water storage, storage shed"],
                 "followUps": [
-                  "If multiple: \"Excellent — we'll prioritise milestones so each phase finishes smoothly.\"",
-                  "If unsure: \"No problem — we'll inspect the farm and map what adds maximum value first.\""
+                  "If multiple: \"Perfect — we'll phase the work so each structure is completed properly.\"",
+                  "If unsure: \"No worries — we'll inspect and suggest what gives maximum benefit first.\""
                 ]
               },
               "emotionCues": { "overwhelmed": "simplifying", "ambitious": "celebratory" },
@@ -2828,18 +2828,18 @@
               "label": "Water Source & Borewell Yield",
               "purpose": "Determines irrigation design, pump sizing, and storage planning.",
               "questionIntent": "Document water availability, borewell performance, and existing storage.",
-              "aiGuidance": "Ask about yield honestly. Reassure that storage and pressure regulation can stabilise supply.",
+              "aiGuidance": "Encourage them to pick the closest option; reassure that yield improvements can be balanced with storage.",
               "exampleQuestions": [
-                "What is your main water source — borewell, tank, canal, or combination?",
-                "Do you know the borewell yield or pump horsepower?",
-                "Do you have storage tanks or want to add reservoirs for summer backup?"
+                "Which option best describes your water source — high yield borewell, pond, canal, or storage tank?",
+                "Do you rely on a low-yield borewell or do you have overhead tank storage?",
+                "Should we plan assuming river or canal supply or build additional storage?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Capture water source, yield (if known), storage facilities"],
+                "rules": ["Borewell — high yield | Borewell — low yield | Open well / Farm pond | Overhead tank | Canal / River source | Not sure"],
                 "followUps": [
-                  "If low yield: \"Understood — we'll balance storage and drip to save water.\"",
-                  "If multiple sources: \"Great — we can automate switching so each zone gets steady supply.\""
+                  "If Borewell — low yield: \"Understood — we'll plan drip and storage to make every litre count.\"",
+                  "If Not sure: \"We can measure yield during inspection and size the pump accordingly.\""
                 ]
               },
               "emotionCues": { "worried": "reassuring", "practical": "solution" },
@@ -2849,20 +2849,19 @@
               "id": "soilSlope",
               "label": "Soil Type & Land Slope",
               "purpose": "Guides drainage design, structure foundations, and reinforcement needs.",
-              "questionIntent": "Understand soil family and slope to ensure structural stability.",
-              "aiGuidance": "Translate technical terms into farmer language (e.g., black soil holds moisture longer).",
+              "questionIntent": "Understand soil family and land slope to ensure structural stability.",
+              "aiGuidance": "Use farmer language to describe soil behaviour and slope. Offer testing if unsure.",
               "exampleQuestions": [
-                "Do you have red soil, black soil, sandy soil, or a mix?",
-                "Is the land mostly level or does it slope in certain directions?",
-                "Any low-lying patches where water collects during rainfall?"
+                "Which option suits your soil — red, black, sandy, mixed, or rocky?",
+                "Is the land level, mildly sloped, or does it have uneven patches?",
+                "Do we need to address fast drainage or heavy moisture holding?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Accept descriptive answers; note need for soil testing if unsure"],
+                "rules": ["Red soil (fast drainage) | Black soil (high moisture retention) | Sandy soil (very fast drainage) | Mixed soil (red + black) | Level land with mild slope | Rocky or uneven land"],
                 "followUps": [
-                  "If heavy clay: \"We'll plan drainage and raised beds to avoid waterlogging.\"",
-                  "If slope: \"Got it — we'll contour irrigation and structure placement for stability.\"",
-                  "If unsure: \"We can arrange soil texture and slope assessment before finalising design.\""
+                  "If Sandy soil: \"We'll design irrigation to give frequent, lighter doses.\"",
+                  "If Rocky or uneven land: \"We'll level critical zones and ensure structures stay stable.\""
                 ]
               },
               "emotionCues": { "unsure": "educational", "concerned": "reassuring" },
@@ -2873,21 +2872,21 @@
               "label": "Greenhouse / Polyhouse Interest",
               "purpose": "Evaluates feasibility of protected cultivation investments.",
               "questionIntent": "Learn interest level in greenhouse, polyhouse, or shade-net systems.",
-              "aiGuidance": "Differentiate structures and relate to crop benefits. Provide candid ROI ranges.",
+              "aiGuidance": "Relate each option to crops and expected control over climate; offer guidance option if unsure.",
               "exampleQuestions": [
-                "Are you interested in greenhouse, polyhouse, or shade-net cultivation?",
-                "Would you like protected structures for specific crops like flowers or exotic vegetables?",
-                "Should we compare greenhouse vs shade-net to see what fits best?"
+                "Are you leaning towards a greenhouse, polyhouse, shade-net, nursery, or keeping it open?",
+                "Would you prefer a simple shade-net or a fully climate-controlled greenhouse?",
+                "Should we discuss greenhouse vs polyhouse based on your crop and budget comfort?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Greenhouse | Polyhouse | Shade-net | Open-field improvement only | Need guidance"],
+                "rules": ["Greenhouse (full climate control) | Polyhouse (UV sheet + controlled environment) | Shade-net (low-cost protective structure) | Nursery structure (seedling production) | No structure | Need guidance"],
                 "followUps": [
-                  "If Greenhouse: \"Great — we'll plan ventilation, cooling pads, and crop layout.\"",
-                  "If Need guidance: \"Absolutely — we'll show pros and cons with real farmer examples.\""
+                  "If Need guidance: \"Happy to — we'll compare costs, yields, and maintenance before you decide.\"",
+                  "If Greenhouse: \"We'll plan ventilation, cooling, and crop layout to make it efficient.\""
                 ]
               },
-              "emotionCues": { "curious": "educational", "cost": "practical" },
+              "emotionCues": { "curious": "educational", "cost": "phasing" },
               "usageInProcess": "Determines structural specifications, vendor type, and ROI narrative."
             },
             {
@@ -2895,21 +2894,21 @@
               "label": "Irrigation Requirement",
               "purpose": "Designs micro-irrigation, automation, and fertigation systems.",
               "questionIntent": "Clarify preferred irrigation method and automation level.",
-              "aiGuidance": "Encourage thinking about future expansion. Highlight water savings and labour reduction.",
+              "aiGuidance": "Explain each irrigation style simply. Encourage adding automation if labour is a concern.",
               "exampleQuestions": [
-                "Do you want drip lines, sprinklers, misting, or a combination?",
-                "Would automated irrigation or pump control make your work easier?",
-                "Should we integrate fertigation with the irrigation setup?"
+                "Should we plan for drip, sprinklers, micro-sprinklers, or a combination?",
+                "Do you want the system to run fully automated or start with manual control?",
+                "Would combining drip and sprinkler systems help cover different crops?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Allow multiple selections across drip, sprinkler, micro, combination, automation, guidance"],
+                "rules": ["Allow multiple selections: Drip irrigation | Sprinkler irrigation | Micro-sprinkler system | Drip + sprinkler combination | Fully automated irrigation | Not decided"],
                 "followUps": [
-                  "If Automation: \"Nice — we'll include controllers and scheduling to save labour.\"",
-                  "If Combination: \"Perfect — we'll zone the farm so each crop gets tailored irrigation.\""
+                  "If Fully automated irrigation: \"We'll integrate controllers and pump automation for you.\"",
+                  "If Not decided: \"We can compare options based on crop, labour, and water availability.\""
                 ]
               },
-              "emotionCues": { "budget": "phased", "labour": "encouraging" },
+              "emotionCues": { "budget": "practical", "labour": "encouraging" },
               "usageInProcess": "Feeds irrigation layout, automation hardware selection, and supplier mapping."
             },
             {
@@ -2917,18 +2916,18 @@
               "label": "Budget Range (₹)",
               "purpose": "Aligns investment planning, vendor matching, and phased execution.",
               "questionIntent": "Understand budget comfort to phase construction and prioritise ROI.",
-              "aiGuidance": "Offer phased or modular planning if budget is tight. Reinforce realistic cost-benefit.",
+              "aiGuidance": "Offer phased planning and reassure that productivity gains can balance costs.",
               "exampleQuestions": [
-                "What budget range feels comfortable for this farm infrastructure project?",
-                "Would phased execution help — for example, irrigation first, then greenhouse?",
-                "Should we map options across ₹5–10 lakh, ₹10–20 lakh, or higher brackets?"
+                "Which investment band suits you — under ₹50k, ₹50k–1.5L, ₹1.5–3L, ₹3–7L, ₹7–15L, or more?",
+                "Would phased budgeting help, starting with irrigation then structures?",
+                "Should we explore subsidy or loan support for higher investment bands?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Under ₹5 lakhs | ₹5–10 lakhs | ₹10–20 lakhs | ₹20–40 lakhs | ₹40 lakhs+ | Need phased budgeting"],
+                "rules": ["Under ₹50,000 | ₹50,000 – ₹1,50,000 | ₹1,50,000 – ₹3,00,000 | ₹3,00,000 – ₹7,00,000 | ₹7,00,000 – ₹15,00,000 | Above ₹15,00,000 (full farm setup)"],
                 "followUps": [
-                  "If Need phased budgeting: \"Sure — we'll split the plan so you can build confidently step by step.\"",
-                  "If ₹20–40 lakhs: \"Excellent — we'll include protected cultivation and automation within this plan.\""
+                  "If Under ₹50,000: \"We'll focus on the essentials that give quick impact.\"",
+                  "If Above ₹15,00,000 (full farm setup): \"We'll plan end-to-end infrastructure with phased execution milestones.\""
                 ]
               },
               "emotionCues": { "costly": "reassuring", "practical": "phasing" },
@@ -2939,21 +2938,21 @@
               "label": "Wind / Weather Concerns",
               "purpose": "Plans structural reinforcement, drainage, and weather contingencies.",
               "questionIntent": "Identify climate risks like wind, rainfall, or heat stress.",
-              "aiGuidance": "Relate local monsoon or summer experiences. Offer protective measures.",
+              "aiGuidance": "Encourage them to pick concerns even if occasional; offer tailored mitigation.",
               "exampleQuestions": [
-                "Does your farm face high winds, heavy monsoon, or extreme summer heat?",
-                "Should we design for rainwater harvesting, wind bracing, or shade cooling?",
-                "Any past issues like frost, hail, or cyclone impact?"
+                "Is your farm exposed to high winds, heavy rainfall, or extreme summer heat?",
+                "Do you face only seasonal issues like monsoon or peak summer stress?",
+                "Should we plan reinforcement for wind, rainwater harvesting, or shade cooling?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Allow multiple selections covering wind, rain, drought, cold, none, need assessment"],
+                "rules": ["High winds | Heavy rainfall zone | High summer heat | Normal weather | Not sure | Seasonal issues only (monsoon / summer)"],
                 "followUps": [
-                  "If High winds: \"Understood — we'll add structural bracing and windbreak planning.\"",
-                  "If Heavy rains: \"We'll incorporate drainage and covered workspaces to stay productive.\""
+                  "If High winds: \"We'll include windbreaks and structural bracing.\"",
+                  "If Seasonal issues only: \"Perfect — we'll map seasonal action plans to stay prepared.\""
                 ]
               },
-              "emotionCues": { "worried": "reassuring", "proactive": "encouraging" },
+              "emotionCues": { "worried": "reassuring", "seasonal": "encouraging" },
               "usageInProcess": "Informs structural design, material selection, and contingency planning."
             },
             {
@@ -2961,18 +2960,18 @@
               "label": "Timeline / Installation Goal",
               "purpose": "Schedules inspections, material procurement, and vendor mobilisation.",
               "questionIntent": "Clarify desired completion timeline to align project phases.",
-              "aiGuidance": "Offer confidence that TatvaOps can fast-track when needed; emphasize realistic sequencing.",
+              "aiGuidance": "Offer confidence whether they need immediate work or are exploring. Highlight realistic sequencing.",
               "exampleQuestions": [
-                "By when would you like the infrastructure ready — within a month, next season, or post-harvest?",
-                "Should we align completion before a specific crop cycle or planting window?",
-                "Are you just exploring, or do we start inspections immediately?"
+                "When would you like the setup ready — immediately, this month, next 1–3 months, or after harvest?",
+                "Are you flexible on timing or should we aim to finish before planting season?",
+                "Are you just exploring options or ready to begin inspections soon?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Immediate (within 1 month) | Next 2–3 months | Before next crop cycle | Post-harvest / offseason | Just evaluating"],
+                "rules": ["Immediately | This month | Next 1–3 months | After harvest | Flexible | Just exploring options"],
                 "followUps": [
-                  "If Immediate: \"Great — we'll prioritise inspections and quick mobilisation.\"",
-                  "If Post-harvest: \"Perfect — we'll use this window to plan without disturbing current crops.\""
+                  "If Immediately: \"We'll prioritise quick mobilisation and inspections.\"",
+                  "If Just exploring options: \"Wonderful — we'll prepare a roadmap so you can decide peacefully.\""
                 ]
               },
               "emotionCues": { "urgent": "focused", "exploring": "informative" },

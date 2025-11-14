@@ -578,42 +578,77 @@ export const serviceParameters: Record<string, Param[]> = {
     {
       id: 'landSizeCrop',
       label: 'Land Size & Crop Type',
-      type: 'text',
+      type: 'choice',
       goal: 'Understand farm layout planning, crop selection, and structure feasibility',
-      validationHint: 'Mention acreage/hectares plus main crops (open field vs protected)',
-      expectedFormat: 'Share approximate land size and crops (e.g., 5 acres vegetables, 2 acres flowers)'
+      options: [
+        'Vegetables — < 1 acre',
+        'Horticulture — 1–5 acres',
+        'Plantation — 5–10 acres',
+        'Open-field crops — > 10 acres',
+        'Mixed farming',
+        'Greenhouse'
+      ],
+      expectedFormat: 'Choose the option that best describes your land and crops'
     },
     {
       id: 'infrastructureType',
       label: 'Required Infrastructure Type',
       type: 'choice',
       goal: 'Determine scope for construction, irrigation, storage, and structures',
-      options: ['Irrigation setup', 'Greenhouse / polyhouse', 'Shade-net structure', 'Fencing & gating', 'Pump house & storage tank', 'Farm shed / packhouse', 'Utility & electrical room', 'Multiple items / need guidance'],
-      expectedFormat: 'Select the infrastructure elements you want to focus on',
+      options: [
+        'Irrigation system setup',
+        'Greenhouse construction',
+        'Shade-net setup',
+        'Fencing & gate construction',
+        'Pump house / Water storage tanks',
+        'Storage shed / Utility room'
+      ],
+      expectedFormat: 'Select the infrastructure elements you want to focus on (choose all that apply)',
       allowMultiple: true
     },
     {
       id: 'waterSource',
       label: 'Water Source & Borewell Yield',
-      type: 'text',
+      type: 'choice',
       goal: 'Define irrigation design, reservoir sizing, and pump planning',
-      validationHint: 'Mention borewell depth/yield, tanks, canals, or rainwater harvesting potential',
-      expectedFormat: 'Describe water source, yield, and storage (if known)'
+      options: [
+        'Borewell — high yield',
+        'Borewell — low yield',
+        'Open well / Farm pond',
+        'Overhead tank',
+        'Canal / River source',
+        'Not sure'
+      ],
+      expectedFormat: 'Select the water source that best fits your farm'
     },
     {
       id: 'soilSlope',
       label: 'Soil Type & Land Slope',
-      type: 'text',
+      type: 'choice',
       goal: 'Guide drainage, structural stability, and foundation planning',
-      validationHint: 'Note soil family (red/black/sandy) and slope (flat/undulating)',
-      expectedFormat: 'Share soil type and whether land is level or sloped'
+      options: [
+        'Red soil (fast drainage)',
+        'Black soil (high moisture retention)',
+        'Sandy soil (very fast drainage)',
+        'Mixed soil (red + black)',
+        'Level land with mild slope',
+        'Rocky or uneven land'
+      ],
+      expectedFormat: 'Choose the option that matches your soil and slope'
     },
     {
       id: 'protectedCultivationInterest',
       label: 'Greenhouse / Polyhouse Interest',
       type: 'choice',
       goal: 'Assess suitability for protected cultivation structures',
-      options: ['Greenhouse', 'Polyhouse', 'Shade-net', 'Open-field improvement only', 'Need guidance'],
+      options: [
+        'Greenhouse (full climate control)',
+        'Polyhouse (UV sheet + controlled environment)',
+        'Shade-net (low-cost protective structure)',
+        'Nursery structure (seedling production)',
+        'No structure',
+        'Need guidance'
+      ],
       expectedFormat: 'Select the protected cultivation option you are considering'
     },
     {
@@ -621,8 +656,15 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Irrigation Requirement',
       type: 'choice',
       goal: 'Define irrigation system design and automation level',
-      options: ['Drip irrigation', 'Sprinkler irrigation', 'Micro-sprinkler / misting', 'Combination system', 'Automated irrigation (IoT)', 'Need guidance'],
-      expectedFormat: 'Choose irrigation style you prefer (can select multiple if needed)',
+      options: [
+        'Drip irrigation',
+        'Sprinkler irrigation',
+        'Micro-sprinkler system',
+        'Drip + sprinkler combination',
+        'Fully automated irrigation',
+        'Not decided'
+      ],
+      expectedFormat: 'Choose the irrigation style you prefer (select all that apply)',
       allowMultiple: true
     },
     {
@@ -630,7 +672,14 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Budget Range (₹)',
       type: 'choice',
       goal: 'Align proposal, vendor phasing, and ROI expectations',
-      options: ['Under ₹5 lakhs', '₹5–10 lakhs', '₹10–20 lakhs', '₹20–40 lakhs', '₹40 lakhs+', 'Need phased budgeting'],
+      options: [
+        'Under ₹50,000',
+        '₹50,000 – ₹1,50,000',
+        '₹1,50,000 – ₹3,00,000',
+        '₹3,00,000 – ₹7,00,000',
+        '₹7,00,000 – ₹15,00,000',
+        'Above ₹15,00,000 (full farm setup)'
+      ],
       expectedFormat: 'Choose the investment range or request phased planning'
     },
     {
@@ -638,7 +687,14 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Wind / Weather Concerns',
       type: 'choice',
       goal: 'Plan structural reinforcements and weather contingency',
-      options: ['High winds / storm risk', 'Heavy monsoon rains', 'Frequent drought / heat stress', 'Frost / cold stress', 'No major issues', 'Need assessment'],
+      options: [
+        'High winds',
+        'Heavy rainfall zone',
+        'High summer heat',
+        'Normal weather',
+        'Not sure',
+        'Seasonal issues only (monsoon / summer)'
+      ],
       expectedFormat: 'Select concerns that apply to your farm location',
       allowMultiple: true
     },
@@ -647,7 +703,7 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Timeline / Installation Goal',
       type: 'choice',
       goal: 'Schedule site visits, vendor mobilization, and execution milestones',
-      options: ['Immediate (within 1 month)', 'Next 2–3 months', 'Before next crop cycle', 'Post-harvest / offseason', 'Just evaluating'],
+      options: ['Immediately', 'This month', 'Next 1–3 months', 'After harvest', 'Flexible', 'Just exploring options'],
       expectedFormat: 'Choose when you want the setup to be ready'
     }
   ],
