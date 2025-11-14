@@ -888,9 +888,38 @@
             bubble.className = 'bubble';
 
             const optionsArray = Array.isArray(options) ? options : [];
-            const cleanedText = optionsArray.length
-                ? String(text).replace(/\s*\(Options:[^)]+\)\s*[\.\u3002]?\s*/ig, ' ').trim()
-                : String(text).trim();
+            let cleanedText = String(text ?? '').trim();
+
+            if (optionsArray.length) {
+                // Remove inline "(Options: ...)" hints
+                cleanedText = cleanedText.replace(/\s*\((?:options?|choices?):[^)]*\)\s*[\.\u3002]?/gi, ' ');
+
+                // Drop lines that announce options, choice lists, or restate MCQ labels
+                const lines = cleanedText
+                    .split(/\n+/)
+                    .map(line => line.trim())
+                    .filter(line => {
+                        if (!line) return false;
+                        const lower = line.toLowerCase();
+                        if (lower.startsWith('options:')) return false;
+                        if (lower.startsWith('option:')) return false;
+                        if (lower.startsWith('choices:')) return false;
+                        if (lower.startsWith('choices include')) return false;
+                        if (lower.startsWith('choose from:')) return false;
+                        if (lower.startsWith('select from:')) return false;
+                        if (lower.startsWith('available options')) return false;
+                        // Remove lines that are just comma/pipe separated duplicates of the provided options
+                        const normalized = lower.replace(/[|,]/g, ' ').split(/\s+/).filter(Boolean);
+                        const uniqueWords = new Set(normalized);
+                        const allOptionsMentioned = optionsArray.every(opt => lower.includes(opt.toLowerCase()));
+                        if (allOptionsMentioned && uniqueWords.size <= optionsArray.length * 2) {
+                            return false;
+                        }
+                        return true;
+                    });
+
+                cleanedText = lines.join('\n').replace(/\s{2,}/g, ' ').trim();
+            }
 
             // No meta headers; show only message text inside the bubble (WhatsApp-style)
 
