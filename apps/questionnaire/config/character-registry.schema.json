@@ -52,7 +52,7 @@
           },
           "service": {
             "type": "string",
-            "enum": ["construction", "interior_design", "home_automation", "painting", "solar_services", "electrical_services", "irrigation_automation"],
+            "enum": ["construction", "interior_design", "home_automation", "painting", "solar_services", "electrical_services", "irrigation_automation", "event_management"],
             "description": "Service this character handles"
           },
           "active": {

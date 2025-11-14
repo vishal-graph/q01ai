@@ -35,6 +35,7 @@ export function extractParamValue(service: string, paramId: string, userText: st
     case 'solar_services':
     case 'electrical_services':
     case 'irrigation_automation':
+    case 'event_management':
       switch (paramId) {
         case 'spaceType': {
           const m = text.match(/(home|house|apartment|flat|villa|office|retail|shop|business|commercial)/i);

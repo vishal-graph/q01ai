@@ -9,7 +9,8 @@ export type ServiceType =
   | 'painting'
   | 'solar_services'
   | 'electrical_services'
-  | 'irrigation_automation';
+  | 'irrigation_automation'
+  | 'event_management';
 
 export interface CharacterMeta {
   name: string;

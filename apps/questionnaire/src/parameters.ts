@@ -498,6 +498,78 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Select when you want the irrigation automation to be ready'
     }
   ],
+  event_management: [
+    {
+      id: 'eventType',
+      label: 'Event Type',
+      type: 'choice',
+      goal: 'Identify the nature of the event to scope planning requirements',
+      options: ['Wedding / Reception', 'Pre-wedding function', 'Corporate event', 'Private celebration / party', 'Festival / Cultural event', 'Brand activation / Expo', 'Housewarming / Ritual', 'Other'],
+      expectedFormat: 'Choose the category that best describes the event'
+    },
+    {
+      id: 'eventDateDuration',
+      label: 'Event Date & Duration',
+      type: 'text',
+      goal: 'Determine scheduling urgency and timeline planning',
+      validationHint: 'Mention confirmed date(s) or tentative timeline plus approximate start/end times',
+      expectedFormat: 'Share the event date(s) and expected duration (hours/days)'
+    },
+    {
+      id: 'venueStatus',
+      label: 'Venue Status',
+      type: 'choice',
+      goal: 'Assess venue readiness and location logistics',
+      options: ['Venue booked', 'Shortlisted, need help finalizing', 'Need venue suggestions', 'At home / private space', 'Hybrid / multiple locations'],
+      expectedFormat: 'Select the statement that matches your venue situation'
+    },
+    {
+      id: 'guestCount',
+      label: 'Guest Count',
+      type: 'number',
+      goal: 'Plan capacity, hospitality, and vendor scaling',
+      validationHint: 'Approximate number is sufficient; ranges are acceptable',
+      expectedFormat: 'Provide an approximate guest count'
+    },
+    {
+      id: 'themeMood',
+      label: 'Theme / Mood Preference',
+      type: 'text',
+      goal: 'Guide décor, styling, and experience design direction',
+      expectedFormat: 'Describe the desired style (e.g., traditional, modern, minimal, festive, elegant)'
+    },
+    {
+      id: 'programFlow',
+      label: 'Program Flow Highlights',
+      type: 'text',
+      goal: 'Understand key segments to choreograph timeline and production',
+      expectedFormat: 'List important segments (e.g., rituals, performances, speeches, special entries)'
+    },
+    {
+      id: 'vendorNeeds',
+      label: 'Vendor Assistance Required',
+      type: 'choice',
+      goal: 'Identify vendors or services that require coordination',
+      options: ['Décor & styling', 'Catering & F&B', 'Photography & videography', 'Stage/sound/lighting', 'Entertainment & choreography', 'Travel & logistics', 'All of the above', 'Need guidance'],
+      expectedFormat: 'Select the support areas you need TatvaOps to handle',
+      allowMultiple: true
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align planning and vendor recommendations with financial comfort',
+      options: ['Under ₹5L', '₹5L – ₹10L', '₹10L – ₹20L', '₹20L – ₹40L', '₹40L+', 'Need cost guidance'],
+      expectedFormat: 'Choose the budget window or indicate if guidance is needed'
+    },
+    {
+      id: 'specialRequirements',
+      label: 'Special Requirements or Requests',
+      type: 'text',
+      goal: 'Capture personalized touches, cultural needs, and unique expectations',
+      expectedFormat: 'Share any special rituals, surprise elements, or accessibility needs'
+    }
+  ],
   electrical_services: [
     {
       id: 'propertyType',
