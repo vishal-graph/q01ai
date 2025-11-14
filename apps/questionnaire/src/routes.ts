@@ -107,15 +107,14 @@ router.post('/questionnaires/:id/messages', async (req, res) => {
 
 CONTEXT (recent turns):\n${recentContext}\n\nTASK:
 1) Start with ONE warm, human, emotionally-aware affirmation (3–8 words) tailored to the user's last input.
-   - Explicitly reference their selection/value if it matches an option: ${paramMeta.options ? paramMeta.options.join(' | ') : '(no options)'}.
-   - Convey benefit or understanding (e.g., comfort, clarity, aesthetics, budget fit, timeline confidence).
+   - Focus on benefits or understanding (e.g., comfort, clarity, water savings, effort reduction, timeline confidence).
    - Avoid generic phrases like "Excellent choice", "Noted", "Got it", "Let's proceed" by themselves.
    - Vary language each turn; do not repeat prior affirmations.
-   - Examples: "Lovely range for cozy layouts.", "Great, 2BHK—balanced and practical.", "Nice pick—elegant and timeless.", "Perfect for efficient planning.", "Great fit for that style." 
+   - Examples: "Love how that crop thrives with precision watering.", "Great choice for smart irrigation.", "Perfect for efficient planning.", "Wonderful focus—let's tune automation."
 2) Then ask ONE concise next question about "${paramMeta.label}" (≤ 14 words).
    - Use the expected format: ${paramMeta.expectedFormat || '(no specific format)'}.
-   - If there are options, include exactly: ${paramMeta.options ? `(Options: ${paramMeta.options.join(' | ')})` : '(no options)'}.
-3) No greetings. No extra sentences. Keep it natural and warm.`;
+   - Do NOT list option values or say "choose the options"; simply ask the question.
+3) No greetings. No extra sentences. Keep it natural, warm, and question-focused.`;
 
   const response = await geminiAPIClient.generateText({
     model: character.routing?.ai?.model || 'gemini-2.5-flash',
