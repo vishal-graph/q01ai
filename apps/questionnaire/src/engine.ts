@@ -250,13 +250,6 @@ export function stripOptionPhrases(text: string, options?: string[]): string {
     joined = joined.replace(/\(\s*(?:\)|$)/g, ' ');
   }
 
-  // Truncate anything after the first sentence-ending punctuation to avoid stray option text
-  const sentinel = joined.match(/([?.!])\s/);
-  if (sentinel) {
-    const index = joined.indexOf(sentinel[1]);
-    joined = joined.slice(0, index + 1);
-  }
-
   return joined.replace(/\s{2,}/g, ' ').replace(/\s+([?.!,;:])/g, '$1').trim();
 }
 
