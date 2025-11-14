@@ -574,6 +574,83 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Select any special touches you would like us to plan'
     }
   ],
+  farm_infrastructure: [
+    {
+      id: 'landSizeCrop',
+      label: 'Land Size & Crop Type',
+      type: 'text',
+      goal: 'Understand farm layout planning, crop selection, and structure feasibility',
+      validationHint: 'Mention acreage/hectares plus main crops (open field vs protected)',
+      expectedFormat: 'Share approximate land size and crops (e.g., 5 acres vegetables, 2 acres flowers)'
+    },
+    {
+      id: 'infrastructureType',
+      label: 'Required Infrastructure Type',
+      type: 'choice',
+      goal: 'Determine scope for construction, irrigation, storage, and structures',
+      options: ['Irrigation setup', 'Greenhouse / polyhouse', 'Shade-net structure', 'Fencing & gating', 'Pump house & storage tank', 'Farm shed / packhouse', 'Utility & electrical room', 'Multiple items / need guidance'],
+      expectedFormat: 'Select the infrastructure elements you want to focus on',
+      allowMultiple: true
+    },
+    {
+      id: 'waterSource',
+      label: 'Water Source & Borewell Yield',
+      type: 'text',
+      goal: 'Define irrigation design, reservoir sizing, and pump planning',
+      validationHint: 'Mention borewell depth/yield, tanks, canals, or rainwater harvesting potential',
+      expectedFormat: 'Describe water source, yield, and storage (if known)'
+    },
+    {
+      id: 'soilSlope',
+      label: 'Soil Type & Land Slope',
+      type: 'text',
+      goal: 'Guide drainage, structural stability, and foundation planning',
+      validationHint: 'Note soil family (red/black/sandy) and slope (flat/undulating)',
+      expectedFormat: 'Share soil type and whether land is level or sloped'
+    },
+    {
+      id: 'protectedCultivationInterest',
+      label: 'Greenhouse / Polyhouse Interest',
+      type: 'choice',
+      goal: 'Assess suitability for protected cultivation structures',
+      options: ['Greenhouse', 'Polyhouse', 'Shade-net', 'Open-field improvement only', 'Need guidance'],
+      expectedFormat: 'Select the protected cultivation option you are considering'
+    },
+    {
+      id: 'irrigationRequirement',
+      label: 'Irrigation Requirement',
+      type: 'choice',
+      goal: 'Define irrigation system design and automation level',
+      options: ['Drip irrigation', 'Sprinkler irrigation', 'Micro-sprinkler / misting', 'Combination system', 'Automated irrigation (IoT)', 'Need guidance'],
+      expectedFormat: 'Choose irrigation style you prefer (can select multiple if needed)',
+      allowMultiple: true
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align proposal, vendor phasing, and ROI expectations',
+      options: ['Under ₹5 lakhs', '₹5–10 lakhs', '₹10–20 lakhs', '₹20–40 lakhs', '₹40 lakhs+', 'Need phased budgeting'],
+      expectedFormat: 'Choose the investment range or request phased planning'
+    },
+    {
+      id: 'weatherConcerns',
+      label: 'Wind / Weather Concerns',
+      type: 'choice',
+      goal: 'Plan structural reinforcements and weather contingency',
+      options: ['High winds / storm risk', 'Heavy monsoon rains', 'Frequent drought / heat stress', 'Frost / cold stress', 'No major issues', 'Need assessment'],
+      expectedFormat: 'Select concerns that apply to your farm location',
+      allowMultiple: true
+    },
+    {
+      id: 'installationTimeline',
+      label: 'Timeline / Installation Goal',
+      type: 'choice',
+      goal: 'Schedule site visits, vendor mobilization, and execution milestones',
+      options: ['Immediate (within 1 month)', 'Next 2–3 months', 'Before next crop cycle', 'Post-harvest / offseason', 'Just evaluating'],
+      expectedFormat: 'Choose when you want the setup to be ready'
+    }
+  ],
   electrical_services: [
     {
       id: 'propertyType',

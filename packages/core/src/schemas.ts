@@ -13,7 +13,8 @@ export const ServiceTypeZ = z.enum([
   'solar_services',
   'electrical_services',
   'irrigation_automation',
-  'event_management'
+  'event_management',
+  'farm_infrastructure'
 ]);
 
 // Character Meta
