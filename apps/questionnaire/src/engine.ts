@@ -226,8 +226,38 @@ export function stripOptionPhrases(text: string, options?: string[]): string {
       return true;
     });
 
-  const joined = filteredLines.join('\n').replace(/\s{2,}/g, ' ').trim();
-  return joined.length ? joined : cleaned.trim();
+  let joined = filteredLines.join('\n').replace(/\s{2,}/g, ' ').trim();
+  if (!joined.length) {
+    joined = cleaned.trim();
+  }
+
+  if (optionList.length > 0 && joined) {
+    optionList.forEach((opt) => {
+      const escaped = opt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const patterns = [
+        new RegExp(`\\s*\\|\\s*${escaped}`, 'gi'),
+        new RegExp(`\\s*,\\s*${escaped}`, 'gi'),
+        new RegExp(`\\s*/\\s*${escaped}`, 'gi'),
+        new RegExp(`\\b(?:and|or)\\s+${escaped}`, 'gi'),
+      ];
+      patterns.forEach((pattern) => {
+        joined = joined.replace(pattern, ' ');
+      });
+    });
+
+    // Remove trailing segments that still look like option listings (pipes without text)
+    joined = joined.replace(/\|\s*(?:\)|$)/g, ' ');
+    joined = joined.replace(/\(\s*(?:\)|$)/g, ' ');
+  }
+
+  // Truncate anything after the first sentence-ending punctuation to avoid stray option text
+  const sentinel = joined.match(/([?.!])\s/);
+  if (sentinel) {
+    const index = joined.indexOf(sentinel[1]);
+    joined = joined.slice(0, index + 1);
+  }
+
+  return joined.replace(/\s{2,}/g, ' ').replace(/\s+([?.!,;:])/g, '$1').trim();
 }
 
 
