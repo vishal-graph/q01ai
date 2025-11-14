@@ -9,7 +9,14 @@ import Ajv from "ajv";
 // Remove circular import - use console for now
 import { deepmerge } from "./utils"; // Import deepmerge
 
-export type Service = "interior_design" | "construction" | "home_automation" | "painting" | "solar_services" | "electrical_services";
+export type Service =
+  | "interior_design"
+  | "construction"
+  | "home_automation"
+  | "painting"
+  | "solar_services"
+  | "electrical_services"
+  | "irrigation_automation";
 
 // Module-level path variables, to be configured by the application
 let REGISTRY_PATH: string | null = null;

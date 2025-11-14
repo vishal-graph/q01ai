@@ -382,6 +382,80 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Choose your target installation window'
     }
   ],
+  irrigation_automation: [
+    {
+      id: 'farmSizeCrop',
+      label: 'Farm Size & Crop Type',
+      type: 'text',
+      goal: 'Determine zone design, water requirement and scheduling',
+      examples: ['5 acres mango + 2 acres vegetables', '1 acre floriculture polyhouse'],
+      expectedFormat: 'Share acreage/hectares and list the crops you are growing'
+    },
+    {
+      id: 'currentIrrigationMethod',
+      label: 'Current Irrigation Method',
+      type: 'choice',
+      goal: 'Understand upgrade path and baseline efficiency',
+      options: ['Manual flood / channel', 'Basic drip lines', 'Sprinkler / rain gun', 'Micro / misting', 'Combination setup', 'Not sure / other'],
+      expectedFormat: 'Choose the irrigation style you currently follow'
+    },
+    {
+      id: 'waterSource',
+      label: 'Water Source & Pressure',
+      type: 'text',
+      goal: 'Pump sizing and pressure balancing for automation',
+      validationHint: 'Mention source (borewell/tank/canal), motor HP and whether pressure fluctuates',
+      expectedFormat: 'Describe where water comes from, pump capacity and pressure consistency'
+    },
+    {
+      id: 'soilType',
+      label: 'Soil Type',
+      type: 'choice',
+      goal: 'Plan moisture retention logic and scheduling buffers',
+      options: ['Red soil', 'Black cotton soil', 'Sandy / loamy soil', 'Laterite mix', 'Mixed patches', 'Not sure'],
+      expectedFormat: 'Pick the soil family that matches your fields'
+    },
+    {
+      id: 'automationPreference',
+      label: 'Preferred Automation Level',
+      type: 'choice',
+      goal: 'Select appropriate controller and valve logic',
+      options: ['Semi-automatic (timers)', 'Fully automated IoT control', 'Manual with alerts', 'Need guidance'],
+      expectedFormat: 'Choose the control style you are comfortable with'
+    },
+    {
+      id: 'powerReliability',
+      label: 'Power Availability & Backup',
+      type: 'choice',
+      goal: 'Assess feasibility of pump automation and scheduling',
+      options: ['Stable power supply', 'Frequent power cuts', 'Using diesel generator backup', 'Solar pump / hybrid', 'Need recommendations'],
+      expectedFormat: 'Describe current power condition for pumps and controllers'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align proposal, ROI narrative and component selection',
+      options: ['₹1L - ₹3L', '₹3L - ₹6L', '₹6L - ₹10L', '₹10L+', 'Need cost guidance'],
+      expectedFormat: 'Pick the budget window you are considering'
+    },
+    {
+      id: 'fertigationInterest',
+      label: 'Interest in Fertigation Automation',
+      type: 'choice',
+      goal: 'Plan nutrient dosing integration and controller selection',
+      options: ['Yes, want fertigation automation', 'Maybe later', 'No, keep manual', 'Need to understand benefits'],
+      expectedFormat: 'Choose if you want fertilizer dosing automated'
+    },
+    {
+      id: 'installationTimeline',
+      label: 'Timeline / Installation Goal',
+      type: 'choice',
+      goal: 'Coordinate inspections, vendor scheduling and rollout',
+      options: ['Immediately (within 1 month)', 'Next 2-3 months', 'Before next crop cycle', 'Post-harvest / offseason', 'Just evaluating'],
+      expectedFormat: 'Select when you want the irrigation automation to be ready'
+    }
+  ],
   electrical_services: [
     {
       id: 'propertyType',

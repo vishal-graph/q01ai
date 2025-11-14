@@ -1,6 +1,6 @@
 # Questionnaire Service (Standalone)
 
-A plug-and-play service to run 9-parameter conversational questionnaires per service (Construction, Interior Design, Home Automation, Painting).
+A plug-and-play service to run 9-parameter conversational questionnaires per service (Construction, Interior Design, Home Automation, Painting, Solar Services, Electrical Services, Irrigation Automation).
 
 ## Run
 
