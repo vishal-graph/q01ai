@@ -168,4 +168,66 @@ export function applyEQIfAny(character: any, userText: string, base: string): st
   return parts.join('\n\n');
 }
 
+export function stripOptionPhrases(text: string, options?: string[]): string {
+  if (!text) return '';
+  let cleaned = String(text);
+
+  // Remove inline "(Options: ...)" or "(Choices: ...)" segments
+  cleaned = cleaned.replace(/\s*\((?:options?|choices?)\s*:[^)]*\)\s*[\.\u3002]?/gi, ' ');
+
+  const optionList = Array.isArray(options)
+    ? options.map((opt) => opt.toLowerCase().trim()).filter(Boolean)
+    : [];
+
+  const filteredLines = cleaned
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter((line) => {
+      if (!line) return false;
+      const lower = line.toLowerCase();
+
+      if (
+        lower.startsWith('options:') ||
+        lower.startsWith('option:') ||
+        lower.startsWith('options include') ||
+        lower.startsWith('choices:') ||
+        lower.startsWith('choices include') ||
+        lower.startsWith('choose from:') ||
+        lower.startsWith('select from:') ||
+        lower.startsWith('available options')
+      ) {
+        return false;
+      }
+
+      if (/^(?:options?|choices?)\s*(?:include|are)\b/.test(lower)) {
+        return false;
+      }
+
+      // Remove lines that exactly match one of the options (with common bullet markers)
+      if (
+        optionList.length > 0 &&
+        optionList.some((opt) => {
+          const normalizedLine = lower.replace(/^[\d•\-]+\s*/, '').replace(/[.!]$/, '').trim();
+          return normalizedLine === opt;
+        })
+      ) {
+        return false;
+      }
+
+      // Remove lines that list multiple options separated by delimiters
+      if (
+        optionList.length > 0 &&
+        optionList.every((opt) => lower.includes(opt)) &&
+        (/[|,\/]/.test(lower) || /\b(and|or)\b/.test(lower))
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+  const joined = filteredLines.join('\n').replace(/\s{2,}/g, ' ').trim();
+  return joined.length ? joined : cleaned.trim();
+}
+
 

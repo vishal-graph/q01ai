@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { QuestionnaireStore } from './models/Questionnaire';
 import { pickCharacter } from '../../../packages/core/src/index';
 import { geminiAPIClient } from '../../../packages/ai/src/index';
-import { getNextParamId, getParamMeta, extractParamValue } from './engine';
+import { getNextParamId, getParamMeta, extractParamValue, stripOptionPhrases } from './engine';
 import { config } from './config';
 import { postCompletion } from './webhook';
 import { router as adminRouter } from './admin.routes';
@@ -124,7 +124,7 @@ CONTEXT (recent turns):\n${recentContext}\n\nTASK:
     temperature: 0.35,
   });
 
-  assistantResponse = String(response.data);
+  assistantResponse = stripOptionPhrases(String(response.data), paramMeta?.options);
 
   // If this is the first assistant response of the conversation, prefix an introduction phrase
   const assistantTurnsCount = doc.transcript.filter(m => m.role === 'assistant').length;
