@@ -504,53 +504,56 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Event Type',
       type: 'choice',
       goal: 'Identify the nature of the event to scope planning requirements',
-      options: ['Wedding / Reception', 'Pre-wedding function', 'Corporate event', 'Private celebration / party', 'Festival / Cultural event', 'Brand activation / Expo', 'Housewarming / Ritual', 'Other'],
+      options: ['Wedding', 'Corporate Event', 'Birthday Celebration', 'Cultural Event', 'Product Launch', 'College / School Event'],
       expectedFormat: 'Choose the category that best describes the event'
     },
     {
       id: 'eventDateDuration',
       label: 'Event Date & Duration',
-      type: 'text',
+      type: 'choice',
       goal: 'Determine scheduling urgency and timeline planning',
-      validationHint: 'Mention confirmed date(s) or tentative timeline plus approximate start/end times',
-      expectedFormat: 'Share the event date(s) and expected duration (hours/days)'
+      options: ['Full-day', 'Half-day', 'Multi-day', 'Week-long event', 'Flexible', 'Just exploring'],
+      expectedFormat: 'Select the option that best matches your timeline; add details if needed'
     },
     {
       id: 'venueStatus',
       label: 'Venue Status',
       type: 'choice',
       goal: 'Assess venue readiness and location logistics',
-      options: ['Venue booked', 'Shortlisted, need help finalizing', 'Need venue suggestions', 'At home / private space', 'Hybrid / multiple locations'],
+      options: ['Venue already booked', 'Shortlisted a few venues', 'Need suggestions', 'Need both indoor + outdoor options', 'No venue yet', 'Not sure'],
       expectedFormat: 'Select the statement that matches your venue situation'
     },
     {
       id: 'guestCount',
       label: 'Guest Count',
-      type: 'number',
+      type: 'choice',
       goal: 'Plan capacity, hospitality, and vendor scaling',
-      validationHint: 'Approximate number is sufficient; ranges are acceptable',
-      expectedFormat: 'Provide an approximate guest count'
+      options: ['Under 50 guests', '50–150 guests', '150–300 guests', '300–500 guests', '500–1000 guests', 'Above 1000 guests'],
+      expectedFormat: 'Choose the guest range that best fits your event'
     },
     {
       id: 'themeMood',
       label: 'Theme / Mood Preference',
-      type: 'text',
+      type: 'choice',
       goal: 'Guide décor, styling, and experience design direction',
-      expectedFormat: 'Describe the desired style (e.g., traditional, modern, minimal, festive, elegant)'
+      options: ['Classical', 'Modern & Elegant', 'Minimal & Clean', 'Festive', 'Luxury', 'Not sure'],
+      expectedFormat: 'Select the overall vibe you prefer (add details if needed)'
     },
     {
       id: 'programFlow',
       label: 'Program Flow Highlights',
-      type: 'text',
+      type: 'choice',
       goal: 'Understand key segments to choreograph timeline and production',
-      expectedFormat: 'List important segments (e.g., rituals, performances, speeches, special entries)'
+      options: ['Reception / Welcome', 'Stage performances', 'Speeches', 'Cultural segments', 'Games / activities', 'Party section'],
+      expectedFormat: 'Select the key segments you have planned',
+      allowMultiple: true
     },
     {
       id: 'vendorNeeds',
       label: 'Vendor Assistance Required',
       type: 'choice',
       goal: 'Identify vendors or services that require coordination',
-      options: ['Décor & styling', 'Catering & F&B', 'Photography & videography', 'Stage/sound/lighting', 'Entertainment & choreography', 'Travel & logistics', 'All of the above', 'Need guidance'],
+      options: ['Décor & stage setup', 'Photography & videography', 'Catering & food service', 'Sound, lighting & AV', 'Invitation & branding', 'End-to-end event management'],
       expectedFormat: 'Select the support areas you need TatvaOps to handle',
       allowMultiple: true
     },
@@ -559,15 +562,16 @@ export const serviceParameters: Record<string, Param[]> = {
       label: 'Budget Range (₹)',
       type: 'choice',
       goal: 'Align planning and vendor recommendations with financial comfort',
-      options: ['Under ₹5L', '₹5L – ₹10L', '₹10L – ₹20L', '₹20L – ₹40L', '₹40L+', 'Need cost guidance'],
+      options: ['Under ₹1 lakh', '₹1–3 lakhs', '₹3–7 lakhs', '₹7–15 lakhs', '₹15–30 lakhs', 'Above ₹30 lakhs'],
       expectedFormat: 'Choose the budget window or indicate if guidance is needed'
     },
     {
       id: 'specialRequirements',
       label: 'Special Requirements or Requests',
-      type: 'text',
+      type: 'choice',
       goal: 'Capture personalized touches, cultural needs, and unique expectations',
-      expectedFormat: 'Share any special rituals, surprise elements, or accessibility needs'
+      options: ['Theme-based entry', 'Live music', 'Anchor appearance', 'Ritual-specific arrangements', 'Surprise elements', 'Nothing special'],
+      expectedFormat: 'Select any special touches you would like us to plan'
     }
   ],
   electrical_services: [

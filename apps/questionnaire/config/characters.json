@@ -2495,15 +2495,18 @@
               "exampleQuestions": [
                 "Is this celebration a wedding, a corporate event, or something more personal?",
                 "What kind of event are we planning together — wedding, reception, corporate evening, or private party?",
-                "Lovely! Could you share if it's a festival celebration, a brand launch, or a family milestone?"
+                "Lovely! Could you share if it's a festival celebration, a product launch, or a campus event?"
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Wedding / Reception | Pre-wedding function | Corporate event | Private celebration / party | Festival / Cultural event | Brand activation / Expo | Housewarming / Ritual | Other"],
+                "rules": ["Wedding | Corporate Event | Birthday Celebration | Cultural Event | Product Launch | College / School Event"],
                 "followUps": [
                   "If Wedding: \"Beautiful — we'll honour traditions and create joyful experiences for your guests.\"",
-                  "If Corporate: \"Perfect — we'll craft a polished experience that reflects your brand.\"",
-                  "If Private Celebration: \"Lovely — we'll make sure it feels personal and memorable.\""
+                  "If Corporate Event: \"Perfect — we'll craft a polished experience that reflects your brand.\"",
+                  "If Birthday Celebration: \"How delightful — we'll make it personal and memorable.\"",
+                  "If Cultural Event: \"Wonderful — we'll respect traditions while keeping logistics smooth.\"",
+                  "If Product Launch: \"Exciting — we'll design an impactful reveal for your audience.\"",
+                  "If College / School Event: \"Lovely — we'll balance energy, fun, and organisation.\""
                 ]
               },
               "emotionCues": { "excited": "celebratory", "overwhelmed": "calming" },
@@ -2517,15 +2520,16 @@
               "aiGuidance": "Be sensitive if the event is soon. Offer reassurance about quick coordination if timelines are tight.",
               "exampleQuestions": [
                 "When is the event scheduled, and how many hours or days will it run?",
-                "Do you already have dates locked in, or are we working with a tentative window?",
-                "Is this a single-day celebration or a multi-day experience so we can plan timelines?"
+                "Would you describe it as a half-day, full-day, or multi-day experience?",
+                "Are we planning for a week-long festival or something flexible at the moment?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Accept specific date ranges or tentative timelines; note urgency if within 30 days"],
+                "rules": ["Full-day | Half-day | Multi-day | Week-long event | Flexible | Just exploring"],
                 "followUps": [
-                  "If soon: \"Understood — we'll fast-track the plan so you can relax.\"",
-                  "If tentative: \"No problem — we'll keep things flexible until dates are confirmed.\""
+                  "If Full-day: \"Great — we’ll craft a timeline from welcome to farewell.\"",
+                  "If Multi-day: \"Wonderful — we’ll map each day so the experience stays effortless.\"",
+                  "If Just exploring: \"Absolutely — we can plan both tentative and confirmed timelines.\""
                 ]
               },
               "emotionCues": { "urgent": "focused", "unsure": "reassuring" },
@@ -2544,10 +2548,11 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Venue booked | Shortlisted, need help finalizing | Need venue suggestions | At home / private space | Hybrid / multiple locations"],
+                "rules": ["Venue already booked | Shortlisted a few venues | Need suggestions | Need both indoor + outdoor options | No venue yet | Not sure"],
                 "followUps": [
                   "If Need Suggestions: \"Happy to curate venues that match your vision and budget.\"",
-                  "If Booked: \"Wonderful — let's note any layout details or restrictions to plan smoothly.\""
+                  "If Venue already booked: \"Wonderful — let's capture layout details so every zone is covered.\"",
+                  "If Need both indoor + outdoor options: \"Great choice — we’ll balance weather backup and ambience beautifully.\""
                 ]
               },
               "emotionCues": { "undecided": "supportive", "confident": "affirming" },
@@ -2564,11 +2569,13 @@
                 "Is there a ballpark guest count — perhaps 100, 300, or more?",
                 "Do you have an estimate of attendees for each day or segment?"
               ],
-              "responseType": "number",
+              "responseType": "choice",
               "validation": {
+                "rules": ["Under 50 guests | 50–150 guests | 150–300 guests | 300–500 guests | 500–1000 guests | Above 1000 guests"],
                 "followUps": [
-                  "If large (>500): \"Lovely — we'll structure guest flow so everyone feels cared for.\"",
-                  "If intimate: \"Wonderful — intimate events let us personalise every detail.\""
+                  "If 50–150 guests: \"Perfect — we’ll ensure the venue feels intimate yet comfortable.\"",
+                  "If 300–500 guests: \"Wonderful — we’ll manage flow so everyone feels looked after.\"",
+                  "If Above 1000 guests: \"Grand! We’ll choreograph hospitality and logistics in detail.\""
                 ]
               },
               "emotionCues": { "anxious": "calming", "excited": "celebratory" },
@@ -2585,11 +2592,11 @@
                 "How would you like the event to feel for your guests — elegant, grand, minimalist?",
                 "Any colours, inspirations, or references that make you feel 'this is us'?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Accept descriptive words or references; note if inspiration boards exist"],
+                "rules": ["Classical | Modern & Elegant | Minimal & Clean | Festive | Luxury | Not sure"],
                 "followUps": [
-                  "If unsure: \"We can explore Pinterest or mood boards together — we'll co-create the vibe.\""
+                  "If Not sure: \"We can explore mood boards together and find a style that feels just right.\""
                 ]
               },
               "emotionCues": { "inspired": "celebratory", "unsure": "encouraging" },
@@ -2602,15 +2609,16 @@
               "questionIntent": "Collect key activities like rituals, performances, speeches, and special entries.",
               "aiGuidance": "Break down the flow; if user is overwhelmed, guide them through typical sequences.",
               "exampleQuestions": [
-                "What key moments should we plan for — rituals, performances, speeches, special entries?",
-                "Do you have a sequence in mind like welcome, ceremony, dinner, entertainment?",
-                "Any surprise elements or traditions we should highlight in the run sheet?"
+                "Which segments are you planning — reception, stage performances, speeches, or a party section?",
+                "Do you already see cultural segments, games, or dance performances in the schedule?",
+                "Should we include a welcome reception, cultural showcase, or interactive activities?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Capture list or rough sequence; note segments needing special attention"],
+                "rules": ["Reception / Welcome | Stage performances | Speeches | Cultural segments | Games / activities | Party section"],
                 "followUps": [
-                  "If unsure: \"We can co-create a simple flow and refine it as we confirm vendors.\""
+                  "If multiple: \"Lovely — we’ll choreograph transitions so each segment flows seamlessly.\"",
+                  "If unsure: \"We can craft a recommended sequence and adapt it with you.\""
                 ]
               },
               "emotionCues": { "overwhelmed": "simplifying", "excited": "structured" },
@@ -2629,10 +2637,11 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Allow multiple selections covering décor, catering, production, entertainment, logistics"],
+                "rules": ["Allow multiple selections covering décor, photography, catering, production, branding, coordination"],
                 "followUps": [
-                  "If All: \"Perfect — we'll manage end-to-end so you can enjoy the celebration.\"",
-                  "If Specific: \"Noted — we'll shortlist the best vendors for those categories.\""
+                  "If Décor & stage setup: \"Beautiful — we’ll craft visual magic that suits your mood and venue.\"",
+                  "If Catering & food service: \"Wonderful — we’ll work with chefs who deliver both taste and presentation.\"",
+                  "If End-to-end event management: \"We’ve got you. From planning to execution, we’ll stand beside you throughout.\""
                 ]
               },
               "emotionCues": { "budget": "practical", "uncertain": "supportive" },
@@ -2651,10 +2660,11 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Under ₹5L | ₹5L – ₹10L | ₹10L – ₹20L | ₹20L – ₹40L | ₹40L+ | Need cost guidance"],
+                "rules": ["Under ₹1 lakh | ₹1–3 lakhs | ₹3–7 lakhs | ₹7–15 lakhs | ₹15–30 lakhs | Above ₹30 lakhs"],
                 "followUps": [
-                  "If Need guidance: \"Absolutely — we'll align experience ideas with practical budgets.\"",
-                  "If High: \"Beautiful — we'll curate premium vendors who deliver unforgettable touches.\""
+                  "If Under ₹1 lakh: \"Lovely — we’ll focus on thoughtful touches that make a big impact.\"",
+                  "If ₹7–15 lakhs: \"Wonderful — we can balance premium experiences with meaningful savings.\"",
+                  "If Above ₹30 lakhs: \"Spectacular — we’ll design immersive experiences with top-tier vendors.\""
                 ]
               },
               "emotionCues": { "budget": "practical", "cautious": "reassuring" },
@@ -2671,12 +2681,13 @@
                 "Any colours, traditions, or personal elements we should definitely include?",
                 "Do you have surprises planned or accessibility needs we should be aware of?"
               ],
-              "responseType": "text",
+              "responseType": "choice",
               "validation": {
-                "rules": ["Accept open-ended responses; note if ideas are tentative"],
+                "rules": ["Theme-based entry | Live music | Anchor appearance | Ritual-specific arrangements | Surprise elements | Nothing special"],
                 "followUps": [
-                  "If Emotional: \"Beautiful — we'll honour that memory carefully.\"",
-                  "If Unsure: \"We can explore inspirations and craft something meaningful together.\""
+                  "If Theme-based entry: \"How exciting! We’ll choreograph the moment to feel unforgettable.\"",
+                  "If Ritual-specific arrangements: \"Beautiful — we’ll honour every tradition with thoughtful detailing.\"",
+                  "If Nothing special: \"No worries — we’ll still make the overall experience feel effortless.\""
                 ]
               },
               "emotionCues": { "sentimental": "empathetic", "creative": "celebratory" },
