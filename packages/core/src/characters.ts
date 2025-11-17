@@ -13,6 +13,7 @@ export type Service =
   | "interior_design"
   | "commercial_interiors"
   | "commercial_construction"
+  | "property_development"
   | "construction"
   | "home_automation"
   | "painting"

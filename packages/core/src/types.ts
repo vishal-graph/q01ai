@@ -7,6 +7,7 @@ export type ServiceType =
   | 'interior_design'
   | 'commercial_interiors'
   | 'commercial_construction'
+  | 'property_development'
   | 'home_automation'
   | 'painting'
   | 'solar_services'

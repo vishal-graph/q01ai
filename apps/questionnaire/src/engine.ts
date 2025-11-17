@@ -31,6 +31,7 @@ export function extractParamValue(service: string, paramId: string, userText: st
     case 'interior_design':
     case 'commercial_interiors':
     case 'commercial_construction':
+    case 'property_development':
     case 'construction':
     case 'home_automation':
     case 'painting':

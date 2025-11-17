@@ -357,6 +357,143 @@ export const serviceParameters: Record<string, Param[]> = {
       allowMultiple: true
     }
   ],
+  property_development: [
+    {
+      id: 'projectType',
+      label: 'Project Type',
+      type: 'choice',
+      goal: 'Identify project category to align vendor mix and compliance scope',
+      options: [
+        'Independent house',
+        'Villa project',
+        'Apartment',
+        'Commercial'
+      ],
+      expectedFormat: 'Choose the project type that best matches your development'
+    },
+    {
+      id: 'projectStage',
+      label: 'Current Project Stage',
+      type: 'choice',
+      goal: 'Understand milestone starting point for TatvaOps engagement',
+      options: [
+        'Land purchase',
+        'Foundation stage',
+        'Structure stage',
+        'Brickwork / walls / partition stage',
+        'Finishing stage',
+        'Handover stage'
+      ],
+      expectedFormat: 'Select the stage you are currently in'
+    },
+    {
+      id: 'plotOrBuiltArea',
+      label: 'Plot / Built-up Area',
+      type: 'choice',
+      goal: 'Estimate scale for vendor requirement and payment milestones',
+      options: [
+        'Under 1,500 sqft',
+        '1,500 – 3,000 sqft',
+        '3,000 – 10,000 sqft',
+        '10,000 – 25,000 sqft',
+        '25,000 – 1 lakh sqft',
+        'Above 1 lakh sqft'
+      ],
+      expectedFormat: 'Select a range or provide an approximate area'
+    },
+    {
+      id: 'vendorNeeds',
+      label: 'Vendor Categories Needed',
+      type: 'choice',
+      goal: 'Map vendors to onboard, audit, or coordinate',
+      options: [
+        'Civil contractor',
+        'MEP (Mechanical, Electrical, Plumbing)',
+        'Interiors & finishing team',
+        'Structural consultants / architects',
+        'HVAC / Fire safety / Security systems',
+        'Full turnkey team (all vendors)'
+      ],
+      expectedFormat: 'Select all vendor categories you require support with',
+      allowMultiple: true
+    },
+    {
+      id: 'documentationStatus',
+      label: 'Documentation & Compliance Status',
+      type: 'choice',
+      goal: 'Check readiness of statutory and regulatory approvals',
+      options: [
+        'Yes — all approvals ready (sanction + drawings)',
+        'Partially ready (some drawings/approvals pending)',
+        'Only basic plan ready — sanction pending',
+        'RERA registration done',
+        'Required but not started',
+        'Not sure — need guidance'
+      ],
+      expectedFormat: 'Select the statement that fits your current documentation status'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align vendor tiers and proposal structure',
+      options: [
+        'Under ₹10 lakhs',
+        '₹10–25 lakhs',
+        '₹25–50 lakhs',
+        '₹50 lakhs – ₹1 crore',
+        '₹1–3 crores',
+        'Above ₹3 crores (large project)'
+      ],
+      expectedFormat: 'Choose the approximate budget range for the current phase'
+    },
+    {
+      id: 'timelineExpectation',
+      label: 'Timeline Expectation',
+      type: 'choice',
+      goal: 'Set milestone cadence and delivery expectations',
+      options: [
+        'ASAP (high urgency)',
+        'Within 1–3 months',
+        'Within 3–6 months',
+        'Within 6–12 months',
+        'Flexible — depends on vendors',
+        'No fixed timeline — planning stage'
+      ],
+      expectedFormat: 'Select your desired completion timeline for this phase'
+    },
+    {
+      id: 'painPoints',
+      label: 'Current Pain Points / Risks',
+      type: 'choice',
+      goal: 'Surface blockers to address through TatvaOps coordination',
+      options: [
+        'Contractor delays',
+        'Budget overruns',
+        'Quality issues / rework',
+        'Approval / compliance delays',
+        'Poor coordination between vendors',
+        'Need clarity on scope / drawings'
+      ],
+      expectedFormat: 'Select all risks or challenges you are facing',
+      allowMultiple: true
+    },
+    {
+      id: 'decisionStyle',
+      label: 'Decision & Communication Style',
+      type: 'choice',
+      goal: 'Tailor updates to builder preference for efficient coordination',
+      options: [
+        'Detailed explanation + full breakdown',
+        'Quick milestone updates only',
+        'Hybrid: summary + detailed when required',
+        'Visual-first (layouts, renders, charts)',
+        'Data-driven (comparisons, timelines, costs)',
+        'Prefer verbal explanation (call/meeting)'
+      ],
+      expectedFormat: 'Choose how you prefer to receive updates and decisions'
+    }
+  ],
   construction: [
     { 
       id: 'plotSize', 
