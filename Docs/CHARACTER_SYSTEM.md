@@ -239,7 +239,7 @@ Content-Type: application/json
 ### Preview Character
 
 ```bash
-GET /admin/characters/vikram-construction/preview?userName=John
+GET /admin/characters/vikram-residential-construction/preview?userName=John
 ```
 
 **Response:**
@@ -247,9 +247,9 @@ GET /admin/characters/vikram-construction/preview?userName=John
 {
   "greeting": "Namaste! I'm Vikram. John",
   "tone": "Professional yet approachable",
-  "persona": "Experienced civil engineer...",
-  "sampleEmpathy": "I understand this is a significant investment.",
-  "guardrails": ["Focus on safety...", "Transparent about costs..."]
+  "persona": "Experienced residential civil engineer...",
+  "sampleEmpathy": "I understand this is a significant investment in your home.",
+  "guardrails": ["Focus on safety...", "Transparent about costs...", "Realistic timelines for residential builds"]
 }
 ```
 
