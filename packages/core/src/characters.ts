@@ -12,6 +12,7 @@ import { deepmerge } from "./utils"; // Import deepmerge
 export type Service =
   | "interior_design"
   | "commercial_interiors"
+  | "commercial_construction"
   | "construction"
   | "home_automation"
   | "painting"

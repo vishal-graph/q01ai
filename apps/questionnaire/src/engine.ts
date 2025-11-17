@@ -30,6 +30,7 @@ export function extractParamValue(service: string, paramId: string, userText: st
   switch (service) {
     case 'interior_design':
     case 'commercial_interiors':
+    case 'commercial_construction':
     case 'construction':
     case 'home_automation':
     case 'painting':
@@ -46,6 +47,7 @@ export function extractParamValue(service: string, paramId: string, userText: st
         }
         case 'areaSqft':
         case 'carpetAreaSqft':
+        case 'builtUpAreaSqft':
         case 'totalAreaSqft':
         case 'availableRoofAreaSqft': {
           const m = text.match(/(\d{3,6})\s*(sq\s*ft|square\s*feet|sq\s*m|m2|yards?|yds?)/i);

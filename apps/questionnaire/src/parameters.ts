@@ -218,6 +218,145 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Choose when you would like the fit-out to be completed'
     }
   ],
+  commercial_construction: [
+    {
+      id: 'projectType',
+      label: 'Project Type',
+      type: 'choice',
+      goal: 'Identify the commercial build category and vendor ecosystem required',
+      options: [
+        'Office space',
+        'Retail store',
+        'Warehouse',
+        'Industrial factory',
+        'Restaurant',
+        'Mixed-use commercial space'
+      ],
+      expectedFormat: 'Choose the project type closest to your scope'
+    },
+    {
+      id: 'projectStage',
+      label: 'Project Stage',
+      type: 'choice',
+      goal: 'Understand the current milestone so planning picks up from the right point',
+      options: [
+        'Design stage',
+        'Civil stage',
+        'MEP stage',
+        'Interiors stage',
+        'Finishing stage',
+        'Pre-handover stage'
+      ],
+      expectedFormat: 'Choose the stage that reflects your project status'
+    },
+    {
+      id: 'builtUpAreaSqft',
+      label: 'Built-up Area (sqft)',
+      type: 'choice',
+      goal: 'Gauge scale for structural, MEP, and budget planning',
+      options: [
+        'Under 2,000 sqft',
+        '2,000 – 5,000 sqft',
+        '5,000 – 15,000 sqft',
+        '15,000 – 50,000 sqft',
+        '50,000 – 1 lakh sqft',
+        'Above 1 lakh sqft'
+      ],
+      expectedFormat: 'Select a range or type an approximate area (e.g., 25,000 sqft)'
+    },
+    {
+      id: 'vendorCategories',
+      label: 'Required Vendor Categories',
+      type: 'choice',
+      goal: 'Map the contractor and specialist teams TatvaOps should organise',
+      options: [
+        'Civil construction team',
+        'Electrical & Plumbing (MEP) teams',
+        'HVAC (air conditioning, ducting)',
+        'Interior fit-out teams',
+        'Fire safety team',
+        'Full turnkey execution team'
+      ],
+      expectedFormat: 'Select all teams you need support with',
+      allowMultiple: true
+    },
+    {
+      id: 'complianceStatus',
+      label: 'Compliance Status',
+      type: 'choice',
+      goal: 'Check readiness with fire, structural, and municipal approvals',
+      options: [
+        'All approvals ready',
+        'Fire drawings ready',
+        'Structural drawings ready',
+        'Only basic layout ready',
+        'Compliance required',
+        'Not sure'
+      ],
+      expectedFormat: 'Select the statement that fits your current approval status or Not sure'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align vendor mix and material planning with investment comfort',
+      options: [
+        'Under ₹20 lakhs',
+        '₹20–50 lakhs',
+        '₹50 lakhs – ₹1 crore',
+        '₹1–2 crores',
+        '₹2–5 crores',
+        'Above ₹5 crores'
+      ],
+      expectedFormat: 'Choose the range that fits your planned spend'
+    },
+    {
+      id: 'timelineExpectation',
+      label: 'Timeline Expectation',
+      type: 'choice',
+      goal: 'Set delivery cadence and milestone durations',
+      options: [
+        'Immediate start',
+        '1–2 months',
+        '3–4 months',
+        '6 months',
+        'Flexible',
+        'Not fixed'
+      ],
+      expectedFormat: 'Choose or describe your target go-live timeline'
+    },
+    {
+      id: 'tenantCommitments',
+      label: 'Tenant / Client Commitments',
+      type: 'choice',
+      goal: 'Capture external deadlines like move-in dates or launch events',
+      options: [
+        'Tenant move-in date fixed',
+        'Store/office launch date fixed',
+        'Client fit-out deadline approaching',
+        'No external deadline',
+        'Planning stage',
+        'Not sure'
+      ],
+      expectedFormat: 'Select the option that matches your current commitments'
+    },
+    {
+      id: 'keyPainPoints',
+      label: 'Key Pain Points',
+      type: 'choice',
+      goal: 'Surface immediate risks or issues needing attention',
+      options: [
+        'Contractor delays',
+        'Approval issues (BBMP/Fire)',
+        'Quality concerns / rework',
+        'Poor coordination between vendors',
+        'Budget overruns',
+        'Lack of clear milestone plan'
+      ],
+      expectedFormat: 'Select the pain points you are experiencing',
+      allowMultiple: true
+    }
+  ],
   construction: [
     { 
       id: 'plotSize', 
