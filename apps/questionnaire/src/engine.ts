@@ -28,11 +28,11 @@ export function extractParamValue(service: string, paramId: string, userText: st
   // This prevents premature completion for services where extractParamValue doesn't have explicit logic.
   // In a real-world scenario, you'd add specific regex/NLP for each parameter.
   switch (service) {
-    case 'interior_design':
+    case 'residential_interiors':
     case 'commercial_interiors':
     case 'commercial_construction':
     case 'property_development':
-    case 'construction':
+    case 'residential_construction':
     case 'home_automation':
     case 'painting':
     case 'solar_services':

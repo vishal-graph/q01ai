@@ -6,8 +6,8 @@ import { z } from 'zod';
 
 // Service Type
 export const ServiceTypeZ = z.enum([
-  'construction',
-  'interior_design',
+  'residential_construction',
+  'residential_interiors',
   'commercial_interiors',
   'commercial_construction',
   'property_development',

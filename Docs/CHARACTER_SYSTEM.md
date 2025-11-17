@@ -104,9 +104,9 @@ pnpm dev
 This file defines all consultant characters. Each character has:
 
 #### Core Identity
-- `id` - Unique identifier (e.g., `"arvind-construction"`)
-- `name` - Display name (e.g., `"Vikram - Construction Expert"`)
-- `service` - Service type (`construction`, `interior_design`, `home_automation`, `painting`)
+- `id` - Unique identifier (e.g., `"arvind-residential-construction"`)
+- `name` - Display name (e.g., `"Vikram - Residential Construction Expert"`)
+- `service` - Service type (`residential_construction`, `residential_interiors`, `home_automation`, `painting`)
 - `active` - Whether this character is active (boolean)
 
 #### Personality
@@ -163,9 +163,9 @@ GET /admin/characters
   "count": 3,
   "characters": [
     {
-      "id": "arvind-construction",
-      "name": "Vikram - Construction Expert",
-      "service": "construction",
+      "id": "arvind-residential-construction",
+      "name": "Vikram - Residential Construction Expert",
+      "service": "residential_construction",
       "active": true,
       "region": { "country": "India", "state": "Maharashtra", "city": "Mumbai" },
       "tone": "Professional yet approachable"
@@ -177,7 +177,7 @@ GET /admin/characters
 ### Get Character by ID
 
 ```bash
-GET /admin/characters/vikram-construction
+GET /admin/characters/vikram-residential-construction
 ```
 
 Returns complete character configuration.
@@ -185,7 +185,7 @@ Returns complete character configuration.
 ### Get Characters by Service
 
 ```bash
-GET /admin/characters/service/construction
+GET /admin/characters/service/residential_construction
 ```
 
 ### Force Reload Registry
@@ -209,7 +209,7 @@ Forces immediate reload from disk. Use after manual file edits.
 ### Update Character Tone (Runtime)
 
 ```bash
-PATCH /admin/characters/arvind-construction/tone
+PATCH /admin/characters/arvind-residential-construction/tone
 Content-Type: application/json
 
 {
@@ -224,7 +224,7 @@ Content-Type: application/json
 ### Update Character Guardrails
 
 ```bash
-PATCH /admin/characters/arvind-construction/guardrails
+PATCH /admin/characters/arvind-residential-construction/guardrails
 Content-Type: application/json
 
 {
@@ -265,10 +265,10 @@ The `composeSystemPrompt()` function dynamically generates prompts based on char
 import { composeSystemPrompt } from '@tatvaops/ai';
 
 // For summarizer
-const systemPrompt = composeSystemPrompt('construction', 'summarizer');
+const systemPrompt = composeSystemPrompt('residential_construction', 'summarizer');
 
 // For enquiry conversation
-const enquiryPrompt = composeSystemPrompt('interior_design', 'enquiry');
+const enquiryPrompt = composeSystemPrompt('residential_interiors', 'enquiry');
 
 // For milestone generation
 const milestonePrompt = composeSystemPrompt('home_automation', 'milestone');

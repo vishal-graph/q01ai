@@ -12,14 +12,14 @@ export type Param = {
 };
 
 export const serviceParameters: Record<string, Param[]> = {
-  interior_design: [
+  residential_interiors: [
     {
       id: 'spaceType',
       label: 'Space Type',
       type: 'choice',
       goal: 'Identify project category',
-      options: ['Home', 'Apartment', 'Villa/Farmhouse', 'Commercial Project', 'Other'],
-      expectedFormat: 'Choose from: Home, Apartment, Villa/Farmhouse, Commercial Project, or Other'
+      options: ['Independent house', 'Apartment', 'Villa/Farmhouse', 'Other'],
+      expectedFormat: 'Choose from: Independent house, Apartment, Villa/Farmhouse, or Other'
     },
     {
       id: 'areaSqft',
@@ -494,7 +494,7 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Choose how you prefer to receive updates and decisions'
     }
   ],
-  construction: [
+  residential_construction: [
     { 
       id: 'plotSize', 
       label: 'Plot Size', 

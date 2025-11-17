@@ -108,7 +108,7 @@ How this parameter is used downstream
 
 ## 🎨 Service-Specific Parameters
 
-### Construction (Arvind Narayan)
+### Residential Construction (Arvind Narayan)
 1. Plot Size
 2. Plot Type / Zone
 3. Approval Status
@@ -119,7 +119,7 @@ How this parameter is used downstream
 8. Timeline (months)
 9. Budget Range (₹)
 
-### Interior Design (Aadhya Rao)
+### Residential Interiors (Aadhya Rao)
 1. Space Type
 2. Area (sqft)
 3. BHK / Room Count
@@ -240,7 +240,7 @@ Your enquiry is now complete! Our team will analyze this and generate a detailed
 Request:
 ```json
 {
-  "service": "construction",
+  "service": "residential_construction",
   "message": "I want to build a house",
   "sessionId": "optional-session-id"
 }
@@ -273,7 +273,7 @@ Response:
 
 ```tsx
 <ChatInterface
-  service="construction"
+service="residential_construction"
   characterName="Arvind Narayan"
   onComplete={(sessionId, parameters) => {
     // All 9 parameters collected!
@@ -391,4 +391,3 @@ The AI learns from:
 **Last Updated**: October 18, 2025
 **Version**: 1.0.0
 **Status**: ✅ Production Ready
-

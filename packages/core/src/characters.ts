@@ -10,11 +10,11 @@ import Ajv from "ajv";
 import { deepmerge } from "./utils"; // Import deepmerge
 
 export type Service =
-  | "interior_design"
+  | "residential_interiors"
   | "commercial_interiors"
   | "commercial_construction"
   | "property_development"
-  | "construction"
+  | "residential_construction"
   | "home_automation"
   | "painting"
   | "solar_services"

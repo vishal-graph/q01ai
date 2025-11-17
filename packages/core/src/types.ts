@@ -3,8 +3,8 @@
  */
 
 export type ServiceType =
-  | 'construction'
-  | 'interior_design'
+  | 'residential_construction'
+  | 'residential_interiors'
   | 'commercial_interiors'
   | 'commercial_construction'
   | 'property_development'
