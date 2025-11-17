@@ -4,7 +4,7 @@
 
 ## Features
 
-- **9 Services** with 9-parameter models each
+- **10 Services** with 9-parameter models each
 - **Character Registry** with hot-reload (config/characters.json)
 - **EQ Engine** for empathy and tone modulation
 - **Guardrails** for safe, compliant responses

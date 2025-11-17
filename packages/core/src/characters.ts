@@ -18,7 +18,8 @@ export type Service =
   | "electrical_services"
   | "irrigation_automation"
   | "event_management"
-  | "farm_infrastructure";
+  | "farm_infrastructure"
+  | "plumbing_services";
 
 // Module-level path variables, to be configured by the application
 let REGISTRY_PATH: string | null = null;

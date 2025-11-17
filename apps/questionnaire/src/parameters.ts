@@ -707,6 +707,80 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Choose when you want the setup to be ready'
     }
   ],
+  plumbing_services: [
+    {
+      id: 'serviceType',
+      label: 'Service Type',
+      type: 'choice',
+      goal: 'Identify whether the request is for repair, new installation, or renovation',
+      options: ['Repair / Fix leak', 'New installation', 'Renovation / remodeling', 'Preventive maintenance', 'Inspection / assessment'],
+      expectedFormat: 'Choose the option that matches your requirement'
+    },
+    {
+      id: 'issueLocation',
+      label: 'Location of Issue / Area',
+      type: 'choice',
+      goal: 'Scope the area impacted by the plumbing issue',
+      options: ['Bathroom', 'Kitchen', 'Utility / Wash area', 'Outdoor / Garden line', 'Entire house / building'],
+      expectedFormat: 'Select the area where the issue is noticed'
+    },
+    {
+      id: 'problemDescription',
+      label: 'Problem Description',
+      type: 'choice',
+      goal: 'Capture the type of plumbing problem',
+      options: ['Leak or dampness', 'Clog / blockage', 'Low pressure', 'Noise / vibration', 'Slow drainage', 'Fixture installation', 'General maintenance', 'Not sure'],
+      expectedFormat: 'Select the problem that best describes your situation'
+    },
+    {
+      id: 'waterSourceType',
+      label: 'Water Source Type',
+      type: 'choice',
+      goal: 'Understand the supply system context',
+      options: ['Overhead tank', 'Underground sump + pump', 'Borewell direct', 'Municipal / BWSSB line', 'Combination system', 'Not sure'],
+      expectedFormat: 'Select your water supply type'
+    },
+    {
+      id: 'pipeMaterial',
+      label: 'Material Type (if known)',
+      type: 'choice',
+      goal: 'Check compatibility with fittings and repairs',
+      options: ['CPVC', 'UPVC / PVC', 'PPR', 'GI / metal pipes', 'PEX', 'Not sure'],
+      expectedFormat: 'Select the pipe material if known (choose Not sure if unknown)'
+    },
+    {
+      id: 'pressureCondition',
+      label: 'Water Pressure Condition',
+      type: 'choice',
+      goal: 'Diagnose pressure-related issues',
+      options: ['Low pressure in specific taps', 'Low pressure everywhere', 'High pressure / sudden bursts', 'Fluctuating pressure', 'Normal', 'Not sure'],
+      expectedFormat: 'Select the pressure condition you observe'
+    },
+    {
+      id: 'visibleDamage',
+      label: 'Visible Damage or Dampness',
+      type: 'choice',
+      goal: 'Assess leak severity and surface damage',
+      options: ['Damp wall / ceiling', 'Water pooling on floor', 'Corrosion or rust stains', 'Visible cracks / broken fittings', 'No visible damage'],
+      expectedFormat: 'Select if you observe any visible signs'
+    },
+    {
+      id: 'urgencyLevel',
+      label: 'Urgency Level',
+      type: 'choice',
+      goal: 'Prioritise scheduling and response',
+      options: ['Emergency (needs same day)', 'High (within 24 hours)', 'Moderate (within 2-3 days)', 'Low (routine service)', 'Just gathering estimates'],
+      expectedFormat: 'Select how urgent the service is for you'
+    },
+    {
+      id: 'accessTimeline',
+      label: 'Timeline / Access Availability',
+      type: 'choice',
+      goal: 'Plan inspection and repair scheduling',
+      options: ['Same-day visit possible', 'This week', 'Specific date preferred', 'Weekends only', 'Remote property access (need coordination)'],
+      expectedFormat: 'Select when we can access the site for inspection'
+    }
+  ],
   electrical_services: [
     {
       id: 'propertyType',
