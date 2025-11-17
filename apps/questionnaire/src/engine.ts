@@ -29,6 +29,7 @@ export function extractParamValue(service: string, paramId: string, userText: st
   // In a real-world scenario, you'd add specific regex/NLP for each parameter.
   switch (service) {
     case 'interior_design':
+    case 'commercial_interiors':
     case 'construction':
     case 'home_automation':
     case 'painting':
@@ -44,6 +45,7 @@ export function extractParamValue(service: string, paramId: string, userText: st
           return m ? m[1].toLowerCase() : userText;
         }
         case 'areaSqft':
+        case 'carpetAreaSqft':
         case 'totalAreaSqft':
         case 'availableRoofAreaSqft': {
           const m = text.match(/(\d{3,6})\s*(sq\s*ft|square\s*feet|sq\s*m|m2|yards?|yds?)/i);

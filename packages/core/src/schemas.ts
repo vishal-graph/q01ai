@@ -8,6 +8,7 @@ import { z } from 'zod';
 export const ServiceTypeZ = z.enum([
   'construction',
   'interior_design',
+  'commercial_interiors',
   'home_automation',
   'painting',
   'solar_services',

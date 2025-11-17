@@ -85,6 +85,139 @@ export const serviceParameters: Record<string, Param[]> = {
       expectedFormat: 'Please describe any ideas or inspirations you have'
     },
   ],
+  commercial_interiors: [
+    {
+      id: 'spaceType',
+      label: 'Space Type',
+      type: 'choice',
+      goal: 'Identify the commercial environment to align layout and styling',
+      options: [
+        'Office space',
+        'Restaurant',
+        'Healthcare space',
+        'Supermarket',
+        'Shared office',
+        'Studio workspace'
+      ],
+      expectedFormat: 'Choose the space category that best fits your project'
+    },
+    {
+      id: 'carpetAreaSqft',
+      label: 'Carpet Area (sqft)',
+      type: 'choice',
+      goal: 'Size guides seating density, services, and material budgeting',
+      options: [
+        'Under 1,000 sqft',
+        '1,000 – 3,000 sqft',
+        '3,000 – 7,000 sqft',
+        '7,000 – 15,000 sqft',
+        '15,000 – 30,000 sqft',
+        'Above 30,000 sqft'
+      ],
+      expectedFormat: 'Select a range or type the exact usable carpet area (e.g., 4,500 sqft)'
+    },
+    {
+      id: 'brandThemeDirection',
+      label: 'Theme / Brand Direction',
+      type: 'choice',
+      goal: 'Capture brand story, colours, and ambience drivers for design concept',
+      options: [
+        'Modern & minimal',
+        'Classic / Luxury',
+        'Industrial / Exposed ceiling look',
+        'Vibrant & branded theme',
+        'Eco-friendly / Natural materials',
+        'Not sure'
+      ],
+      expectedFormat: 'Choose a theme direction or share what feels closest to your brand'
+    },
+    {
+      id: 'functionalPriorities',
+      label: 'Functional Requirements',
+      type: 'choice',
+      goal: 'Understand zones and workflows the space must support',
+      options: [
+        'Cabins & executive rooms',
+        'Workstations',
+        'Conference & meeting rooms',
+        'Reception & waiting area',
+        'Dining / Pantry / Breakout zones',
+        'Checkout counters / Display shelving'
+      ],
+      expectedFormat: 'Select the functional areas that must be accommodated',
+      allowMultiple: true
+    },
+    {
+      id: 'lightingAcousticNeeds',
+      label: 'Lighting & Acoustic Needs',
+      type: 'choice',
+      goal: 'Plan comfort, ambiance, and productivity for key zones',
+      options: [
+        'Basic lighting only',
+        'Smart lighting with sensors',
+        'Accent lighting',
+        'Acoustic treatment for conference rooms',
+        'Full soundproofing',
+        'Not sure'
+      ],
+      expectedFormat: 'Select lighting or acoustic priorities (choose all that apply)',
+      allowMultiple: true
+    },
+    {
+      id: 'mepHvacStatus',
+      label: 'MEP / HVAC Status',
+      type: 'choice',
+      goal: 'Identify dependencies with electrical, HVAC, and services',
+      options: [
+        'Electrical layout ready',
+        'HVAC ducts installed',
+        'Both electrical & HVAC ready',
+        'Partially ready',
+        'Not started',
+        'Not sure'
+      ],
+      expectedFormat: 'Choose current status of electrical and HVAC coordination'
+    },
+    {
+      id: 'furnitureRequirement',
+      label: 'Furniture Requirement',
+      type: 'choice',
+      goal: 'Scope modular and custom furniture deliverables',
+      options: [
+        'Modular workstations',
+        'Loose furniture',
+        'Custom furniture',
+        'Storage units & cabinets',
+        'Hybrid (modular + custom)',
+        'Not decided'
+      ],
+      expectedFormat: 'Select the furniture support you expect (choose all that apply)',
+      allowMultiple: true
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align material selection and vendor shortlist with investment',
+      options: [
+        'Under ₹10 lakhs',
+        '₹10–25 lakhs',
+        '₹25–50 lakhs',
+        '₹50 lakhs – ₹1 crore',
+        '₹1–2 crores',
+        'Above ₹2 crores'
+      ],
+      expectedFormat: 'Choose the budget band you are comfortable with'
+    },
+    {
+      id: 'timelineExpectation',
+      label: 'Timeline Expectation',
+      type: 'choice',
+      goal: 'Plan sequencing and milestones for delivery',
+      options: ['ASAP', '1–2 months', '3 months', '4–6 months', 'Flexible', 'No fixed timeline'],
+      expectedFormat: 'Choose when you would like the fit-out to be completed'
+    }
+  ],
   construction: [
     { 
       id: 'plotSize', 
