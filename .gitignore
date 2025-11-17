@@ -89,6 +89,8 @@ dist
 # Gatsby files
 .cache/
 public
+!apps/questionnaire/public/
+!apps/questionnaire/public/test-ui.html
 
 # Storybook build outputs
 .out
