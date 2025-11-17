@@ -3077,10 +3077,10 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Repair / Fix leak | New installation | Renovation / remodeling | Preventive maintenance | Inspection / assessment"],
+                "rules": ["Repair work | New plumbing installation | Renovation old pipes | Bathroom/kitchen fitting installation | Geyser related service | Not sure"],
                 "followUps": [
-                  "If Repair / Fix leak: \"Got it — we'll trace the exact cause so it doesn't return.\"",
-                  "If New installation: \"Perfect — we'll plan materials and routing to avoid future issues.\""
+                  "If Repair work: \"Got it — we'll trace the exact cause so it doesn't return.\"",
+                  "If New plumbing installation: \"Perfect — we'll plan materials and routing to avoid future issues.\""
                 ]
               },
               "emotionCues": { "urgent": "reassuring", "budget": "practical" },
@@ -3099,10 +3099,10 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Bathroom | Kitchen | Utility / Wash area | Outdoor / Garden line | Entire house / building"],
+                "rules": ["Bathroom | Kitchen | Wash area | Outdoor pipeline | Entire house | Commercial space"],
                 "followUps": [
                   "If Bathroom: \"Understood — we'll handle it carefully, especially around tiles and fittings.\"",
-                  "If Entire house / building: \"We'll run a systematic check so nothing is missed.\""
+                  "If Entire house: \"We'll run a systematic check so nothing is missed.\""
                 ]
               },
               "emotionCues": { "stress": "calming", "concern": "reassuring" },
@@ -3121,9 +3121,9 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Leak or dampness | Clog / blockage | Low pressure | Noise / vibration | Slow drainage | Fixture installation | General maintenance | Not sure"],
+                "rules": ["Water leak | Clogged drain / slow flow | Low water pressure | No water / intermittent supply | Noise in pipes / vibration | Foul smell | Not sure"],
                 "followUps": [
-                  "If Leak or dampness: \"We'll isolate the source carefully so we don't break more than necessary.\"",
+                  "If Water leak: \"We'll isolate the source carefully so we don't break more than necessary.\"",
                   "If Not sure: \"That's okay — we'll inspect and identify the exact cause.\""
                 ]
               },
@@ -3143,9 +3143,9 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Overhead tank | Underground sump + pump | Borewell direct | Municipal / BWSSB line | Combination system | Not sure"],
+                "rules": ["Overhead tank | Borewell pump | Municipal supply | Sump-to-pump line | Mixed sources | Not sure"],
                 "followUps": [
-                  "If Underground sump + pump: \"We'll check pump calibration and suction lines too.\"",
+                  "If Sump-to-pump line: \"We'll check pump calibration and suction lines too.\"",
                   "If Not sure: \"We can confirm during inspection — thank you for letting me know.\""
                 ]
               },
@@ -3165,9 +3165,9 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["CPVC | UPVC / PVC | PPR | GI / metal pipes | PEX | Not sure"],
+                "rules": ["CPVC pipes | PVC pipes | GI (galvanized iron) pipes | UPVC pipes | Mixed materials | Not sure"],
                 "followUps": [
-                  "If GI / metal pipes: \"We'll check for corrosion and suggest durable replacements if needed.\"",
+                  "If GI (galvanized iron) pipes: \"We'll check for corrosion and suggest durable replacements if needed.\"",
                   "If Not sure: \"We'll test and note the material before proceeding.\""
                 ]
               },
@@ -3187,10 +3187,10 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Low pressure in specific taps | Low pressure everywhere | High pressure / sudden bursts | Fluctuating pressure | Normal | Not sure"],
+                "rules": ["Low pressure in one tap | Low pressure in multiple taps | Low pressure in entire house | Pressure fluctuations | No pressure issues | Not sure"],
                 "followUps": [
-                  "If Low pressure in specific taps: \"Sounds like a local choke — we'll clear it without disturbing other lines.\"",
-                  "If High pressure / sudden bursts: \"We'll balance the pump and add pressure relief if needed.\""
+                  "If Low pressure in one tap: \"Sounds like a local choke — we'll clear it without disturbing other lines.\"",
+                  "If Pressure fluctuations: \"We'll balance the pump and add pressure relief if needed.\""
                 ]
               },
               "emotionCues": { "frustrated": "calming", "curious": "educational" },
@@ -3209,10 +3209,10 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Damp wall / ceiling | Water pooling on floor | Corrosion or rust stains | Visible cracks / broken fittings | No visible damage"],
+                "rules": ["Yes | No | No visible issues | Not sure"],
                 "followUps": [
-                  "If Damp wall / ceiling: \"We'll use leak detection to minimise tile removal.\"",
-                  "If No visible damage: \"We'll use pressure tests to pinpoint hidden issues.\""
+                  "If Yes: \"We'll use leak detection to minimise tile removal.\"",
+                  "If No visible issues: \"We'll use pressure tests to pinpoint hidden issues.\""
                 ]
               },
               "emotionCues": { "anxious": "reassuring", "relieved": "supportive" },
@@ -3231,10 +3231,10 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Emergency (needs same day) | High (within 24 hours) | Moderate (within 2-3 days) | Low (routine service) | Just gathering estimates"],
+                "rules": ["Very urgent | Urgent | 24–48 hours | No urgency | Flexible | Just exploring"],
                 "followUps": [
-                  "If Emergency: \"We'll prioritise immediate response to prevent damage.\"",
-                  "If Just gathering estimates: \"Happy to help — we'll give you clarity so you can plan ahead.\""
+                  "If Very urgent: \"We'll prioritise immediate response to prevent damage.\"",
+                  "If Just exploring: \"Happy to help — we'll give you clarity so you can plan ahead.\""
                 ]
               },
               "emotionCues": { "urgent": "focused", "planning": "helpful" },
@@ -3253,10 +3253,10 @@
               ],
               "responseType": "choice",
               "validation": {
-                "rules": ["Same-day visit possible | This week | Specific date preferred | Weekends only | Remote property access (need coordination)"],
+                "rules": ["Today | Tomorrow | Next 2–3 days | This weekend | Next week | Flexible"],
                 "followUps": [
-                  "If Same-day visit possible: \"Great — we'll align technician availability quickly.\"",
-                  "If Remote property access: \"No worries — we'll coordinate with your caretaker or family.\""
+                  "If Today: \"Great — we'll align technician availability quickly.\"",
+                  "If Flexible: \"No worries — we'll coordinate a slot that fits your schedule.\""
                 ]
               },
               "emotionCues": { "busy": "respectful", "helpful": "supportive" },
