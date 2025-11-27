@@ -1,0 +1,1277 @@
+export type Param = {
+  id: string;
+  label: string;
+  type: 'text' | 'number' | 'bool' | 'choice' | 'media';
+  goal: string;
+  validationHint?: string;
+  followUps?: string[];
+  examples?: string[];
+  options?: string[];
+  expectedFormat?: string;
+  allowMultiple?: boolean;
+};
+
+export const serviceParameters: Record<string, Param[]> = {
+  residential_interiors: [
+    {
+      id: 'spaceType',
+      label: 'Space Type',
+      type: 'choice',
+      goal: 'Identify project category',
+      options: ['Independent house', 'Apartment', 'Villa/Farmhouse', 'Other'],
+      expectedFormat: 'Choose from: Independent house, Apartment, Villa/Farmhouse, or Other'
+    },
+    {
+      id: 'areaSqft',
+      label: 'Area (sqft)',
+      type: 'choice',
+      goal: 'Determine scale and budget mapping',
+      options: ['500-800 sqft', '801-1200 sqft', '1201-1600 sqft', '1601-2000 sqft', 'More than 2000 sqft', 'Other'],
+      expectedFormat: 'Choose a range for the area in square feet'
+    },
+    {
+      id: 'bhkRoomCount',
+      label: 'Room / BHK Count',
+      type: 'choice',
+      goal: 'Define layout complexity',
+      options: ['Studio/1BHK', '2BHK', '3BHK', '4BHK/Villa', 'Other'],
+      expectedFormat: 'Choose the number of rooms or BHK configuration'
+    },
+    {
+      id: 'stylePreference',
+      label: 'Style Preference',
+      type: 'choice',
+      goal: 'Creative direction',
+      options: ['Modern/Contemporary', 'Neo-Indian/Traditional', 'European', 'Japandi', 'Not Sure', 'Other'],
+      expectedFormat: 'Choose your preferred design style'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Material & planning alignment',
+      options: ['1-3 Lakhs', '3-5 Lakhs', '5-8 Lakhs', 'More than 8 Lakhs', 'Flexible', 'Other'],
+      expectedFormat: 'Choose your approximate budget range in Lakhs'
+    },
+    {
+      id: 'timeline',
+      label: 'Timeline',
+      type: 'choice',
+      goal: 'Pacing for milestones',
+      options: ['45-60 Days', '61-90 Days', 'More than 90 days', 'Flexible', 'Other'],
+      expectedFormat: 'Choose your desired project timeline'
+    },
+    {
+      id: 'floorPlanAvailability',
+      label: 'Floor Plan Availability',
+      type: 'choice',
+      goal: 'Quotation accuracy',
+      options: ['Yes', 'No', 'Other'],
+      expectedFormat: 'Do you have a floor plan available?'
+    },
+    {
+      id: 'specialZonesFocus',
+      label: 'Special Zones / Focus Areas',
+      type: 'choice',
+      goal: 'Priority areas',
+      options: ['Living Room', 'Bedroom', 'Kids Room', 'All rooms', 'Other'],
+      expectedFormat: 'Choose any special focus areas'
+    },
+    {
+      id: 'inspirationsMoodboard',
+      label: 'Inspirations / Moodboard',
+      type: 'text',
+      goal: 'Mood & theme cues',
+      expectedFormat: 'Please describe any ideas or inspirations you have'
+    },
+  ],
+  commercial_interiors: [
+    {
+      id: 'spaceType',
+      label: 'Space Type',
+      type: 'choice',
+      goal: 'Identify the commercial environment to align layout and styling',
+      options: [
+        'Office space',
+        'Restaurant',
+        'Healthcare space',
+        'Supermarket',
+        'Shared office',
+        'Studio workspace'
+      ],
+      expectedFormat: 'Choose the space category that best fits your project'
+    },
+    {
+      id: 'carpetAreaSqft',
+      label: 'Carpet Area (sqft)',
+      type: 'choice',
+      goal: 'Size guides seating density, services, and material budgeting',
+      options: [
+        'Under 1,000 sqft',
+        '1,000 – 3,000 sqft',
+        '3,000 – 7,000 sqft',
+        '7,000 – 15,000 sqft',
+        '15,000 – 30,000 sqft',
+        'Above 30,000 sqft'
+      ],
+      expectedFormat: 'Select a range or type the exact usable carpet area (e.g., 4,500 sqft)'
+    },
+    {
+      id: 'brandThemeDirection',
+      label: 'Theme / Brand Direction',
+      type: 'choice',
+      goal: 'Capture brand story, colours, and ambience drivers for design concept',
+      options: [
+        'Modern & minimal',
+        'Classic / Luxury',
+        'Industrial / Exposed ceiling look',
+        'Vibrant & branded theme',
+        'Eco-friendly / Natural materials',
+        'Not sure'
+      ],
+      expectedFormat: 'Choose a theme direction or share what feels closest to your brand'
+    },
+    {
+      id: 'functionalPriorities',
+      label: 'Functional Requirements',
+      type: 'choice',
+      goal: 'Understand zones and workflows the space must support',
+      options: [
+        'Cabins & executive rooms',
+        'Workstations',
+        'Conference & meeting rooms',
+        'Reception & waiting area',
+        'Dining / Pantry / Breakout zones',
+        'Checkout counters / Display shelving'
+      ],
+      expectedFormat: 'Select the functional areas that must be accommodated',
+      allowMultiple: true
+    },
+    {
+      id: 'lightingAcousticNeeds',
+      label: 'Lighting & Acoustic Needs',
+      type: 'choice',
+      goal: 'Plan comfort, ambiance, and productivity for key zones',
+      options: [
+        'Basic lighting only',
+        'Smart lighting with sensors',
+        'Accent lighting',
+        'Acoustic treatment for conference rooms',
+        'Full soundproofing',
+        'Not sure'
+      ],
+      expectedFormat: 'Select lighting or acoustic priorities (choose all that apply)',
+      allowMultiple: true
+    },
+    {
+      id: 'mepHvacStatus',
+      label: 'MEP / HVAC Status',
+      type: 'choice',
+      goal: 'Identify dependencies with electrical, HVAC, and services',
+      options: [
+        'Electrical layout ready',
+        'HVAC ducts installed',
+        'Both electrical & HVAC ready',
+        'Partially ready',
+        'Not started',
+        'Not sure'
+      ],
+      expectedFormat: 'Choose current status of electrical and HVAC coordination'
+    },
+    {
+      id: 'furnitureRequirement',
+      label: 'Furniture Requirement',
+      type: 'choice',
+      goal: 'Scope modular and custom furniture deliverables',
+      options: [
+        'Modular workstations',
+        'Loose furniture',
+        'Custom furniture',
+        'Storage units & cabinets',
+        'Hybrid (modular + custom)',
+        'Not decided'
+      ],
+      expectedFormat: 'Select the furniture support you expect (choose all that apply)',
+      allowMultiple: true
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align material selection and vendor shortlist with investment',
+      options: [
+        'Under ₹10 lakhs',
+        '₹10–25 lakhs',
+        '₹25–50 lakhs',
+        '₹50 lakhs – ₹1 crore',
+        '₹1–2 crores',
+        'Above ₹2 crores'
+      ],
+      expectedFormat: 'Choose the budget band you are comfortable with'
+    },
+    {
+      id: 'timelineExpectation',
+      label: 'Timeline Expectation',
+      type: 'choice',
+      goal: 'Plan sequencing and milestones for delivery',
+      options: ['ASAP', '1–2 months', '3 months', '4–6 months', 'Flexible', 'No fixed timeline'],
+      expectedFormat: 'Choose when you would like the fit-out to be completed'
+    }
+  ],
+  commercial_construction: [
+    {
+      id: 'projectType',
+      label: 'Project Type',
+      type: 'choice',
+      goal: 'Identify the commercial build category and vendor ecosystem required',
+      options: [
+        'Office space',
+        'Retail store',
+        'Warehouse',
+        'Industrial factory',
+        'Restaurant',
+        'Mixed-use commercial space'
+      ],
+      expectedFormat: 'Choose the project type closest to your scope'
+    },
+    {
+      id: 'projectStage',
+      label: 'Project Stage',
+      type: 'choice',
+      goal: 'Understand the current milestone so planning picks up from the right point',
+      options: [
+        'Design stage',
+        'Civil stage',
+        'MEP stage',
+        'Interiors stage',
+        'Finishing stage',
+        'Pre-handover stage'
+      ],
+      expectedFormat: 'Choose the stage that reflects your project status'
+    },
+    {
+      id: 'builtUpAreaSqft',
+      label: 'Built-up Area (sqft)',
+      type: 'choice',
+      goal: 'Gauge scale for structural, MEP, and budget planning',
+      options: [
+        'Under 2,000 sqft',
+        '2,000 – 5,000 sqft',
+        '5,000 – 15,000 sqft',
+        '15,000 – 50,000 sqft',
+        '50,000 – 1 lakh sqft',
+        'Above 1 lakh sqft'
+      ],
+      expectedFormat: 'Select a range or type an approximate area (e.g., 25,000 sqft)'
+    },
+    {
+      id: 'vendorCategories',
+      label: 'Required Vendor Categories',
+      type: 'choice',
+      goal: 'Map the contractor and specialist teams TatvaOps should organise',
+      options: [
+        'Civil construction team',
+        'Electrical & Plumbing (MEP) teams',
+        'HVAC (air conditioning, ducting)',
+        'Interior fit-out teams',
+        'Fire safety team',
+        'Full turnkey execution team'
+      ],
+      expectedFormat: 'Select all teams you need support with',
+      allowMultiple: true
+    },
+    {
+      id: 'complianceStatus',
+      label: 'Compliance Status',
+      type: 'choice',
+      goal: 'Check readiness with fire, structural, and municipal approvals',
+      options: [
+        'All approvals ready',
+        'Fire drawings ready',
+        'Structural drawings ready',
+        'Only basic layout ready',
+        'Compliance required',
+        'Not sure'
+      ],
+      expectedFormat: 'Select the statement that fits your current approval status or Not sure'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align vendor mix and material planning with investment comfort',
+      options: [
+        'Under ₹20 lakhs',
+        '₹20–50 lakhs',
+        '₹50 lakhs – ₹1 crore',
+        '₹1–2 crores',
+        '₹2–5 crores',
+        'Above ₹5 crores'
+      ],
+      expectedFormat: 'Choose the range that fits your planned spend'
+    },
+    {
+      id: 'timelineExpectation',
+      label: 'Timeline Expectation',
+      type: 'choice',
+      goal: 'Set delivery cadence and milestone durations',
+      options: [
+        'Immediate start',
+        '1–2 months',
+        '3–4 months',
+        '6 months',
+        'Flexible',
+        'Not fixed'
+      ],
+      expectedFormat: 'Choose or describe your target go-live timeline'
+    },
+    {
+      id: 'tenantCommitments',
+      label: 'Tenant / Client Commitments',
+      type: 'choice',
+      goal: 'Capture external deadlines like move-in dates or launch events',
+      options: [
+        'Tenant move-in date fixed',
+        'Store/office launch date fixed',
+        'Client fit-out deadline approaching',
+        'No external deadline',
+        'Planning stage',
+        'Not sure'
+      ],
+      expectedFormat: 'Select the option that matches your current commitments'
+    },
+    {
+      id: 'keyPainPoints',
+      label: 'Key Pain Points',
+      type: 'choice',
+      goal: 'Surface immediate risks or issues needing attention',
+      options: [
+        'Contractor delays',
+        'Approval issues (BBMP/Fire)',
+        'Quality concerns / rework',
+        'Poor coordination between vendors',
+        'Budget overruns',
+        'Lack of clear milestone plan'
+      ],
+      expectedFormat: 'Select the pain points you are experiencing',
+      allowMultiple: true
+    }
+  ],
+  property_development: [
+    {
+      id: 'projectType',
+      label: 'Project Type',
+      type: 'choice',
+      goal: 'Identify project category to align vendor mix and compliance scope',
+      options: [
+        'Independent house',
+        'Villa project',
+        'Apartment',
+        'Commercial'
+      ],
+      expectedFormat: 'Choose the project type that best matches your development'
+    },
+    {
+      id: 'projectStage',
+      label: 'Current Project Stage',
+      type: 'choice',
+      goal: 'Understand milestone starting point for TatvaOps engagement',
+      options: [
+        'Land purchase',
+        'Foundation stage',
+        'Structure stage',
+        'Brickwork / walls / partition stage',
+        'Finishing stage',
+        'Handover stage'
+      ],
+      expectedFormat: 'Select the stage you are currently in'
+    },
+    {
+      id: 'plotOrBuiltArea',
+      label: 'Plot / Built-up Area',
+      type: 'choice',
+      goal: 'Estimate scale for vendor requirement and payment milestones',
+      options: [
+        'Under 1,500 sqft',
+        '1,500 – 3,000 sqft',
+        '3,000 – 10,000 sqft',
+        '10,000 – 25,000 sqft',
+        '25,000 – 1 lakh sqft',
+        'Above 1 lakh sqft'
+      ],
+      expectedFormat: 'Select a range or provide an approximate area'
+    },
+    {
+      id: 'vendorNeeds',
+      label: 'Vendor Categories Needed',
+      type: 'choice',
+      goal: 'Map vendors to onboard, audit, or coordinate',
+      options: [
+        'Civil contractor',
+        'MEP (Mechanical, Electrical, Plumbing)',
+        'Interiors & finishing team',
+        'Structural consultants / architects',
+        'HVAC / Fire safety / Security systems',
+        'Full turnkey team (all vendors)'
+      ],
+      expectedFormat: 'Select all vendor categories you require support with',
+      allowMultiple: true
+    },
+    {
+      id: 'documentationStatus',
+      label: 'Documentation & Compliance Status',
+      type: 'choice',
+      goal: 'Check readiness of statutory and regulatory approvals',
+      options: [
+        'Yes — all approvals ready (sanction + drawings)',
+        'Partially ready (some drawings/approvals pending)',
+        'Only basic plan ready — sanction pending',
+        'RERA registration done',
+        'Required but not started',
+        'Not sure — need guidance'
+      ],
+      expectedFormat: 'Select the statement that fits your current documentation status'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align vendor tiers and proposal structure',
+      options: [
+        'Under ₹10 lakhs',
+        '₹10–25 lakhs',
+        '₹25–50 lakhs',
+        '₹50 lakhs – ₹1 crore',
+        '₹1–3 crores',
+        'Above ₹3 crores (large project)'
+      ],
+      expectedFormat: 'Choose the approximate budget range for the current phase'
+    },
+    {
+      id: 'timelineExpectation',
+      label: 'Timeline Expectation',
+      type: 'choice',
+      goal: 'Set milestone cadence and delivery expectations',
+      options: [
+        'ASAP (high urgency)',
+        'Within 1–3 months',
+        'Within 3–6 months',
+        'Within 6–12 months',
+        'Flexible — depends on vendors',
+        'No fixed timeline — planning stage'
+      ],
+      expectedFormat: 'Select your desired completion timeline for this phase'
+    },
+    {
+      id: 'painPoints',
+      label: 'Current Pain Points / Risks',
+      type: 'choice',
+      goal: 'Surface blockers to address through TatvaOps coordination',
+      options: [
+        'Contractor delays',
+        'Budget overruns',
+        'Quality issues / rework',
+        'Approval / compliance delays',
+        'Poor coordination between vendors',
+        'Need clarity on scope / drawings'
+      ],
+      expectedFormat: 'Select all risks or challenges you are facing',
+      allowMultiple: true
+    },
+    {
+      id: 'decisionStyle',
+      label: 'Decision & Communication Style',
+      type: 'choice',
+      goal: 'Tailor updates to builder preference for efficient coordination',
+      options: [
+        'Detailed explanation + full breakdown',
+        'Quick milestone updates only',
+        'Hybrid: summary + detailed when required',
+        'Visual-first (layouts, renders, charts)',
+        'Data-driven (comparisons, timelines, costs)',
+        'Prefer verbal explanation (call/meeting)'
+      ],
+      expectedFormat: 'Choose how you prefer to receive updates and decisions'
+    }
+  ],
+  residential_construction: [
+    { 
+      id: 'plotSize', 
+      label: 'Plot Size', 
+      type: 'choice', 
+      goal: 'Foundation & scope estimation',
+      options: ['<1200 sqft', '1200-2400 sqft', '2401-4000 sqft', '4001-6000 sqft', '6000+ sqft', 'Not Sure', 'Other'],
+      expectedFormat: 'Choose a range for plot size in square feet'
+    },
+    { 
+      id: 'plotType', 
+      label: 'Plot Type / Zone', 
+      type: 'choice', 
+      goal: 'Approval norms',
+      options: ['BBMP', 'DTCP', 'BMRDA', 'Panchayat', 'Private Site', 'Not Sure', 'Other'],
+      expectedFormat: 'Choose from: BBMP, DTCP, BMRDA, Panchayat, Private Site, Not Sure, or Other'
+    },
+    { 
+      id: 'approvalStatus', 
+      label: 'Approval Status', 
+      type: 'choice', 
+      goal: 'Readiness for design',
+      options: ['Yes', 'No', 'In Progress', 'Not Started', 'Not Sure'],
+      expectedFormat: 'Choose approval status: Yes, No, In Progress, Not Started, or Not Sure'
+    },
+    { 
+      id: 'soilTestStatus', 
+      label: 'Soil Test Status', 
+      type: 'choice', 
+      goal: 'Safety pre-check',
+      options: ['Yes (report available)', 'Scheduled', 'No', 'Not Sure'],
+      expectedFormat: 'Choose: Yes (report available), Scheduled, No, or Not Sure'
+    },
+    { 
+      id: 'numberOfFloors', 
+      label: 'Number of Floors', 
+      type: 'choice', 
+      goal: 'Structural base',
+      options: ['G', 'G+1', 'G+2', 'G+3', '4+ Floors', 'Not Sure'],
+      expectedFormat: 'Choose floors: G, G+1, G+2, G+3, 4+ Floors, or Not Sure'
+    },
+    { 
+      id: 'structureType', 
+      label: 'Structure Type', 
+      type: 'choice', 
+      goal: 'RCC vs alternatives',
+      options: ['RCC Frame', 'Load Bearing', 'Hybrid', 'Steel Frame', 'Not Sure'],
+      expectedFormat: 'Choose from: RCC Frame, Load Bearing, Hybrid, Steel Frame, or Not Sure'
+    },
+    { 
+      id: 'constructionStage', 
+      label: 'Construction Stage', 
+      type: 'choice', 
+      goal: 'New vs ongoing',
+      options: ['New Project', 'Mid-way Construction', 'Renovation', 'Extension'],
+      expectedFormat: 'Choose from: New Project, Mid-way Construction, Renovation, or Extension'
+    },
+    { 
+      id: 'timeline', 
+      label: 'Timeline', 
+      type: 'choice', 
+      goal: 'Schedule planning',
+      options: ['< 3 months', '3–6 months', '6–9 months', '> 9 months', 'Flexible', 'Not Sure'],
+      expectedFormat: 'Choose your target timeline'
+    },
+    { 
+      id: 'budgetRange', 
+      label: 'Budget Range (₹)', 
+      type: 'choice', 
+      goal: 'Material & phases',
+      options: ['< ₹20L', '₹20–35L', '₹35–50L', '₹50–75L', '₹75L+', 'Flexible', 'Not Sure'],
+      expectedFormat: 'Choose a budget range in Lakhs'
+    },
+  ],
+  home_automation: [
+    { 
+      id: 'homeType', 
+      label: 'Home Type', 
+      type: 'choice', 
+      goal: 'Wiring vs retrofit',
+      options: ['New Build', 'Existing Home', 'Under Construction', 'Rental Property', 'Not Sure'],
+      expectedFormat: 'Choose from: New Build, Existing Home, Under Construction, Rental Property, or Not Sure'
+    },
+    { 
+      id: 'automationFocus', 
+      label: 'Automation Focus', 
+      type: 'choice', 
+      goal: 'Lighting/security/climate',
+      options: ['Lighting & Ambience', 'Security & Safety', 'Climate & Energy', 'Entertainment & Media', 'Whole Home Suite', 'Not Sure'],
+      expectedFormat: 'You can choose multiple: Lighting & Ambience, Security & Safety, Climate & Energy, Entertainment & Media, Whole Home Suite, or Not Sure',
+      allowMultiple: true
+    },
+    { 
+      id: 'roomsToAutomate', 
+      label: 'Rooms to Automate', 
+      type: 'choice', 
+      goal: 'Device count & mapping',
+      options: ['Living Room & Common Areas', 'Bedrooms', 'Kitchen & Dining', 'Entire Home', 'Specific Zones Only', 'Not Decided'],
+      expectedFormat: 'Choose rooms: Living Room & Common Areas, Bedrooms, Kitchen & Dining, Entire Home, Specific Zones Only, or Not Decided'
+    },
+    { 
+      id: 'powerBackupInverter', 
+      label: 'Power Backup', 
+      type: 'choice', 
+      goal: 'System compatibility',
+      options: ['Yes (already installed)', 'Planning to install', 'No backup', 'Not Sure'],
+      expectedFormat: 'Choose: Yes (already installed), Planning to install, No backup, or Not Sure'
+    },
+    { 
+      id: 'wifiNetworkStrength', 
+      label: 'Wi-Fi Strength', 
+      type: 'choice', 
+      goal: 'Ecosystem stability',
+      options: ['Strong throughout home', 'Moderate (few weak spots)', 'Weak (needs upgrade)', 'Currently no Wi-Fi', 'Need on-site assessment'],
+      expectedFormat: 'Choose Wi-Fi status: Strong, Moderate, Weak, No Wi-Fi, or Need assessment'
+    },
+    { 
+      id: 'ecosystemPreference', 
+      label: 'Ecosystem Preference', 
+      type: 'choice', 
+      goal: 'Voice/app-based',
+      options: ['Amazon Alexa', 'Google Assistant', 'Apple HomeKit', 'App-based Only', 'Open to suggestions'],
+      expectedFormat: 'Choose: Amazon Alexa, Google Assistant, Apple HomeKit, App-based Only, or Open to suggestions'
+    },
+    { 
+      id: 'securityPriority', 
+      label: 'Security Priority', 
+      type: 'choice', 
+      goal: 'Cameras/sensors',
+      options: ['High (CCTV & sensors)', 'Medium (basic alerts)', 'Low priority', 'Not Sure'],
+      expectedFormat: 'Choose security focus: High, Medium, Low, or Not Sure'
+    },
+    { 
+      id: 'budgetTier', 
+      label: 'Budget Tier', 
+      type: 'choice', 
+      goal: 'Product planning',
+      options: ['Economical', 'Mid-range', 'Premium', 'Luxury', 'Flexible'],
+      expectedFormat: 'Choose budget tier: Economical, Mid-range, Premium, Luxury, or Flexible'
+    },
+    { 
+      id: 'lifestylePatterns', 
+      label: 'Lifestyle Patterns', 
+      type: 'choice', 
+      goal: 'Scene intelligence',
+      options: ['Working professionals', 'Mostly at home', 'Senior-friendly home', 'Rental / AirBnB', 'Vacation / Second Home', 'Not Sure'],
+      expectedFormat: 'Choose: Working professionals, Mostly at home, Senior-friendly, Rental/AirBnB, Vacation home, or Not Sure'
+    },
+  ],
+  painting: [
+    { 
+      id: 'propertyType', 
+      label: 'Property Type', 
+      type: 'choice', 
+      goal: 'Surface preparation context',
+      options: ['Apartment', 'Independent House', 'Villa', 'Office Space', 'Retail/Commercial', 'Other'],
+      expectedFormat: 'Choose from: Apartment, Independent House, Villa, Office Space, Retail/Commercial, or Other'
+    },
+    { 
+      id: 'interiorOrExterior', 
+      label: 'Interior or Exterior', 
+      type: 'choice', 
+      goal: 'Product family',
+      options: ['Interior Only', 'Exterior Only', 'Both Interior & Exterior', 'Feature Walls Only'],
+      expectedFormat: 'Choose from: Interior Only, Exterior Only, Both Interior & Exterior, or Feature Walls Only'
+    },
+    { 
+      id: 'surfaceCondition', 
+      label: 'Surface Condition', 
+      type: 'choice', 
+      goal: 'Repair / damp proofing',
+      options: ['Fresh / Good condition', 'Minor cracks or flaking', 'Damp patches present', 'Peeling / bubbling paint', 'Major repair needed', 'Not Sure'],
+      expectedFormat: 'Choose condition: Fresh, Minor cracks, Damp patches, Peeling, Major repair, or Not Sure'
+    },
+    { 
+      id: 'oldPaintType', 
+      label: 'Old Paint Type', 
+      type: 'choice', 
+      goal: 'Primer compatibility',
+      options: ['Emulsion', 'Enamel', 'Distemper', 'Not Sure', 'No Previous Paint'],
+      expectedFormat: 'Choose from: Emulsion, Enamel, Distemper, Not Sure, or No Previous Paint'
+    },
+    { 
+      id: 'colourThemeIntent', 
+      label: 'Colour Theme / Intent', 
+      type: 'choice', 
+      goal: 'Visual direction',
+      options: ['Warm & Cozy', 'Soft Pastels', 'Earthy / Natural', 'Bright & Vibrant', 'Monochrome / Minimal', 'Accent Feature Wall', 'Not Sure'],
+      expectedFormat: 'Choose your colour mood: Warm, Pastels, Earthy, Vibrant, Monochrome, Feature Wall, or Not Sure'
+    },
+    { 
+      id: 'finishPreference', 
+      label: 'Finish Preference', 
+      type: 'choice', 
+      goal: 'Product-level decision',
+      options: ['Matte', 'Eggshell', 'Satin', 'Semi-Gloss', 'High Gloss', 'Not Sure'],
+      expectedFormat: 'Choose from: Matte, Eggshell, Satin, Semi-Gloss, High Gloss, or Not Sure'
+    },
+    { 
+      id: 'totalAreaSqft', 
+      label: 'Total Area (sqft)', 
+      type: 'choice', 
+      goal: 'Quantity estimation',
+      options: ['< 800 sqft', '800 - 1200 sqft', '1201 - 1800 sqft', '1801 - 2500 sqft', '2500+ sqft', 'Not Sure'],
+      expectedFormat: 'Choose the total paintable area range'
+    },
+    { 
+      id: 'timeline', 
+      label: 'Timeline', 
+      type: 'choice', 
+      goal: 'Resource planning',
+      options: ['Within 1 week', '1-2 weeks', '3-4 weeks', 'Next month', 'Flexible', 'Just exploring'],
+      expectedFormat: 'Choose your preferred project window'
+    },
+    { 
+      id: 'budgetBrandFlexibility', 
+      label: 'Budget / Brand Flexibility', 
+      type: 'choice', 
+      goal: 'Recommendations',
+      options: ['Economical (< ₹40k)', 'Mid-range (₹40k - ₹70k)', 'Premium (₹70k - ₹1.2L)', 'Luxury (₹1.2L+)', 'Brand agnostic', 'Specific premium brands only'],
+      expectedFormat: 'Choose budget range or brand preference'
+    },
+  ],
+  solar_services: [
+    {
+      id: 'propertyType',
+      label: 'Property Type',
+      type: 'choice',
+      goal: 'Determines load & roof area',
+      options: ['Independent House', 'Apartment', 'Villa', 'Commercial Building', 'Industrial Shed', 'Institutional / School', 'Other'],
+      expectedFormat: 'Choose from: Independent House, Apartment, Villa, Commercial Building, Industrial Shed, Institutional/School, or Other'
+    },
+    {
+      id: 'roofTypeOrientation',
+      label: 'Roof Type & Orientation',
+      type: 'choice',
+      goal: 'Feasibility for panels',
+      options: ['Flat RCC terrace (open)', 'Tiled / Sloped roof', 'Metal sheet roof', 'Mixed terrace + utilities', 'Partially shaded terrace', 'Ground-mounted area', 'Not Sure'],
+      expectedFormat: 'Choose roof type / orientation or select Not Sure'
+    },
+    {
+      id: 'availableRoofAreaSqft',
+      label: 'Available Roof Area (sqft)',
+      type: 'choice',
+      goal: 'Panel capacity calculation',
+      options: ['< 200 sqft (1-2 kW)', '200 - 400 sqft (2-4 kW)', '401 - 650 sqft (4-6 kW)', '651 - 900 sqft (6-8 kW)', '901+ sqft (8 kW+)', 'Not Sure'],
+      expectedFormat: 'Choose the approximate usable sunlit area'
+    },
+    {
+      id: 'monthlyBillInr',
+      label: 'Current Electricity Bill (₹/month)',
+      type: 'choice',
+      goal: 'Load estimation (kWh/day)',
+      options: ['< ₹1,500', '₹1,500 - ₹3,000', '₹3,001 - ₹5,000', '₹5,001 - ₹8,000', '₹8,001+', 'Seasonal spikes only', 'Not Sure'],
+      expectedFormat: 'Choose your average monthly bill band'
+    },
+    {
+      id: 'desiredSolarType',
+      label: 'Desired Solar Type',
+      type: 'choice',
+      goal: 'System design choice',
+      options: ['On-grid', 'Hybrid', 'Off-grid', 'Not Sure'],
+      expectedFormat: 'Choose from: On-grid, Hybrid, Off-grid, Not Sure'
+    },
+    {
+      id: 'backupRequirement',
+      label: 'Backup Requirement',
+      type: 'choice',
+      goal: 'Battery sizing',
+      options: ['Yes, power cuts are frequent', 'Yes, want critical load backup', 'No, grid is reliable', 'Considering later', 'Not Sure'],
+      expectedFormat: 'Choose your backup requirement preference'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Proposal alignment',
+      options: ['₹1.5L - ₹2.5L', '₹2.5L - ₹4L', '₹4L - ₹6L', '₹6L+', 'Exploring financing options', 'Flexible / need guidance'],
+      expectedFormat: 'Choose a budget band or financing preference'
+    },
+    {
+      id: 'interestedInSubsidy',
+      label: 'Interest in Subsidy',
+      type: 'choice',
+      goal: 'Determine policy applicability',
+      options: ['Yes, residential subsidy', 'Yes, commercial scheme', 'Need help understanding eligibility', 'No, not required'],
+      expectedFormat: 'Choose your subsidy interest'
+    },
+    {
+      id: 'installationTimeline',
+      label: 'Timeline / Installation Goal',
+      type: 'choice',
+      goal: 'Planning and vendor sync',
+      options: ['Within 1 month', '1-2 months', 'This quarter', 'After monsoon', 'Just exploring options'],
+      expectedFormat: 'Choose your target installation window'
+    }
+  ],
+  irrigation_automation: [
+    {
+      id: 'farmSizeCrop',
+      label: 'Farm Size & Crop Type',
+      type: 'choice',
+      goal: 'Determine zone design, water requirement and scheduling',
+      options: [
+        'Vegetables – < 1 acre',
+        'Horticulture – 1–5 acres',
+        'Plantation – 5–10 acres',
+        'Open Field Crops – >10 acres',
+        'Mixed Farming (Multiple crops across different plots)',
+        'Greenhouse / Polyhouse crops'
+      ],
+      expectedFormat: 'Choose the crop layout that matches your farm'
+    },
+    {
+      id: 'currentIrrigationMethod',
+      label: 'Current Irrigation Method',
+      type: 'choice',
+      goal: 'Understand upgrade path and baseline efficiency',
+      options: ['Manual flood / channel', 'Basic drip lines', 'Sprinkler / rain gun', 'Micro / misting', 'Combination setup', 'Not sure / other'],
+      expectedFormat: 'Choose the irrigation style you currently follow'
+    },
+    {
+      id: 'waterSource',
+      label: 'Water Source & Pressure',
+      type: 'choice',
+      goal: 'Pump sizing and pressure balancing for automation',
+      options: [
+        'Borewell (high yield)',
+        'Borewell (low yield)',
+        'Open well / Farm pond',
+        'Overhead tank / Sump storage',
+        'Canal / River source',
+        'Not sure about pressure — need assessment'
+      ],
+      expectedFormat: 'Select the water source and pressure condition'
+    },
+    {
+      id: 'soilType',
+      label: 'Soil Type',
+      type: 'choice',
+      goal: 'Plan moisture retention logic and scheduling buffers',
+      options: [
+        'Red soil (fast draining)',
+        'Black soil (high moisture retention)',
+        'Sandy soil (very fast draining)',
+        'Mixed soil (red + black)',
+        'Rocky / Hard soil',
+        'Not sure — require soil test'
+      ],
+      expectedFormat: 'Pick the soil family that matches your fields'
+    },
+    {
+      id: 'automationPreference',
+      label: 'Preferred Automation Level',
+      type: 'choice',
+      goal: 'Select appropriate controller and valve logic',
+      options: [
+        'Fully manual control',
+        'Semi-automatic (timer-based valves)',
+        'Fully automated (IoT + motor + valve control)',
+        'Automated only for irrigation lines',
+        'Automated only for pump/motor',
+        'Need guidance to decide'
+      ],
+      expectedFormat: 'Choose the control style you are comfortable with'
+    },
+    {
+      id: 'powerReliability',
+      label: 'Power Availability & Backup',
+      type: 'choice',
+      goal: 'Assess feasibility of pump automation and scheduling',
+      options: [
+        'No power cuts',
+        'Occasional power cuts (1–2 hrs)',
+        'Frequent power cuts (3–6 hrs)',
+        'Daily long outages (6+ hrs)',
+        'Require solar pump backup',
+        'Not sure'
+      ],
+      expectedFormat: 'Describe current power condition for pumps and controllers'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align proposal, ROI narrative and component selection',
+      options: [
+        'Under ₹50,000',
+        '₹50,000 – ₹1,00,000',
+        '₹1,00,000 – ₹2,50,000',
+        '₹2,50,000 – ₹5,00,000',
+        '₹5,00,000 – ₹10,00,000',
+        'Above ₹10,00,000'
+      ],
+      expectedFormat: 'Pick the budget window you are considering'
+    },
+    {
+      id: 'fertigationInterest',
+      label: 'Interest in Fertigation Automation',
+      type: 'choice',
+      goal: 'Plan nutrient dosing integration and controller selection',
+      options: ['Yes', 'Maybe', 'Not now', 'No', 'Undecided'],
+      expectedFormat: 'Choose if you want fertilizer dosing automated'
+    },
+    {
+      id: 'installationTimeline',
+      label: 'Timeline / Installation Goal',
+      type: 'choice',
+      goal: 'Coordinate inspections, vendor scheduling and rollout',
+      options: ['Immediately', 'This month', '2–3 months', 'Post-harvest', 'Planning stage', 'Just exploring'],
+      expectedFormat: 'Select when you want the irrigation automation to be ready'
+    }
+  ],
+  event_management: [
+    {
+      id: 'eventType',
+      label: 'Event Type',
+      type: 'choice',
+      goal: 'Identify the nature of the event to scope planning requirements',
+      options: ['Wedding', 'Corporate Event', 'Birthday Celebration', 'Cultural Event', 'Product Launch', 'College / School Event'],
+      expectedFormat: 'Choose the category that best describes the event'
+    },
+    {
+      id: 'eventDateDuration',
+      label: 'Event Date & Duration',
+      type: 'choice',
+      goal: 'Determine scheduling urgency and timeline planning',
+      options: ['Full-day', 'Half-day', 'Multi-day', 'Week-long event', 'Flexible', 'Just exploring'],
+      expectedFormat: 'Select the option that best matches your timeline; add details if needed'
+    },
+    {
+      id: 'venueStatus',
+      label: 'Venue Status',
+      type: 'choice',
+      goal: 'Assess venue readiness and location logistics',
+      options: ['Venue already booked', 'Shortlisted a few venues', 'Need suggestions', 'Need both indoor + outdoor options', 'No venue yet', 'Not sure'],
+      expectedFormat: 'Select the statement that matches your venue situation'
+    },
+    {
+      id: 'guestCount',
+      label: 'Guest Count',
+      type: 'choice',
+      goal: 'Plan capacity, hospitality, and vendor scaling',
+      options: ['Under 50 guests', '50–150 guests', '150–300 guests', '300–500 guests', '500–1000 guests', 'Above 1000 guests'],
+      expectedFormat: 'Choose the guest range that best fits your event'
+    },
+    {
+      id: 'themeMood',
+      label: 'Theme / Mood Preference',
+      type: 'choice',
+      goal: 'Guide décor, styling, and experience design direction',
+      options: ['Classical', 'Modern & Elegant', 'Minimal & Clean', 'Festive', 'Luxury', 'Not sure'],
+      expectedFormat: 'Select the overall vibe you prefer (add details if needed)'
+    },
+    {
+      id: 'programFlow',
+      label: 'Program Flow Highlights',
+      type: 'choice',
+      goal: 'Understand key segments to choreograph timeline and production',
+      options: ['Reception / Welcome', 'Stage performances', 'Speeches', 'Cultural segments', 'Games / activities', 'Party section'],
+      expectedFormat: 'Select the key segments you have planned',
+      allowMultiple: true
+    },
+    {
+      id: 'vendorNeeds',
+      label: 'Vendor Assistance Required',
+      type: 'choice',
+      goal: 'Identify vendors or services that require coordination',
+      options: ['Décor & stage setup', 'Photography & videography', 'Catering & food service', 'Sound, lighting & AV', 'Invitation & branding', 'End-to-end event management'],
+      expectedFormat: 'Select the support areas you need TatvaOps to handle',
+      allowMultiple: true
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align planning and vendor recommendations with financial comfort',
+      options: ['Under ₹1 lakh', '₹1–3 lakhs', '₹3–7 lakhs', '₹7–15 lakhs', '₹15–30 lakhs', 'Above ₹30 lakhs'],
+      expectedFormat: 'Choose the budget window or indicate if guidance is needed'
+    },
+    {
+      id: 'specialRequirements',
+      label: 'Special Requirements or Requests',
+      type: 'choice',
+      goal: 'Capture personalized touches, cultural needs, and unique expectations',
+      options: ['Theme-based entry', 'Live music', 'Anchor appearance', 'Ritual-specific arrangements', 'Surprise elements', 'Nothing special'],
+      expectedFormat: 'Select any special touches you would like us to plan'
+    }
+  ],
+  farm_infrastructure: [
+    {
+      id: 'landSizeCrop',
+      label: 'Land Size & Crop Type',
+      type: 'choice',
+      goal: 'Understand farm layout planning, crop selection, and structure feasibility',
+      options: [
+        'Vegetables — < 1 acre',
+        'Horticulture — 1–5 acres',
+        'Plantation — 5–10 acres',
+        'Open-field crops — > 10 acres',
+        'Mixed farming',
+        'Greenhouse'
+      ],
+      expectedFormat: 'Choose the option that best describes your land and crops'
+    },
+    {
+      id: 'infrastructureType',
+      label: 'Required Infrastructure Type',
+      type: 'choice',
+      goal: 'Determine scope for construction, irrigation, storage, and structures',
+      options: [
+        'Irrigation system setup',
+        'Greenhouse construction',
+        'Shade-net setup',
+        'Fencing & gate construction',
+        'Pump house / Water storage tanks',
+        'Storage shed / Utility room'
+      ],
+      expectedFormat: 'Select the infrastructure elements you want to focus on (choose all that apply)',
+      allowMultiple: true
+    },
+    {
+      id: 'waterSource',
+      label: 'Water Source & Borewell Yield',
+      type: 'choice',
+      goal: 'Define irrigation design, reservoir sizing, and pump planning',
+      options: [
+        'Borewell — high yield',
+        'Borewell — low yield',
+        'Open well / Farm pond',
+        'Overhead tank',
+        'Canal / River source',
+        'Not sure'
+      ],
+      expectedFormat: 'Select the water source that best fits your farm'
+    },
+    {
+      id: 'soilSlope',
+      label: 'Soil Type & Land Slope',
+      type: 'choice',
+      goal: 'Guide drainage, structural stability, and foundation planning',
+      options: [
+        'Red soil (fast drainage)',
+        'Black soil (high moisture retention)',
+        'Sandy soil (very fast drainage)',
+        'Mixed soil (red + black)',
+        'Level land with mild slope',
+        'Rocky or uneven land'
+      ],
+      expectedFormat: 'Choose the option that matches your soil and slope'
+    },
+    {
+      id: 'protectedCultivationInterest',
+      label: 'Greenhouse / Polyhouse Interest',
+      type: 'choice',
+      goal: 'Assess suitability for protected cultivation structures',
+      options: [
+        'Greenhouse (full climate control)',
+        'Polyhouse (UV sheet + controlled environment)',
+        'Shade-net (low-cost protective structure)',
+        'Nursery structure (seedling production)',
+        'No structure',
+        'Need guidance'
+      ],
+      expectedFormat: 'Select the protected cultivation option you are considering'
+    },
+    {
+      id: 'irrigationRequirement',
+      label: 'Irrigation Requirement',
+      type: 'choice',
+      goal: 'Define irrigation system design and automation level',
+      options: [
+        'Drip irrigation',
+        'Sprinkler irrigation',
+        'Micro-sprinkler system',
+        'Drip + sprinkler combination',
+        'Fully automated irrigation',
+        'Not decided'
+      ],
+      expectedFormat: 'Choose the irrigation style you prefer (select all that apply)',
+      allowMultiple: true
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align proposal, vendor phasing, and ROI expectations',
+      options: [
+        'Under ₹50,000',
+        '₹50,000 – ₹1,50,000',
+        '₹1,50,000 – ₹3,00,000',
+        '₹3,00,000 – ₹7,00,000',
+        '₹7,00,000 – ₹15,00,000',
+        'Above ₹15,00,000 (full farm setup)'
+      ],
+      expectedFormat: 'Choose the investment range or request phased planning'
+    },
+    {
+      id: 'weatherConcerns',
+      label: 'Wind / Weather Concerns',
+      type: 'choice',
+      goal: 'Plan structural reinforcements and weather contingency',
+      options: [
+        'High winds',
+        'Heavy rainfall zone',
+        'High summer heat',
+        'Normal weather',
+        'Not sure',
+        'Seasonal issues only (monsoon / summer)'
+      ],
+      expectedFormat: 'Select concerns that apply to your farm location',
+      allowMultiple: true
+    },
+    {
+      id: 'installationTimeline',
+      label: 'Timeline / Installation Goal',
+      type: 'choice',
+      goal: 'Schedule site visits, vendor mobilization, and execution milestones',
+      options: ['Immediately', 'This month', 'Next 1–3 months', 'After harvest', 'Flexible', 'Just exploring options'],
+      expectedFormat: 'Choose when you want the setup to be ready'
+    }
+  ],
+  plumbing_services: [
+    {
+      id: 'serviceType',
+      label: 'Service Type',
+      type: 'choice',
+      goal: 'Identify whether the request is for repair, new installation, or renovation',
+      options: ['Repair work', 'New plumbing installation', 'Renovation old pipes', 'Bathroom/kitchen fitting installation', 'Geyser related service', 'Not sure'],
+      expectedFormat: 'Choose the option that matches your requirement'
+    },
+    {
+      id: 'issueLocation',
+      label: 'Location of Issue / Area',
+      type: 'choice',
+      goal: 'Scope the area impacted by the plumbing issue',
+      options: ['Bathroom', 'Kitchen', 'Wash area', 'Outdoor pipeline', 'Entire house', 'Commercial space'],
+      expectedFormat: 'Select the area where the issue is noticed'
+    },
+    {
+      id: 'problemDescription',
+      label: 'Problem Description',
+      type: 'choice',
+      goal: 'Capture the type of plumbing problem',
+      options: ['Water leak', 'Clogged drain / slow flow', 'Low water pressure', 'No water / intermittent supply', 'Noise in pipes / vibration', 'Foul smell', 'Not sure'],
+      expectedFormat: 'Select the problem that best describes your situation'
+    },
+    {
+      id: 'waterSourceType',
+      label: 'Water Source Type',
+      type: 'choice',
+      goal: 'Understand the supply system context',
+      options: ['Overhead tank', 'Borewell pump', 'Municipal supply', 'Sump-to-pump line', 'Mixed sources', 'Not sure'],
+      expectedFormat: 'Select your water supply type'
+    },
+    {
+      id: 'pipeMaterial',
+      label: 'Material Type (if known)',
+      type: 'choice',
+      goal: 'Check compatibility with fittings and repairs',
+      options: ['CPVC pipes', 'PVC pipes', 'GI (galvanized iron) pipes', 'UPVC pipes', 'Mixed materials', 'Not sure'],
+      expectedFormat: 'Select the pipe material if known (choose Not sure if unknown)'
+    },
+    {
+      id: 'pressureCondition',
+      label: 'Water Pressure Condition',
+      type: 'choice',
+      goal: 'Diagnose pressure-related issues',
+      options: ['Low pressure in one tap', 'Low pressure in multiple taps', 'Low pressure in entire house', 'Pressure fluctuations', 'No pressure issues', 'Not sure'],
+      expectedFormat: 'Select the pressure condition you observe'
+    },
+    {
+      id: 'visibleDamage',
+      label: 'Visible Damage or Dampness',
+      type: 'choice',
+      goal: 'Assess leak severity and surface damage',
+      options: ['Yes', 'No', 'No visible issues', 'Not sure'],
+      expectedFormat: 'Select if you observe any visible signs'
+    },
+    {
+      id: 'urgencyLevel',
+      label: 'Urgency Level',
+      type: 'choice',
+      goal: 'Prioritise scheduling and response',
+      options: ['Very urgent', 'Urgent', '24–48 hours', 'No urgency', 'Flexible', 'Just exploring'],
+      expectedFormat: 'Select how urgent the service is for you'
+    },
+    {
+      id: 'accessTimeline',
+      label: 'Timeline / Access Availability',
+      type: 'choice',
+      goal: 'Plan inspection and repair scheduling',
+      options: ['Today', 'Tomorrow', 'Next 2–3 days', 'This weekend', 'Next week', 'Flexible'],
+      expectedFormat: 'Select when we can access the site for inspection'
+    }
+  ],
+  electrical_services: [
+    {
+      id: 'propertyType',
+      label: 'Property Type',
+      type: 'choice',
+      goal: 'Establish project scale and wiring complexity',
+      options: ['Apartment', 'Independent House', 'Villa', 'Office Space', 'Retail/Commercial', 'Other'],
+      expectedFormat: 'Choose from: Apartment, Independent House, Villa, Office Space, Retail/Commercial, or Other'
+    },
+    {
+      id: 'wiringAge',
+      label: 'Age of Wiring (years)',
+      type: 'choice',
+      goal: 'Safety indicator for risk assessment',
+      options: ['< 5 years', '5–10 years', '10–15 years', '15+ years', 'Not Sure'],
+      expectedFormat: 'Choose approximate age band or Not Sure'
+    },
+    {
+      id: 'powerIssues',
+      label: 'Frequent Power Issues',
+      type: 'choice',
+      goal: 'Detect voltage fluctuations or circuit problems',
+      options: ['Frequent tripping', 'Flickering lights', 'Sparks or burnt smell', 'Electric shocks', 'Overheating plugs/sockets', 'None', 'Other'],
+      expectedFormat: 'Choose the most relevant issue or None/Other'
+    },
+    {
+      id: 'mainPowerSource',
+      label: 'Main Power Source',
+      type: 'choice',
+      goal: 'Understand grid/inverter/solar mix',
+      options: ['Grid Only', 'Grid + Inverter', 'Grid + Solar', 'Grid + Solar + Inverter', 'DG Backup', 'Other'],
+      expectedFormat: 'Choose from: Grid Only, Grid + Inverter, Grid + Solar, Grid + Solar + Inverter, DG Backup, or Other'
+    },
+    {
+      id: 'inverterBackup',
+      label: 'Inverter / Backup System',
+      type: 'choice',
+      goal: 'Integration and load management',
+      options: ['Yes (installed)', 'Planning to install', 'No backup', 'Not Sure'],
+      expectedFormat: 'Choose: Yes (installed), Planning to install, No backup, or Not Sure'
+    },
+    {
+      id: 'applianceLoad',
+      label: 'Appliance Load Summary',
+      type: 'choice',
+      goal: 'Estimate power consumption',
+      options: ['Light (no AC/geyser)', 'Moderate (1 AC or geyser)', 'Heavy (2+ ACs / heavy kitchen)', 'Mixed household + office', 'Not Sure'],
+      expectedFormat: 'Choose load profile: Light, Moderate, Heavy, Mixed, or Not Sure'
+    },
+    {
+      id: 'earthingSafety',
+      label: 'Earthing & Safety Devices',
+      type: 'choice',
+      goal: 'Compliance check for safety systems',
+      options: ['Yes (with ELCB/RCCB)', 'Only MCB', 'No', 'Not Sure'],
+      expectedFormat: 'Choose from: Yes (with ELCB/RCCB), Only MCB, No, or Not Sure'
+    },
+    {
+      id: 'renovationGoal',
+      label: 'Renovation or Maintenance Goal',
+      type: 'choice',
+      goal: 'Define service scope',
+      options: ['Safety Inspection', 'Repair/Troubleshooting', 'Partial Upgrade', 'Full Rewiring', 'Automation Integration', 'New Installation', 'Other'],
+      expectedFormat: 'Choose from: Safety Inspection, Repair/Troubleshooting, Partial Upgrade, Full Rewiring, Automation Integration, New Installation, or Other'
+    },
+    {
+      id: 'budgetRange',
+      label: 'Budget Range (₹)',
+      type: 'choice',
+      goal: 'Align scope with financial planning',
+      options: ['< ₹10k', '₹10k - ₹25k', '₹25k - ₹50k', '₹50k+', 'Flexible / Need quote'],
+      expectedFormat: 'Choose a budget band for the electrical work'
+    },
+    {
+      id: 'timeline',
+      label: 'Timeline / Urgency',
+      type: 'choice',
+      goal: 'Scheduling service priority',
+      options: ['ASAP', 'This week', '1–2 weeks', 'This month', 'Flexible'],
+      expectedFormat: 'Choose your preferred schedule window'
+    }
+  ],
+};
+
+

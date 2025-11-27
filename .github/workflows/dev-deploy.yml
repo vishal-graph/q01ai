@@ -1,0 +1,56 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Test EC2 connectivity
+        run: |
+          echo "🔍 Testing connectivity to EC2 instance..."
+          echo "Host: ${{ secrets.DEV_EC2_HOST }}"
+          echo "Port: ${{ secrets.EC2_PORT }}"
+          echo "User: ${{ secrets.DEV_EC2_USER }}"
+
+          if [ -z "${{ secrets.DEV_EC2_USER }}" ]; then
+            echo "❌ DEV_EC2_USER secret missing!"; exit 1;
+          fi
+          if [ -z "${{ secrets.DEV_EC2_HOST }}" ]; then
+            echo "❌ DEV_EC2_HOST secret missing!"; exit 1;
+          fi
+          if [ -z "${{ secrets.EC2_PORT }}" ]; then
+            echo "⚠️ EC2_PORT not set, defaulting to 22"; EC2_PORT=22;
+          else
+            EC2_PORT=${{ secrets.EC2_PORT }};
+          fi
+
+          echo "🔌 Testing network connectivity..."
+          timeout 10 nc -zv ${{ secrets.DEV_EC2_HOST }} $EC2_PORT || {
+            echo "❌ Cannot connect to ${{ secrets.DEV_EC2_HOST }}:$EC2_PORT";
+            exit 1;
+          }
+          echo "✅ Basic connectivity test passed"
+
+      - name: Deploy application to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.DEV_EC2_USER }}
+          port: ${{ secrets.EC2_PORT }}
+          key: ${{ secrets.DEV_EC2_SSH_KEY }}
+          script: |
+            echo "🚀 Starting deployment on EC2 instance..."
+            cd /home/ubuntu/scripts
+            ./deploy_questionnaire_service.sh
+            echo "✅ Deployment script executed successfully"
