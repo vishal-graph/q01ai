@@ -33,8 +33,8 @@ The service exposes the full service catalogue from the root project:
 
 ```bash
 cd apps/questionnaire
-pnpm install
-PORT=8082 pnpm dev
+npm install
+PORT=8082 npm run dev
 ```
 
 The server starts on `http://localhost:8082`.

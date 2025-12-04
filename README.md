@@ -83,14 +83,14 @@ Q.01AI is a **Gemini-powered conversational intake engine** that captures nine c
 ### Prerequisites
 
 - **Node.js 20.x** or later  
-- **pnpm 8.x** (preferred package manager)  
+- **npm** (comes with Node.js)  
 - Optional: **Vercel CLI** (for deployment)  
 - Gemini API key (if you want live LLM responses instead of mock text)
 
 ### Install Dependencies
 
 ```bash
-pnpm install
+npm install
 ```
 
 ### Bootstrap Env Defaults (optional)
@@ -125,7 +125,7 @@ Core packages use configuration passed programmatically.
 
 ```bash
 cd apps/questionnaire
-pnpm dev            # runs Express server on PORT (default 8082)
+npm run dev            # runs Express server on PORT (default 8082)
 ```
 
 Open the bundled demo client:

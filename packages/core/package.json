@@ -11,7 +11,9 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
     "dotenv": "^16.3.1",
+    "fast-redact": "^3.1.1",
     "pino": "^8.17.2",
     "pino-pretty": "^10.3.1",
     "zod": "^3.22.4"

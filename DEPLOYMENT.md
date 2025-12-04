@@ -64,14 +64,14 @@ Configure the following environment variables in your Vercel project settings:
 
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Build all packages
-pnpm build
+npm run build
 
 # Start development server
 cd apps/questionnaire
-pnpm dev
+npm run dev
 ```
 
 Server will run on http://localhost:8082
