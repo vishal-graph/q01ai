@@ -4,12 +4,7 @@
 
 import { GoogleAuth } from 'google-auth-library';
 import { AIClient, GenerateOptions, GenerateResponse } from '../client';
-import {
-  logger,
-  AIProviderError,
-  retryWithBackoff,
-  extractJson,
-} from '../../../core/src/index';
+import { logger, AIProviderError, retryWithBackoff, extractJson } from '@tatvaops/core';
 import { createHash } from 'crypto';
 
 class VertexGeminiAdapter implements AIClient {

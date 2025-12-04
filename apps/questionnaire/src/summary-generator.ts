@@ -2,7 +2,7 @@
  * Summary Generator - Generates structured 6-section summary from collected parameters
  */
 
-import { geminiAPIClient } from '../../../packages/ai/src/index';
+import { geminiAPIClient } from '@tatvaops/ai';
 import { serviceParameters } from './parameters';
 
 export interface ProjectSummary {
