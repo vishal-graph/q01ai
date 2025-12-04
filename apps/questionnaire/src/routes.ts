@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { QuestionnaireStore } from './models/Questionnaire';
-import { pickCharacter } from '../../../packages/core/src/index';
-import { geminiAPIClient } from '../../../packages/ai/src/index';
+import { pickCharacter } from '@tatvaops/core';
+import { geminiAPIClient } from '@tatvaops/ai';
 import { getNextParamId, getParamMeta, extractParamValue, stripOptionPhrases } from './engine';
 import { config } from './config';
 import { postCompletion } from './webhook';
