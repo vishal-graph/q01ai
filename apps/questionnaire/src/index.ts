@@ -48,8 +48,24 @@ export function createApp() {
 
   // Pure in-memory mode; integrate your own storage via webhook or by forking routes
 
+  // Health check endpoints
+  app.get('/health', (_req, res) => {
+    const healthInfo = {
+      message: 'Questionnaire service is running',
+      timestamp: new Date().toISOString(),
+      service: 'questionnaire',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: process.version,
+      status: 'ok'
+    };
+    logger.debug(healthInfo, 'Health check performed');
+    res.status(200).json(healthInfo);
+  });
+
   app.get('/healthz', (_req, res) => res.json({ status: 'ok' }));
   app.get('/readyz', (_req, res) => res.json({ status: 'ready' }));
+  
   app.use('/', api);
   return app;
 }
