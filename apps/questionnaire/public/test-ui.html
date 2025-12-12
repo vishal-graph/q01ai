@@ -679,7 +679,20 @@
         let currentAllowMultiple = false;
         let selectedOptions = [];
         let currentCharacterName = 'TatvaOps Concierge';
+        let detailPromptMode = false;
+        let detailPromptBaselineLength = 0;
+        let detailPromptLabel = '';
         let typingMessage = null;
+        const detailKeywords = [
+            'other',
+            'not specified',
+            'not sure',
+            'not certain',
+            'not decided',
+            'not fixed',
+            'no fixed',
+            'flexible'
+        ];
 
         const serviceNameMap = {
             residential_interiors: 'Residential Interiors',
@@ -744,6 +757,33 @@
             messageInput.placeholder = `Message ${firstName}…`;
         }
 
+        function isDetailOption(opt = '') {
+            const lower = String(opt).toLowerCase();
+            return detailKeywords.some((keyword) => lower.includes(keyword));
+        }
+
+        function resetDetailPrompt() {
+            detailPromptMode = false;
+            detailPromptBaselineLength = 0;
+            detailPromptLabel = '';
+        }
+
+        function beginDetailPrompt(opt = '') {
+            detailPromptMode = true;
+            detailPromptLabel = opt;
+            const nonDetailSelections = selectedOptions.filter((o) => !isDetailOption(o));
+            const prefix = currentAllowMultiple && nonDetailSelections.length
+                ? `${nonDetailSelections.join(', ')} - `
+                : '';
+            messageInput.disabled = false;
+            messageInput.value = prefix;
+            detailPromptBaselineLength = messageInput.value.length;
+            messageInput.placeholder = `Please enter details for "${opt}"`;
+            messageInput.focus();
+            showStatus(`Please enter details for "${opt}"`, 'info');
+            updateSendButtonState();
+        }
+
         function showTypingIndicator(name = currentCharacterName) {
             if (typingMessage) return;
             typingMessage = document.createElement('div');
@@ -793,6 +833,11 @@
         function updateSendButtonState() {
             if (messageInput.disabled) {
                 sendBtn.disabled = true;
+                return;
+            }
+
+            if (detailPromptMode) {
+                sendBtn.disabled = messageInput.value.length <= detailPromptBaselineLength;
                 return;
             }
 
@@ -902,6 +947,7 @@
             const message = overrideText !== null ? String(overrideText).trim() : messageInput.value.trim();
             if (!message || !currentQuestionnaireId) return;
 
+            resetDetailPrompt();
             lockAllOptionButtons();
 
             // Add user message to chat
@@ -960,6 +1006,7 @@
                 currentOptions = Array.isArray(data.options) ? data.options : [];
                  currentAllowMultiple = Boolean(data.allowMultiple);
                  selectedOptions = [];
+                 resetDetailPrompt();
                  if (currentAllowMultiple) {
                      messageInput.placeholder = 'Select options or type your answer…';
                  } else {
@@ -1062,6 +1109,7 @@
             }
 
             if (sender === 'assistant' && optionsArray.length) {
+                resetDetailPrompt();
                 if (allowMultiple) {
                     const helper = document.createElement('div');
                     helper.className = 'expected-format';
@@ -1087,14 +1135,27 @@
                                 selectedOptions.push(opt);
                                 btn.classList.add('selected');
                             }
-                            messageInput.value = selectedOptions.join(', ');
-                            updateSendButtonState();
+                            const hasDetailSelection = selectedOptions.some(isDetailOption);
+                            if (hasDetailSelection) {
+                                beginDetailPrompt(opt);
+                            } else {
+                                resetDetailPrompt();
+                                messageInput.placeholder = 'Select options or type your answer…';
+                                messageInput.value = selectedOptions.join(', ');
+                                updateSendButtonState();
+                            }
                         });
                     } else {
                         btn.addEventListener('click', () => {
                             if (btn.disabled) return;
                             btn.classList.add('selected');
+                            if (isDetailOption(opt)) {
+                                beginDetailPrompt(opt);
+                                btn.disabled = true;
+                                return;
+                            }
                             btn.disabled = true;
+                            resetDetailPrompt();
                             sendMessage(opt);
                         });
                     }
