@@ -19,10 +19,26 @@ const ConfigSchema = z.object({
     .optional()
     .transform((v) => (v ?? 'false').toLowerCase() === 'true'),
   API_KEY: z.string().optional(),
+  WHATSAPP_CHARACTER_DEFAULT: z.string().default('aadhya'),
+  WHATSAPP_FREEFLOW_ENABLED: z
+    .string()
+    .optional()
+    .transform((v) => (v ?? 'true').toLowerCase() === 'true'),
+  EXTRACTION_CONFIDENCE_THRESHOLD_AUTO: z.coerce.number().default(0.75),
+  EXTRACTION_CONFIDENCE_THRESHOLD_TENTATIVE: z.coerce.number().default(0.4),
+  MAX_TURNS_BEFORE_DIRECT_ASK: z.coerce.number().int().positive().default(3),
+  MAX_CONTEXT_TURNS: z.coerce.number().int().positive().default(6),
 });
 
 export type AppConfig = z.infer<typeof ConfigSchema>;
 
 export const config: AppConfig = ConfigSchema.parse(process.env as any);
+
+export const EXTRACTION_CONFIDENCE_THRESHOLD_AUTO = config.EXTRACTION_CONFIDENCE_THRESHOLD_AUTO;
+export const EXTRACTION_CONFIDENCE_THRESHOLD_TENTATIVE = config.EXTRACTION_CONFIDENCE_THRESHOLD_TENTATIVE;
+export const MAX_TURNS_BEFORE_DIRECT_ASK = config.MAX_TURNS_BEFORE_DIRECT_ASK;
+export const MAX_CONTEXT_TURNS = config.MAX_CONTEXT_TURNS;
+export const WHATSAPP_CHARACTER_DEFAULT = config.WHATSAPP_CHARACTER_DEFAULT;
+export const WHATSAPP_FREEFLOW_ENABLED = config.WHATSAPP_FREEFLOW_ENABLED;
 
 

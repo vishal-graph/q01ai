@@ -4,7 +4,12 @@
  */
 
 import { AIClient, GenerateOptions, GenerateResponse } from '../client';
-import { logger, AIProviderError, retryWithBackoff, extractJson } from '@tatvaops/core';
+import {
+  logger,
+  AIProviderError,
+  retryWithBackoff,
+  extractJson,
+} from '../../../core/src/index';
 import { createHash } from 'crypto';
 
 class GeminiAPIAdapter implements AIClient {

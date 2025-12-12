@@ -63,6 +63,28 @@ These variables are read by the questionnaire app:
 - `ENABLE_GUARDRAILS` – Enable/disable guardrail sanitation (default `true`).  
 - `GEMINI_API_KEY` – Required for live LLM responses (when configured at the root).
 
+### WhatsApp Freeflow (Aadhya)
+
+- `WHATSAPP_CHARACTER_DEFAULT` – Default character id for WhatsApp (default `aadhya`).  
+- `WHATSAPP_FREEFLOW_ENABLED` – Toggle freeflow mode (default `true`).  
+- `EXTRACTION_CONFIDENCE_THRESHOLD_AUTO` – Auto-accept extracted slot confidence (default `0.75`).  
+- `EXTRACTION_CONFIDENCE_THRESHOLD_TENTATIVE` – Tentative/confirm confidence (default `0.4`).  
+- `MAX_TURNS_BEFORE_DIRECT_ASK` – When to force a direct ask for high-priority datapoints (default `3`).  
+- `MAX_CONTEXT_TURNS` – Max transcript turns sent to LLM (default `6`).  
+
+Applies only to WhatsApp (`channel: whatsapp`, `freeflow: true`). Web `/questionnaires` and the test UI remain unchanged.
+
+### WhatsApp / Twilio integration
+
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_NUMBER` – Required to send/receive WhatsApp messages.  
+- `TWILIO_MESSAGING_SERVICE_SID` – Optional; if set, used when sending interactive list/buttons.  
+- `WHATSAPP_START_PHRASE` – Start trigger text (default `START`).  
+- `WHATSAPP_DEFAULT_SERVICE` – Optional. If set, start phrase auto-starts this service. If empty, users will be prompted to pick from the full service list.  
+- `QUESTIONNAIRE_BASE_URL` – Base URL for the internal questionnaire API (default `http://localhost:8082`).  
+- `WHATSAPP_VERIFY_SIGNATURE` – Validate Twilio webhook signatures (`true`/`false`, default `true`).  
+- `WHATSAPP_SESSION_TTL_MS` – Idle timeout for phone→session mapping (default `86400000`, 24h).  
+- `WHATSAPP_WEBHOOK_URL` – Optional absolute URL used for signature verification when behind proxies.
+
 ---
 
 ## API Surface

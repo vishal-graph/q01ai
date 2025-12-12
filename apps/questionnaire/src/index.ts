@@ -7,7 +7,8 @@ import cors from 'cors';
 import pino from 'pino';
 // optional: lighter logger, avoid pino-http types for now
 import { router as api } from './routes';
-import { initCharacterLoaderFromObjects } from '@tatvaops/core';
+import { initCharacterLoaderFromObjects } from '../../../packages/core/src/index';
+import { whatsappRouter } from './whatsapp.routes';
 // Import config JSON to ensure bundling and avoid fs issues on Vercel
 // These paths are within the app package, so the bundler will include them
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -38,7 +39,13 @@ try {
 export function createApp() {
   const app = express();
   app.use(cors());
-  app.use(express.json({ limit: '1mb' }));
+  const rawBodySaver = (req: any, _res: any, buf: Buffer) => {
+    if (buf?.length) {
+      req.rawBody = buf.toString('utf8');
+    }
+  };
+  app.use(express.json({ limit: '1mb', verify: rawBodySaver }));
+  app.use(express.urlencoded({ extended: false, verify: rawBodySaver }));
   // Basic request logging
   app.use((req, _res, next) => { logger.debug({ path: req.path, method: req.method }, 'req'); next(); });
 
@@ -51,6 +58,7 @@ export function createApp() {
   app.get('/healthz', (_req, res) => res.json({ status: 'ok' }));
   app.get('/readyz', (_req, res) => res.json({ status: 'ready' }));
   app.use('/', api);
+  app.use('/', whatsappRouter);
   return app;
 }
 

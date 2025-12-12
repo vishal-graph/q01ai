@@ -7,10 +7,11 @@ export type QuestionnaireDoc = {
   channel?: string;
   userRef?: string;
   status: 'new' | 'collecting' | 'completed';
-  parameters: Record<string, unknown>;
+  parameters: Record<string, any>;
   transcript: Message[];
   createdAt: Date;
   updatedAt: Date;
+  freeflow?: boolean;
 };
 
 const store = new Map<string, QuestionnaireDoc>();
