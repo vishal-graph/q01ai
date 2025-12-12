@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { QuestionnaireStore } from './models/Questionnaire';
-import { pickCharacter } from '@tatvaops/core';
-import { geminiAPIClient } from '@tatvaops/ai';
+import { pickCharacter } from '../../../packages/core/src/index';
+import { geminiAPIClient } from '../../../packages/ai/src/index';
 import { getNextParamId, getParamMeta, extractParamValue, stripOptionPhrases } from './engine';
 import { config } from './config';
 import { postCompletion } from './webhook';
@@ -34,6 +34,9 @@ router.post('/questionnaires', async (req, res) => {
   });
 
   const openingStatement = character.language?.openingPhrases?.[0] || 'Hello!';
+  // Record the opening statement as the first assistant turn to avoid duplicate introductions later
+  newDoc.transcript.push({ role: 'assistant', text: openingStatement, ts: new Date() });
+  await QuestionnaireStore.save(newDoc);
   // No question asked initially; user's first message will trigger it
   res.status(201).json({ id: newDoc.id, service, character: character.name, nextQuestion: openingStatement });
   return;
@@ -114,6 +117,8 @@ router.post('/questionnaires/:id/messages', async (req, res) => {
   
   // Generate empathetic affirmation and question using Gemini
   const recentContext = doc.transcript.slice(-4).map(m => `${m.role.toUpperCase()}: ${m.text}`).join('\n');
+  const optionText = (paramMeta as any)?.options?.length ? ` Options: ${(paramMeta as any).options.join(', ')}.` : '';
+
   const systemPrompt = `You are ${character.name}, a ${character.service} consultant. Persona: ${character.persona}. Tone: ${character.tone}.
 
 CONTEXT (recent turns):\n${recentContext}\n\nTASK:
@@ -122,9 +127,10 @@ CONTEXT (recent turns):\n${recentContext}\n\nTASK:
    - Avoid generic phrases like "Excellent choice", "Noted", "Got it", "Let's proceed" by themselves.
    - Vary language each turn; do not repeat prior affirmations.
    - Examples: "Love how that crop thrives with precision watering.", "Great choice for smart irrigation.", "Perfect for efficient planning.", "Wonderful focus—let's tune automation."
-2) Then ask ONE concise next question about "${paramMeta.label}" (≤ 14 words).
+2) Then ask ONE concise next question about "${paramMeta.label}" (≤ 18 words).
    - Use the expected format: ${paramMeta.expectedFormat || '(no specific format)'}.
-   - Do NOT list option values or say "choose the options"; simply ask the question.
+   - If options exist, include them inline for guidance:${optionText}
+   - Accept free-text answers; do NOT force the user to choose exactly from the options.
 3) No greetings. No extra sentences. Keep it natural, warm, and question-focused.`;
 
   const response = await geminiAPIClient.generateText({
@@ -139,15 +145,9 @@ CONTEXT (recent turns):\n${recentContext}\n\nTASK:
   // If this is the first assistant response of the conversation, prefix an introduction phrase
   const assistantTurnsCount = doc.transcript.filter(m => m.role === 'assistant').length;
   const isFirstAssistantResponse = assistantTurnsCount === 0 && Object.keys(doc.parameters || {}).length === 0;
+  // Opening statement was already recorded at session start; avoid duplicate introductions
   if (isFirstAssistantResponse) {
-    const rawName = character.name || 'Consultant';
-    const namePart = rawName.split(' - ')[0]?.trim() || rawName;
-    const firstName = (namePart.split(/\s+/)[0] || namePart).replace(/[^A-Za-z]/g, '') || 'Consultant';
-    const rolePart = rawName.includes(' - ') ? rawName.split(' - ')[1]?.trim() : '';
-    const serviceTitle = String(character.service || 'consultant').replace(/_/g, ' ');
-    const role = rolePart || `${serviceTitle} consultant`;
-    const intro = `Hello! I'm ${firstName}, your ${role}.`;
-    assistantResponse = `${intro}\n\n${assistantResponse}`;
+    // No intro injection
   }
 
   doc.transcript.push({ role: 'assistant', text: assistantResponse, ts: new Date() });

@@ -1,5 +1,6 @@
 import { serviceParameters, Param } from './parameters';
-import { smartRepair, detectSignal, pickEmpathyLine } from '@tatvaops/ai';
+import { smartRepair } from '../../../packages/ai/src/index';
+import { detectSignal, pickEmpathyLine } from '../../../packages/ai/src/index';
 
 // Pure in-memory questionnaire engine - plug-and-play, no external storage
 
