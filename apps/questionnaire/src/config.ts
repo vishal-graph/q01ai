@@ -24,7 +24,7 @@ const ConfigSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ?? 'true').toLowerCase() === 'true'),
-  EXTRACTION_CONFIDENCE_THRESHOLD_AUTO: z.coerce.number().default(0.75),
+  EXTRACTION_CONFIDENCE_THRESHOLD_AUTO: z.coerce.number().default(0.65),
   EXTRACTION_CONFIDENCE_THRESHOLD_TENTATIVE: z.coerce.number().default(0.4),
   MAX_TURNS_BEFORE_DIRECT_ASK: z.coerce.number().int().positive().default(3),
   MAX_CONTEXT_TURNS: z.coerce.number().int().positive().default(6),

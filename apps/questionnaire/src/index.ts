@@ -7,7 +7,7 @@ import cors from 'cors';
 import pino from 'pino';
 // optional: lighter logger, avoid pino-http types for now
 import { router as api } from './routes';
-import { initCharacterLoaderFromObjects } from '../../../packages/core/src/index';
+import { initCharacterLoaderFromObjects } from '@tatvaops/core';
 import { whatsappRouter } from './whatsapp.routes';
 // Import config JSON to ensure bundling and avoid fs issues on Vercel
 // These paths are within the app package, so the bundler will include them

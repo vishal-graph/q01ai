@@ -413,6 +413,20 @@
             padding-bottom: 0;
             border-bottom: none;
         }
+        .summary-next-step {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .summary-next-step .summary-label {
+            color: #16a34a;
+        }
+        .summary-next-step-value {
+            font-weight: 600;
+            margin-top: 4px;
+        }
         .summary-label {
             font-size: 11px;
             font-weight: 600;
@@ -559,6 +573,9 @@
         .summary-label { color: #0369a1 !important; }
         .summary-value { color: #374151 !important; }
         .summary-section { border-bottom-color: #e5e7eb !important; }
+        .summary-next-step { background: #ecfdf5 !important; border-color: #a7f3d0 !important; }
+        .summary-next-step .summary-label { color: #047857 !important; }
+        .summary-next-step-value { color: #065f46 !important; }
 
         .popup-content { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #111827 !important; }
         .popup-content h3 { color: #16a34a !important; }
@@ -626,7 +643,11 @@
         </div>
 
         <div class="summary-display" id="summaryDisplay" style="display: none;">
-            <h4>Summary</h4>
+            <h4>Project Summary – Ready to initiate</h4>
+            <div class="summary-section summary-next-step" id="summaryInitiationSection">
+                <div class="summary-label">NEXT STEP</div>
+                <div class="summary-value summary-next-step-value" id="summaryInitiationNextStep">--</div>
+            </div>
             <div class="summary-section">
                 <div class="summary-label">PROJECT OVERVIEW</div>
                 <div class="summary-value" id="summaryProjectOverview">--</div>
@@ -910,19 +931,17 @@
                 updateHeader(currentCharacterName, service);
                 setHeaderStatus(`Awaiting your message • ${friendlyServiceName(service)}`);
 
-                const triggerText = serviceTriggerMessages[service];
-                if (!triggerText && data.nextQuestion) {
-                    addMessage(data.nextQuestion, 'assistant', data.character || currentCharacterName);
-                }
-                
+                // Intro + first question come from backend with first message response; UI does not add any opening
+
                 // Enable input
                 messageInput.disabled = false;
                 sendBtn.disabled = false;
                 updateSendButtonState();
-                
+
                 showStatus(`Questionnaire started for ${service}`, 'success');
                 updateParametersDisplay();
-                
+
+                const triggerText = serviceTriggerMessages[service];
                 if (triggerText) {
                     setTimeout(() => {
                         if (currentQuestionnaireId === data.id) {
@@ -980,43 +999,41 @@
                  messageInput.disabled = false;
                 
                 if (data.status === 'completed') {
-                    // Questionnaire completed
-                    addMessage('Thank you! I have all the details. Your questionnaire is complete.', 'assistant');
+                    const closingText = data.nextMessage || data.nextQuestion || 'Thank you! I have all the details. Your questionnaire is complete.';
+                    addMessage(closingText, 'assistant', currentCharacterName);
                     showStatus('Questionnaire completed!', 'success');
                     messageInput.disabled = true;
                     sendBtn.disabled = true;
-                     messageInput.placeholder = 'Conversation completed';
-                     setHeaderStatus('Conversation complete • We will follow up soon');
-                    
-                    // Show popup affirmation
+                    messageInput.placeholder = 'Conversation completed';
+                    setHeaderStatus('Conversation complete • We will follow up soon');
+
                     showPopup('Thanks for your time, our consultant will get back to you shortly!');
-                    
-                    // Show collected parameters
-                    collectedParameters = data.parameters;
+
+                    collectedParameters = data.parameters || {};
                     updateParametersDisplay();
 
-                    // Show project summary
                     if (data.summary) {
                         updateSummaryDisplay(data.summary);
                     }
-                    
-            } else {
-                // Continue conversation
-                currentExpectedFormat = '';
-                currentOptions = Array.isArray(data.options) ? data.options : [];
-                 currentAllowMultiple = Boolean(data.allowMultiple);
-                 selectedOptions = [];
-                 resetDetailPrompt();
-                 if (currentAllowMultiple) {
-                     messageInput.placeholder = 'Select options or type your answer…';
-                 } else {
-                     updateComposerForCharacter(currentCharacterName);
-                 }
-                 addMessage(data.nextQuestion, 'assistant', currentCharacterName, data.parameterLabel, currentOptions, currentAllowMultiple);
-                 setHeaderStatus('Awaiting your response');
-                messageInput.focus();
-                updateSendButtonState();
-            }
+                } else {
+                    // Continue conversation – natural chat first; option chips are optional
+                    const assistantText = data.nextMessage || data.nextQuestion;
+                    currentOptions = Array.isArray(data.options) ? data.options : [];
+                    currentAllowMultiple = Boolean(data.allowMultiple);
+                    selectedOptions = [];
+                    resetDetailPrompt();
+                    if (currentOptions.length) {
+                        messageInput.placeholder = 'Type your message or tap a quick reply…';
+                    } else {
+                        updateComposerForCharacter(currentCharacterName);
+                    }
+                    addMessage(assistantText, 'assistant', currentCharacterName, null, currentOptions, currentAllowMultiple);
+                    collectedParameters = data.collected || data.parameters || collectedParameters;
+                    updateParametersDisplay();
+                    setHeaderStatus('Awaiting your response');
+                    messageInput.focus();
+                    updateSendButtonState();
+                }
                 
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -1233,13 +1250,14 @@
 
             parametersDisplay.style.display = 'block';
             parametersList.innerHTML = '';
-            
+
             Object.entries(collectedParameters).forEach(([key, value]) => {
+                const displayVal = value != null && typeof value === 'object' && 'value' in value ? value.value : value;
                 const item = document.createElement('div');
                 item.className = 'parameter-item';
                 item.innerHTML = `
                     <span class="parameter-name">${key}</span>
-                    <span class="parameter-value">${value}</span>
+                    <span class="parameter-value">${displayVal}</span>
                 `;
                 parametersList.appendChild(item);
             });
@@ -1253,7 +1271,17 @@
             }
 
             summaryDisplay.style.display = 'block';
-            
+            summaryDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            const nextStepEl = document.getElementById('summaryInitiationNextStep');
+            const nextStepSection = document.getElementById('summaryInitiationSection');
+            if (summary.initiationNextStep && nextStepEl) {
+                nextStepEl.textContent = summary.initiationNextStep;
+                if (nextStepSection) nextStepSection.style.display = 'block';
+            } else if (nextStepSection) {
+                nextStepSection.style.display = 'none';
+            }
+
             document.getElementById('summaryProjectOverview').textContent = summary.projectOverview || '--';
             document.getElementById('summaryScopeOfWork').textContent = summary.scopeOfWork || '--';
             document.getElementById('summaryClientRequirements').textContent = summary.clientRequirements || '--';

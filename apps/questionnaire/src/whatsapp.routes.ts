@@ -5,6 +5,7 @@ import { QuestionnaireStore } from './models/Questionnaire';
 import { getCharacter } from './engine/characterRegistry';
 import { applyExtracted, extractDatapointsFromMessage, generateAssistantReply } from './engine/conversation';
 import { WHATSAPP_FREEFLOW_ENABLED } from './config';
+import { generateSixPointSummary } from './summary-generator';
 
 type Session = { questionnaireId: string; lastSeen: number };
 
@@ -129,6 +130,7 @@ whatsappRouter.post('/integrations/whatsapp/twilio', async (req, res) => {
   const existing = getActiveSession(from, now);
   const matchesStart = body.toLowerCase().startsWith(startPhraseLower);
   const isGreeting = greetingKeywords.includes(body.toLowerCase());
+  const isRestart = ['restart', 'reset', 'start over', 'begin again', 'new'].includes(body.toLowerCase().trim());
 
   const helpText = `Reply with ${startPhraseLower.toUpperCase()} to begin.`;
 
@@ -147,6 +149,43 @@ whatsappRouter.post('/integrations/whatsapp/twilio', async (req, res) => {
 
   inflight.add(from);
   try {
+    // Handle restart command - clear session and start fresh
+    if (isRestart && existing) {
+      sessionByPhone.delete(from);
+      // Start a new session immediately
+      if (!WHATSAPP_FREEFLOW_ENABLED) {
+        await sendWhatsApp(from, 'WhatsApp flow is disabled. Please try the web form.');
+        res.type('text/xml').send('<Response/>');
+        return;
+      }
+      try {
+        const character = getCharacter('aadhya');
+        if (!character) throw new Error('character not found');
+        const newDoc = await QuestionnaireStore.create({
+          service: 'residential_interiors',
+          characterId: character.id,
+          channel: 'whatsapp',
+          userRef: from,
+          status: 'collecting',
+          parameters: {},
+          transcript: [],
+          freeflow: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        sessionByPhone.set(from, { questionnaireId: newDoc.id, lastSeen: now });
+        const opening = `✨ Fresh start! I'm ${character.name}, your TatvaOps interior consultant. Tell me about your space - what are we working with today?`;
+        newDoc.transcript.push({ role: 'assistant', text: opening, ts: new Date() });
+        await QuestionnaireStore.save(newDoc);
+        await sendWhatsApp(from, opening);
+      } catch (err) {
+        logger.error({ err, phone: maskPhone(from) }, 'Failed to restart session');
+        await sendWhatsApp(from, 'Could not restart. Please try again.');
+      }
+      res.type('text/xml').send('<Response/>');
+      return;
+    }
+
     if (!existing && matchesStart) {
       if (!WHATSAPP_FREEFLOW_ENABLED) {
         await sendWhatsApp(from, 'WhatsApp flow is disabled. Please try the web form.');
@@ -170,7 +209,7 @@ whatsappRouter.post('/integrations/whatsapp/twilio', async (req, res) => {
         });
         sessionByPhone.set(from, { questionnaireId: newDoc.id, lastSeen: now });
         const opening =
-          `Hello! I'm ${character.name}, your TatvaOps interior consultant. To begin, is this for an apartment, a villa, or an office space?`;
+          `Hello! I'm ${character.name}, your TatvaOps interior consultant. Tell me about your space - what are we working with today?`;
         newDoc.transcript.push({ role: 'assistant', text: opening, ts: new Date() });
         await QuestionnaireStore.save(newDoc);
         await sendWhatsApp(from, opening);
@@ -203,6 +242,55 @@ whatsappRouter.post('/integrations/whatsapp/twilio', async (req, res) => {
         res.type('text/xml').send('<Response/>');
         return;
       }
+      
+      // Check if this conversation has already ended
+      if (doc.status === 'completed') {
+        // Store additional message from user
+        doc.transcript.push({ role: 'user', text: body, ts: new Date() });
+        
+        const lowerBody = body.toLowerCase().trim();
+        let responseMessage: string;
+        
+        // Check if user is confirming "ok" for the WhatsApp number
+        if (lowerBody === 'ok' || lowerBody === 'okay' || lowerBody === 'yes' || lowerBody === 'confirm' || lowerBody === 'confirmed') {
+          responseMessage = `Perfect! ✅ We'll call you on this WhatsApp number as discussed. Looking forward to creating your dream space! 🏠✨`;
+          
+          // Mark as confirmed
+          if (!doc.parameters) doc.parameters = {};
+          (doc.parameters as any).callback_number_confirmed = { value: from, confidence: 1.0, ts: new Date().toISOString() };
+        }
+        // Check if user provided an alternate phone number
+        else if (/^\+?\d{10,15}$/.test(body.replace(/[\s\-\(\)]/g, ''))) {
+          const altNumber = body.replace(/[\s\-\(\)]/g, '');
+          responseMessage = `Got it! ✅ We'll call you on ${body} instead. Talk soon! 🙏`;
+          
+          // Save alternate number
+          if (!doc.parameters) doc.parameters = {};
+          (doc.parameters as any).alternate_callback_number = { value: altNumber, confidence: 1.0, ts: new Date().toISOString() };
+        }
+        // General follow-up message
+        else {
+          responseMessage = `Thanks for your message! 🙏\n\nYour consultation request is complete. Our team will reach out to you soon.\n\nIf you shared a different contact number above, we've noted it. Otherwise, we'll call you on this WhatsApp number.\n\nHave a great day! ✨`;
+          
+          // Save as additional notes
+          if (!doc.parameters) doc.parameters = {};
+          const existingNotes = (doc.parameters as any).additional_notes?.value || '';
+          (doc.parameters as any).additional_notes = { 
+            value: existingNotes ? `${existingNotes} | ${body}` : body, 
+            confidence: 1.0, 
+            ts: new Date().toISOString() 
+          };
+        }
+        
+        doc.transcript.push({ role: 'assistant', text: responseMessage, ts: new Date() });
+        doc.updatedAt = new Date();
+        await QuestionnaireStore.save(doc);
+        
+        await sendWhatsApp(from, responseMessage);
+        res.type('text/xml').send('<Response/>');
+        return;
+      }
+      
       const character = getCharacter('aadhya');
       if (!character) throw new Error('character not found');
 
@@ -210,15 +298,40 @@ whatsappRouter.post('/integrations/whatsapp/twilio', async (req, res) => {
       const extracted = await extractDatapointsFromMessage(body, doc, character);
       applyExtracted(doc, extracted);
 
-      const { reply } = await generateAssistantReply(doc, character);
+      // Pass the user message for mood detection
+      const { reply, isComplete, mood } = await generateAssistantReply(doc, character, { lastUserMessage: body });
       doc.transcript.push({ role: 'assistant', text: reply, ts: new Date() });
+      
+      // Log mood for debugging
+      if (mood && mood !== 'neutral') {
+        logger.debug({ phone: maskPhone(from), mood }, 'User mood detected');
+      }
+      
+      // Mark session as completed if all required data collected
+      if (isComplete) {
+        doc.status = 'completed';
+        logger.info({ phone: maskPhone(from), questionnaireId: doc.id }, 'Questionnaire completed');
+        
+        // Auto-generate 6-point summary on completion
+        try {
+          const sixPointSummary = await generateSixPointSummary(doc);
+          doc.sixPointSummary = sixPointSummary;
+          logger.info({ phone: maskPhone(from), questionnaireId: doc.id }, 'Auto-generated 6-point summary');
+        } catch (summaryError) {
+          logger.error({ err: summaryError, phone: maskPhone(from) }, 'Failed to auto-generate summary');
+        }
+        
+        // Send the closing reply (which already asks about phone confirmation)
+        await sendWhatsApp(from, reply);
+      } else {
+        await sendWhatsApp(from, reply || 'Thanks, one more detail?');
+      }
+      
       doc.updatedAt = new Date();
       await QuestionnaireStore.save(doc);
 
       session.lastSeen = Date.now();
       sessionByPhone.set(from, session);
-
-      await sendWhatsApp(from, reply || 'Thanks, one more detail?');
     } catch (err) {
       logger.error({ err, phone: maskPhone(from) }, 'Failed to continue questionnaire via WhatsApp');
       await sendWhatsApp(from, 'Something went wrong, please try again later.');

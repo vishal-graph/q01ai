@@ -8,6 +8,7 @@ export type Character = {
   guardrails?: Guardrails;
   eiModel?: EIModel;
   collectionStrategy?: CollectionStrategy;
+  language?: { primary?: string; secondary?: string[]; locale?: string; openingPhrases?: string[] };
   datapoints?: CharacterDatapoint[];
 };
 

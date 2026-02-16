@@ -5,8 +5,9 @@ import pino from 'pino';
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-// Resolve relative to the questionnaire app to ensure we find packaged XMLs
-const charactersDir = path.join(__dirname, '..', 'config', 'characters');
+// Resolve relative to the questionnaire app root to find packaged XMLs
+// __dirname = src/engine, so we go up two levels to app root, then into config/characters
+const charactersDir = path.join(__dirname, '..', '..', 'config', 'characters');
 const registry = new Map<string, Character>();
 
 const FALLBACK_AADHYA: Character = {
@@ -43,22 +44,35 @@ const FALLBACK_AADHYA: Character = {
     inclusivity: 'Respect cultural, religious, and lifestyle preferences; adapt tone accordingly.',
   },
   collectionStrategy: { style: 'implicit', maxTurnsBeforeDirectAsk: 3 },
+  language: {
+    primary: 'English',
+    secondary: ['Hindi', 'Kannada'],
+    locale: 'en-IN',
+    openingPhrases: [
+      "Hi! I'm Aadhya, your interior design consultant.",
+    ],
+  },
   datapoints: [
-    { id: 'project_type', label: 'Project type', priority: 1, hint: 'apartment, villa, office' },
-    { id: 'budget', label: 'Budget', priority: 1, hint: 'budget in INR/USD' },
-    { id: 'timeline', label: 'Timeline', priority: 2, hint: 'when to complete' },
-    { id: 'size_sqft', label: 'Size (sqft)', priority: 2, hint: 'approx area' },
-    { id: 'style', label: 'Preferred style', priority: 2, hint: 'modern, minimal, japandi, neo-indian, industrial' },
-    { id: 'rooms', label: 'Rooms', priority: 2, hint: 'living, kitchen, bedrooms, etc' },
-    { id: 'must_haves', label: 'Must-haves', priority: 3, hint: 'things you must have' },
-    { id: 'avoid', label: 'Avoid', priority: 3, hint: 'materials, colors, constraints' },
-    { id: 'site_ready', label: 'Site ready', priority: 3, hint: 'is site ready for interior works?' },
-    { id: 'contact_pref', label: 'Contact preference', priority: 4, hint: 'phone/email/time' },
-    { id: 'preferred_start', label: 'Preferred start', priority: 4, hint: 'desired start month/date' },
-    { id: 'notes', label: 'Notes', priority: 5, hint: 'extra context or constraints' },
-    { id: 'lighting_pref', label: 'Lighting preferences', priority: 4, hint: 'warm/cool, feature lighting' },
+    // Core project details (ask first)
+    { id: 'project_type', label: 'Project type', priority: 1, hint: 'ONLY: apartment, villa, independent house, office. Do NOT re-ask if already known.' },
+    { id: 'rooms', label: 'Rooms/BHK', priority: 1, hint: 'e.g. 2BHK, 3BHK. If user says 2BHK, this is COMPLETE. Do NOT ask again.' },
+    { id: 'size_sqft', label: 'Size (sqft)', priority: 2, hint: 'approx area in square feet. Accept any number.' },
+    { id: 'style', label: 'Preferred style', priority: 2, hint: 'modern, traditional, minimal, japandi, neo-indian, industrial' },
+    // Secondary details
+    { id: 'notes', label: 'Special focus areas', priority: 3, hint: 'e.g. kids room emphasis, master bedroom priority' },
+    { id: 'must_haves', label: 'Must-haves', priority: 3, hint: 'colors, materials, features they want' },
+    { id: 'avoid', label: 'Avoid', priority: 3, hint: 'materials, colors, items to avoid' },
+    { id: 'site_ready', label: 'Site ready', priority: 3, hint: 'yes/no - is site ready for interior work?' },
     { id: 'storage_needs', label: 'Storage needs', priority: 4, hint: 'wardrobes, lofts, hidden storage' },
-    { id: 'moodboard_refs', label: 'Moodboard references', priority: 5, hint: 'links or inspirations' },
+    { id: 'lighting_pref', label: 'Lighting preference', priority: 4, hint: 'warm/cool/natural lighting preference' },
+    // Budget & timeline (ask AFTER core details)
+    { id: 'budget', label: 'Budget', priority: 5, hint: 'budget in lakhs/INR. Only ask after project_type, rooms, size_sqft known.' },
+    { id: 'timeline', label: 'Project timeline', priority: 5, hint: 'project completion timeline in days/weeks/months' },
+    // Contact details (ask LAST)
+    { id: 'contact_pref', label: 'Contact method', priority: 6, hint: 'phone or email - HOW to contact them' },
+    { id: 'callback_time', label: 'Callback time', priority: 6, hint: 'WHEN to call/contact them - day and time for callback. NOT project start date!' },
+    { id: 'preferred_start', label: 'Project start date', priority: 7, hint: 'when they want the PROJECT/WORK to begin, NOT when to call them' },
+    { id: 'moodboard_refs', label: 'Moodboard references', priority: 7, hint: 'optional: links or inspirations, can skip if user has none' },
   ],
 };
 

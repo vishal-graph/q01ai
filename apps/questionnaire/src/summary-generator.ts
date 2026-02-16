@@ -2,8 +2,9 @@
  * Summary Generator - Generates structured 6-section summary from collected parameters
  */
 
-import { geminiAPIClient } from '../../../packages/ai/src/index';
+import { geminiAPIClient } from '@tatvaops/ai';
 import { serviceParameters } from './parameters';
+import { QuestionnaireDoc, SixPointSummary } from './models/Questionnaire';
 
 export interface ProjectSummary {
   projectOverview: string;
@@ -13,6 +14,8 @@ export interface ProjectSummary {
   timeline: string;
   specialConsiderations: string;
   estimatedScope: string;
+  /** One clear line: what to do first to initiate the project (call client, site visit, proposal, etc.) */
+  initiationNextStep?: string;
 }
 
 const serviceDisplayNames: Record<string, string> = {
@@ -31,46 +34,66 @@ const serviceDisplayNames: Record<string, string> = {
   plumbing_services: 'Plumbing Services',
 };
 
+const paramLabelMap: Record<string, string> = {
+  project_type: 'Project type',
+  rooms: 'Rooms / BHK',
+  size_sqft: 'Area (sqft)',
+  style: 'Style',
+  budget: 'Budget',
+  timeline: 'Timeline',
+  contact_pref: 'Contact preference',
+  callback_time: 'Callback time',
+  must_haves: 'Must-haves',
+  avoid: 'Avoid',
+  notes: 'Notes',
+  site_ready: 'Site ready',
+  moodboard_refs: 'Moodboard refs',
+  preferred_start: 'Preferred start',
+};
+
 export async function generateProjectSummary(
   service: string,
   parameters: Record<string, string>
 ): Promise<ProjectSummary> {
   const serviceName = serviceDisplayNames[service] || service.replace(/_/g, ' ');
   const params = serviceParameters[service] || [];
-  
-  // Build a readable parameter summary
+
   const paramSummary = Object.entries(parameters)
     .map(([key, value]) => {
-      const paramDef = params.find(p => p.id === key);
-      const label = paramDef?.label || key;
+      const label = paramLabelMap[key] || params.find(p => p.id === key)?.label || key.replace(/_/g, ' ');
       return `- ${label}: ${value}`;
     })
     .join('\n');
 
-  const systemPrompt = `You are a professional project consultant. Based on the collected questionnaire parameters for a ${serviceName} project, generate a structured project summary.
+  const systemPrompt = `You are a project consultant. Create a CLEAR, CONCISE, project-initiation-ready summary from the collected parameters. This summary will be used to START the project – no fluff, only actionable points.
 
 COLLECTED PARAMETERS:
 ${paramSummary}
 
-SERVICE TYPE: ${serviceName}
+SERVICE: ${serviceName}
 
-Generate a JSON response with exactly these 7 fields. Each field should be concise (max 3-4 lines):
+Generate a JSON with exactly 8 fields. Each field must be 1-2 SHORT lines (or bullet points). Be direct and on-point.
 
-1. "projectOverview": A brief one-liner describing the project based on all collected parameters. Include key details like area, type, and status.
+1. "projectOverview": One line. Type + size + style. Example: "3BHK villa, 4800 sqft, Japandi style renovation."
 
-2. "scopeOfWork": List the main work items/deliverables based on the service type and parameters. Be specific to the service (e.g., for interiors: design, furniture, execution; for construction: civil, MEP, finishing).
+2. "scopeOfWork": One line. What we will do. Example: "Interior design, key rooms (kids room, home office, theatre, pool area), execution and finishing."
 
-3. "clientRequirements": Summarize what the client wants from their perspective - their vision, preferences, and priorities based on the parameters.
+3. "clientRequirements": One line. Must-haves and preferences. Example: "Kids room, home office, pool, theatre room. Vastu: Telugu panchangam. No specific storage preference yet."
 
-4. "technicalSpecs": Extract any technical specifications from the parameters (e.g., materials, finishes, equipment types, system configurations). If none are explicitly mentioned, infer reasonable specs based on the service and other parameters.
+4. "technicalSpecs": One line. Materials, finishes, or "Standard as per scope" if not specified.
 
-5. "timeline": State the project timeline based on the collected parameters. If a specific timeline was given, use it. Otherwise, suggest a reasonable timeline based on scope.
+5. "timeline": One line. Example: "3 months" or "As discussed: 3 months."
 
-6. "specialConsiderations": Note any special requirements, focus areas, pain points, or emphasis the client mentioned. If none, write "No special considerations noted."
+6. "specialConsiderations": One line. Vastu, site status, renovation note, or "None."
 
-7. "estimatedScope": Describe the project size/scale and complexity. Include the budget range if provided. Format: "[Size/Area] | [Complexity: Low/Medium/High] | [Budget: X]"
+7. "estimatedScope": One line. Format: "Area: X | Budget: Y | Complexity: Low/Medium/High."
 
-Keep each section factual, professional, and directly derived from the parameters. No fluff or generic statements.`;
+8. "initiationNextStep": ONE clear action line – what to do first to initiate the project. Examples:
+   - "Call client tomorrow 5 PM. Send proposal for 5L budget within 3 days."
+   - "Schedule site visit. Prepare quote for 5L, 3-month timeline."
+   Use callback_time and contact_pref from parameters. Be specific and actionable.
+
+Rules: No filler. No "we will ensure" or "as per client". Just facts and one clear next step. Return JSON only.`;
 
   try {
     const response = await geminiAPIClient.generateText({
@@ -89,17 +112,35 @@ Keep each section factual, professional, and directly derived from the parameter
       jsonStr = jsonMatch[1].trim();
     }
     
-    // Try to parse as JSON
+    // Try to parse as JSON; fill any missing fields from parameters so we don't show "--"
     try {
       const parsed = JSON.parse(jsonStr);
+      const timelineFromParams =
+        parameters.timeline || parameters.timelineExpectation || parameters.installationTimeline || parameters.accessTimeline || '';
+      const budgetFromParams =
+        parameters.budgetRange || parameters.budget || parameters.budgetTier || parameters.budgetBrandFlexibility || '';
+      const areaFromParams =
+        parameters.areaSqft || parameters.size_sqft || parameters.carpetAreaSqft || parameters.builtUpAreaSqft ||
+        parameters.totalAreaSqft || parameters.availableRoofAreaSqft || parameters.plotSize || '';
+      const callbackTime = parameters.callback_time || '';
+      const contactPref = parameters.contact_pref || 'phone';
+      const defaultNextStep =
+        callbackTime && contactPref
+          ? `Call client ${callbackTime} via ${contactPref}. Prepare proposal per budget and timeline.`
+          : `Follow up via ${contactPref}. Prepare proposal per budget and timeline.`;
+
       return {
-        projectOverview: parsed.projectOverview || '--',
+        projectOverview: parsed.projectOverview || `${serviceName} project`,
         scopeOfWork: parsed.scopeOfWork || '--',
         clientRequirements: parsed.clientRequirements || '--',
         technicalSpecs: parsed.technicalSpecs || '--',
-        timeline: parsed.timeline || '--',
+        timeline: parsed.timeline || timelineFromParams || '--',
         specialConsiderations: parsed.specialConsiderations || '--',
-        estimatedScope: parsed.estimatedScope || '--',
+        estimatedScope:
+          parsed.estimatedScope ||
+          [areaFromParams && `Size: ${areaFromParams}`, budgetFromParams && `Budget: ${budgetFromParams}`].filter(Boolean).join(' | ') ||
+          '--',
+        initiationNextStep: parsed.initiationNextStep || defaultNextStep,
       };
     } catch {
       // If JSON parsing fails, try to extract sections manually
@@ -124,6 +165,12 @@ function extractSectionsFromText(
     return match ? match[1].trim() : '--';
   };
 
+  const callbackTime = parameters.callback_time || '';
+  const contactPref = parameters.contact_pref || 'phone';
+  const defaultNextStep = callbackTime
+    ? `Call client ${callbackTime} via ${contactPref}. Prepare proposal per budget and timeline.`
+    : `Follow up via ${contactPref}. Prepare proposal per budget and timeline.`;
+
   return {
     projectOverview: extractSection('projectOverview') || `${serviceName} project`,
     scopeOfWork: extractSection('scopeOfWork') || '--',
@@ -132,6 +179,7 @@ function extractSectionsFromText(
     timeline: extractSection('timeline') || parameters.timeline || parameters.timelineExpectation || '--',
     specialConsiderations: extractSection('specialConsiderations') || '--',
     estimatedScope: extractSection('estimatedScope') || '--',
+    initiationNextStep: extractSection('initiationNextStep') || defaultNextStep,
   };
 }
 
@@ -141,14 +189,18 @@ function generateFallbackSummary(
 ): ProjectSummary {
   const serviceName = serviceDisplayNames[service] || service.replace(/_/g, ' ');
   
-  // Extract common fields
-  const area = parameters.areaSqft || parameters.carpetAreaSqft || parameters.builtUpAreaSqft || 
+  const area = parameters.size_sqft || parameters.areaSqft || parameters.carpetAreaSqft || parameters.builtUpAreaSqft ||
                parameters.plotSize || parameters.totalAreaSqft || parameters.availableRoofAreaSqft || '';
-  const budget = parameters.budgetRange || parameters.budgetTier || parameters.budgetBrandFlexibility || '';
-  const timeline = parameters.timeline || parameters.timelineExpectation || parameters.installationTimeline || 
+  const budget = parameters.budget || parameters.budgetRange || parameters.budgetTier || parameters.budgetBrandFlexibility || '';
+  const timeline = parameters.timeline || parameters.timelineExpectation || parameters.installationTimeline ||
                    parameters.accessTimeline || '';
-  const spaceType = parameters.spaceType || parameters.propertyType || parameters.projectType || 
+  const spaceType = parameters.project_type || parameters.spaceType || parameters.propertyType || parameters.projectType ||
                     parameters.homeType || parameters.eventType || '';
+
+  const initiationNextStep =
+    parameters.callback_time && parameters.contact_pref
+      ? `Call client ${parameters.callback_time} via ${parameters.contact_pref}. Prepare proposal for ${budget || 'budget'} within ${timeline || 'timeline'}.`
+      : `Follow up via ${parameters.contact_pref || 'phone'}. Prepare proposal for ${budget || 'budget'}, ${timeline || 'flexible timeline'}.`;
 
   return {
     projectOverview: `${serviceName} project${spaceType ? ` for ${spaceType}` : ''}${area ? `, ${area}` : ''}`,
@@ -158,6 +210,160 @@ function generateFallbackSummary(
     timeline: timeline || '--',
     specialConsiderations: '--',
     estimatedScope: `${area || 'Size not specified'} | ${budget || 'Budget not specified'}`,
+    initiationNextStep,
+  };
+}
+
+// ============================================================================
+// 6-POINT SUMMARY GENERATOR (Auto-generated on conversation completion)
+// ============================================================================
+
+export async function generateSixPointSummary(doc: QuestionnaireDoc): Promise<SixPointSummary> {
+  const serviceName = serviceDisplayNames[doc.service] || doc.service.replace(/_/g, ' ');
+  
+  // Flatten parameters
+  const flatParams: Record<string, string> = {};
+  Object.entries(doc.parameters || {}).forEach(([key, val]) => {
+    if (typeof val === 'object' && val !== null && 'value' in val) {
+      flatParams[key] = String(val.value);
+    } else {
+      flatParams[key] = String(val);
+    }
+  });
+
+  // Build parameter summary
+  const paramSummary = Object.entries(flatParams)
+    .map(([key, value]) => `- ${key}: ${value}`)
+    .join('\n');
+
+  // Build conversation summary
+  const conversationLength = doc.transcript?.length || 0;
+  const userMessages = doc.transcript?.filter(m => m.role === 'user').length || 0;
+  
+  // Mood analysis
+  const moodMeta = doc.conversationMeta;
+  const moodSummary = getMoodAnalysisSummary(moodMeta);
+
+  const systemPrompt = `You are an executive assistant creating a concise 6-point summary for a project manager.
+
+SERVICE: ${serviceName}
+CHANNEL: ${doc.channel || 'web'}
+
+COLLECTED DATA:
+${paramSummary}
+
+CONVERSATION STATS:
+- Total turns: ${conversationLength}
+- User messages: ${userMessages}
+- Duration: ${getConversationDuration(doc)}
+
+MOOD ANALYSIS:
+${moodSummary}
+
+Generate a JSON with exactly 6 fields. Each should be 1-2 sentences max:
+
+{
+  "clientProfile": "Brief client description - contact preference, communication style, urgency level",
+  "projectScope": "What they want - type, size, style in one line",
+  "keyRequirements": "Must-haves, special focus areas, things to avoid",
+  "budgetTimeline": "Budget and timeline in simple format",
+  "conversationInsights": "How the conversation went - was client clear, confused, rushed? Any friction points?",
+  "nextSteps": "Recommended follow-up action based on their contact preference and callback time"
+}
+
+Be factual and concise. No fluff. Return JSON only.`;
+
+  try {
+    const response = await geminiAPIClient.generateText({
+      model: 'gemini-2.5-flash',
+      system: systemPrompt,
+      user: 'Generate the 6-point summary JSON.',
+      temperature: 0.25,
+    });
+
+    const responseText = String(response.data);
+    
+    // Extract JSON
+    let jsonStr = responseText;
+    const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1].trim();
+    }
+
+    const parsed = JSON.parse(jsonStr);
+    
+    return {
+      clientProfile: parsed.clientProfile || '--',
+      projectScope: parsed.projectScope || '--',
+      keyRequirements: parsed.keyRequirements || '--',
+      budgetTimeline: parsed.budgetTimeline || '--',
+      conversationInsights: parsed.conversationInsights || '--',
+      nextSteps: parsed.nextSteps || '--',
+      generatedAt: new Date(),
+      moodSummary: moodSummary,
+    };
+  } catch (error) {
+    console.error('Error generating 6-point summary:', error);
+    return generateFallbackSixPointSummary(doc, flatParams, moodSummary);
+  }
+}
+
+function getMoodAnalysisSummary(moodMeta: QuestionnaireDoc['conversationMeta']): string {
+  if (!moodMeta || !moodMeta.moodHistory || moodMeta.moodHistory.length === 0) {
+    return 'No mood data available';
+  }
+
+  const moodCounts: Record<string, number> = {};
+  moodMeta.moodHistory.forEach(mood => {
+    moodCounts[mood] = (moodCounts[mood] || 0) + 1;
+  });
+
+  const dominantMood = Object.entries(moodCounts)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || 'neutral';
+
+  const frustrationLevel = moodCounts['frustrated'] || 0;
+  const positiveLevel = moodCounts['positive'] || 0;
+  const totalTurns = moodMeta.moodHistory.length;
+
+  let sentiment = 'neutral';
+  if (positiveLevel > totalTurns * 0.5) sentiment = 'positive';
+  else if (frustrationLevel > 0) sentiment = 'had friction';
+  else if (moodCounts['rushed'] > totalTurns * 0.3) sentiment = 'was rushed';
+  else if (moodCounts['uncertain'] > totalTurns * 0.3) sentiment = 'needed guidance';
+
+  return `Dominant mood: ${dominantMood} | Overall sentiment: ${sentiment} | Frustration points: ${frustrationLevel} | Positive moments: ${positiveLevel}`;
+}
+
+function getConversationDuration(doc: QuestionnaireDoc): string {
+  if (!doc.createdAt || !doc.updatedAt) return 'Unknown';
+  
+  const start = new Date(doc.createdAt).getTime();
+  const end = new Date(doc.updatedAt).getTime();
+  const durationMs = end - start;
+  
+  if (durationMs < 60000) return 'Less than 1 minute';
+  if (durationMs < 3600000) return `${Math.round(durationMs / 60000)} minutes`;
+  return `${Math.round(durationMs / 3600000)} hours`;
+}
+
+function generateFallbackSixPointSummary(
+  doc: QuestionnaireDoc,
+  params: Record<string, string>,
+  moodSummary: string
+): SixPointSummary {
+  const serviceName = serviceDisplayNames[doc.service] || doc.service.replace(/_/g, ' ');
+  
+  return {
+    clientProfile: `${doc.channel || 'Web'} inquiry | Contact: ${params.contact_pref || 'Not specified'}`,
+    projectScope: `${serviceName} - ${params.project_type || params.spaceType || 'Type not specified'} | ${params.rooms || ''} | ${params.size_sqft || params.areaSqft || 'Size not specified'}`,
+    keyRequirements: `Style: ${params.style || 'Not specified'} | Focus: ${params.notes || params.must_haves || 'None specified'}`,
+    budgetTimeline: `Budget: ${params.budget || params.budgetRange || 'Not specified'} | Timeline: ${params.timeline || 'Flexible'}`,
+    conversationInsights: `${doc.transcript?.length || 0} turns | ${moodSummary}`,
+    nextSteps: params.callback_time 
+      ? `Call client ${params.callback_time} via ${params.contact_pref || 'phone'}`
+      : `Follow up via ${params.contact_pref || 'phone'}`,
+    generatedAt: new Date(),
+    moodSummary: moodSummary,
   };
 }
 
